@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel target="11">
+      <module name="MIRUNI_FE.aiplanner" target="21" />
+      <module name="MIRUNI_FE.calendar" target="21" />
+      <module name="MIRUNI_FE.component" target="21" />
+      <module name="MIRUNI_FE.core.component" target="21" />
+      <module name="MIRUNI_FE.data.datasource" target="21" />
+      <module name="MIRUNI_FE.datasource" target="21" />
+      <module name="MIRUNI_FE.dto" target="21" />
+      <module name="MIRUNI_FE.home" target="21" />
+      <module name="MIRUNI_FE.login" target="21" />
+      <module name="MIRUNI_FE.mypage" target="21" />
+      <module name="MIRUNI_FE.onboard" target="21" />
+      <module name="MIRUNI_FE.pwreset" target="21" />
+      <module name="MIRUNI_FE.repository" target="21" />
+      <module name="MIRUNI_FE.signup" target="21" />
+      <module name="MIRUNI_FE.splash" target="21" />
+      <module name="MIRUNI_FE.survey" target="21" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
