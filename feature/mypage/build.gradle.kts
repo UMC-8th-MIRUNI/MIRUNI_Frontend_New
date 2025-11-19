@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.feature.mypage"
+    namespace = "com.miruni.feature.mypage"
     compileSdk = 35
 
     defaultConfig {

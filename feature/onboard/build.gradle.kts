@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.feature.onboard"
+    namespace = "com.miruni.feature.onboard"
     compileSdk = 35
 
     defaultConfig {

@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.feature.login"
+    namespace = "com.miruni.feature.login"
     compileSdk = 35
 
     defaultConfig {

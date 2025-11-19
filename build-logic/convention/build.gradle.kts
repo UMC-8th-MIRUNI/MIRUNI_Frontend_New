@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.jvm)
     `kotlin-dsl`
 }
-group = "com.example.buildlogic.convention"
+group = "com.miruni.buildlogic.convention"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_11
@@ -25,31 +25,31 @@ gradlePlugin {
     plugins {
         register("hilt") {
             id = libs.plugins.convention.hilt.get().pluginId
-            implementationClass = "com.example.convention.HiltConventionPlugin"
+            implementationClass = "com.miruni.convention.HiltConventionPlugin"
         }
     }
     plugins {
         register("retrofit") {
             id = libs.plugins.convention.retrofit.get().pluginId
-            implementationClass = "com.example.convention.RetrofitConventionPlugin"
+            implementationClass = "com.miruni.convention.RetrofitConventionPlugin"
         }
     }
     plugins {
         register("uiCompose") {
             id = libs.plugins.convention.ui.compose.get().pluginId
-            implementationClass = "com.example.convention.UiComposeConventionPlugin"
+            implementationClass = "com.miruni.convention.UiComposeConventionPlugin"
         }
     }
     plugins {
         register("androidLibraryBuild") {
             id = libs.plugins.convention.android.lib.build.get().pluginId
-            implementationClass = "com.example.convention.AndroidLibraryBuildConventionPlugin"
+            implementationClass = "com.miruni.convention.AndroidLibraryBuildConventionPlugin"
         }
     }
     plugins {
         register("feature") {
             id = libs.plugins.convention.feature.get().pluginId
-            implementationClass = "com.example.convention.FeatureConventionPlugin"
+            implementationClass = "com.miruni.convention.FeatureConventionPlugin"
         }
     }
 }

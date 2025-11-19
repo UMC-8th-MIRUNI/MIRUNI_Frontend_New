@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.data.repository"
+    namespace = "com.miruni.data.repository"
     compileSdk = 35
 
     defaultConfig {

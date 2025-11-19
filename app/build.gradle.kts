@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.miruni_fe"
+    namespace = "com.miruni.miruni_fe"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.miruni_fe"
+        applicationId = "com.miruni.miruni_fe"
         minSdk = 24
         targetSdk = 36
         versionCode = 1

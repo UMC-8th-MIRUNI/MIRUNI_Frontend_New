@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.data.service"
+    namespace = "com.miruni.data.service"
     compileSdk = 35
 
     defaultConfig {

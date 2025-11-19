@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.data.dto"
+    namespace = "com.miruni.data.dto"
     compileSdk = 35
 
     defaultConfig {

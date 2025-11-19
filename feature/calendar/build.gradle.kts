@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.feature.calendar"
+    namespace = "com.miruni.feature.calendar"
     compileSdk = 35
 
     defaultConfig {

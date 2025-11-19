@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.core.designsystem"
+    namespace = "com.miruni.core.designsystem"
     compileSdk = 35
 
     buildFeatures {

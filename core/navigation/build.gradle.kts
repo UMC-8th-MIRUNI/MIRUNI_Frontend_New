@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.core.navigation"
+    namespace = "com.miruni.core.navigation"
     compileSdk = 35
 
     buildFeatures {

@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.core.di"
+    namespace = "com.miruni.core.di"
     compileSdk = 35
 
     defaultConfig {

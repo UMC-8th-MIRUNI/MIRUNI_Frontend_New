@@ -10,7 +10,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.core.auth"
+    namespace = "com.miruni.core.auth"
     compileSdk = 35
 
     buildFeatures {

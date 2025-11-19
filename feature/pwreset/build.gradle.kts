@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.feature.pwreset"
+    namespace = "com.miruni.feature.pwreset"
     compileSdk = 35
 
     defaultConfig {

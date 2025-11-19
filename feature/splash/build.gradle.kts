@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.feature.splash"
+    namespace = "com.miruni.feature.splash"
     compileSdk = 35
 
     defaultConfig {

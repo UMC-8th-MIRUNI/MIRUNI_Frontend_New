@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.feature.survey"
+    namespace = "com.miruni.feature.survey"
     compileSdk = 35
 
     defaultConfig {

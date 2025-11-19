@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
-        android:name=".MiruniApplication"
+        android:name="com.miruni.miruni_fe.MiruniApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -14,7 +14,7 @@
         android:theme="@style/Theme.MIRUNI_FE"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name="com.miruni.miruni_fe.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.MIRUNI_FE">
