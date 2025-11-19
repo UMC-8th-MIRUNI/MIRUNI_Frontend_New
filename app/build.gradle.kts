@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "com.example.miruni_fe"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.miruni_fe"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 

@@ -23,6 +23,7 @@ class FeatureConventionPlugin : Plugin<Project> {
                 add("implementation", libs.findLibrary("androidx.lifecycle.viewmodel.ktx").get())
                 add("implementation", libs.findLibrary("androidx.lifecycle.viewmodel.android").get())
                 add("implementation", libs.findLibrary("androidx.navigation.compose").get())
+                add("implementation", libs.findLibrary("androidx.material3").get())
 
                 add("testImplementation", libs.findLibrary("androidx.navigation.testing").get())
                 add(

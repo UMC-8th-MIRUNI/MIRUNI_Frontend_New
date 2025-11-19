@@ -39,7 +39,5 @@ amplifytools.xcconfig
 .secret-*
 **.sample
 #amplify-do-not-edit-end
-/app/src/main/res/xml/backup_rules.xml
 /.idea/AndroidProjectSystem.xml
-/app/src/main/res/xml/data_extraction_rules.xml
 /.idea/deploymentTargetSelector.xml
