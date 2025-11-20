@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.miruni.core.designsystem"
-    compileSdk = 35
+    compileSdk = 36
 
     buildFeatures {
         compose = true
