@@ -18,6 +18,7 @@ appcompat = "1.7.1"
 material = "1.13.0"
 jetbrainsKotlinJvm = "2.0.20"
 mockitoKotlin = "5.2.1"
+mockitoAndroid = "5.20.0"
 
 ksp = "2.1.10-1.0.30"
 hilt = "2.57.1"
@@ -65,6 +66,8 @@ androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-com
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockitoKotlin" }
+mockito-android = { group = "org.mockito", name = "mockito-android", version.ref = "mockitoAndroid" }
+
 
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxNavigation" }
 androidx-navigation-testing = { group = "androidx.navigation", name = "navigation-testing", version.ref = "androidxNavigation" }

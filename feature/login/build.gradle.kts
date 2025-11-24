@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.miruni.feature.login"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 24
@@ -48,6 +48,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.material3)
+    implementation(libs.mockito.android)
 
     // compose dependencies
     implementation(platform(libs.androidx.compose.bom))
