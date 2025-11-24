@@ -1,10 +1,9 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-
-    alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.convention.ui.compose)
+//    alias(libs.plugins.convention.ui.compose)
     alias(libs.plugins.convention.hilt)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -47,18 +46,18 @@ dependencies {
     implementation(project(":domain:model"))
     implementation(project(":domain:repository"))
     implementation(project(":data:dto"))
-    implementation(project(":feature:home"))
-    implementation(project(":feature:splash"))
-    implementation(project(":feature:aiplanner"))
-    implementation(project(":feature:calendar"))
-    implementation(project(":feature:home"))
-    implementation(project(":feature:login"))
-    implementation(project(":feature:mypage"))
-    implementation(project(":feature:onboard"))
-    implementation(project(":feature:pwreset"))
-    implementation(project(":feature:signup"))
-    implementation(project(":feature:splash"))
-    implementation(project(":feature:survey"))
+//    implementation(project(":feature:home"))
+//    implementation(project(":feature:splash"))
+//    implementation(project(":feature:aiplanner"))
+//    implementation(project(":feature:calendar"))
+//    implementation(project(":feature:home"))
+//    implementation(project(":feature:login"))
+//    implementation(project(":feature:mypage"))
+//    implementation(project(":feature:onboard"))
+//    implementation(project(":feature:pwreset"))
+//    implementation(project(":feature:signup"))
+//    implementation(project(":feature:splash"))
+//    implementation(project(":feature:survey"))
 
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)

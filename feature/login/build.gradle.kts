@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.convention.feature)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -40,6 +41,8 @@ dependencies {
     implementation(project(":core:auth"))
     implementation(project(":domain:model"))
     implementation(project(":domain:usecase"))
+    implementation(project(":core:designsystem"))
+    implementation(project(":core:navigation"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -57,4 +60,12 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // Dependencies for Compose testing
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Mockito
+    androidTestImplementation(libs.mockito.kotlin)
 }

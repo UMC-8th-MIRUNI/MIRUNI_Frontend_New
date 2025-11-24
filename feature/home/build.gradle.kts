@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.convention.feature)
-    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -28,9 +28,6 @@ android {
     buildFeatures {
         compose = true
     }
-    composeCompiler {
-        enableStrongSkippingMode = true
-    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -41,6 +38,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:designsystem"))
     implementation(project(":core:auth"))
     implementation(project(":domain:model"))
     implementation(project(":domain:usecase"))

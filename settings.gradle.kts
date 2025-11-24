@@ -51,3 +51,4 @@ include(":feature:pwreset")
 
 // convention plugin
 includeBuild("build-logic")
+//include(":build-logic:convention:lib")

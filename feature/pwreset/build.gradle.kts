@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.convention.feature)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -37,6 +38,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:designsystem"))
     implementation(project(":core:auth"))
     implementation(project(":domain:model"))
     implementation(project(":domain:usecase"))

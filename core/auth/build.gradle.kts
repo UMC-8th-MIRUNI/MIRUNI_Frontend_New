@@ -1,12 +1,11 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-
-    alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.convention.ui.compose)
+//    alias(libs.plugins.convention.ui.compose)
     alias(libs.plugins.convention.hilt)
     alias(libs.plugins.convention.retrofit)
     alias(libs.plugins.convention.android.lib.build)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
