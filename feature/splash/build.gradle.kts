@@ -39,6 +39,7 @@ android {
 
 dependencies {
     implementation(project(":core:auth"))
+    implementation(project(":core:navigation"))
     implementation(project(":domain:model"))
     implementation(project(":domain:usecase"))
 

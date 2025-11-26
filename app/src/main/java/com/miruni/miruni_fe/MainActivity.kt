@@ -4,9 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.Text
+import androidx.compose.ui.graphics.vector.ImageVector
+import com.miruni.designsystem.MiruniTheme
 import dagger.hilt.android.AndroidEntryPoint
-
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -14,7 +14,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            Text(text = "Hello Miruni")
+            MiruniTheme {
+                MainScreen()
+            }
         }
     }
 }
+
+data class BottomNavItem(
+    val route: String,
+    val label: String,
+    val icon: ImageVector,
+)

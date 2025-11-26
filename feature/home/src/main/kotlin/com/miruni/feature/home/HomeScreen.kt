@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import com.miruni.core.navigation.AppRoutes
+import com.miruni.core.navigation.MiruniRoute
 import com.miruni.core.navigation.NavigationDestination
 import com.miruni.designsystem.MiruniTheme
 
@@ -32,7 +32,7 @@ fun HomeScreen(
 
 class HomeNavigation : NavigationDestination {
     override fun register(builder: NavGraphBuilder, navController: NavHostController) {
-        builder.composable(AppRoutes.HOME) {
+        builder.composable(MiruniRoute.HOME) {
             HomeScreen()
         }
     }

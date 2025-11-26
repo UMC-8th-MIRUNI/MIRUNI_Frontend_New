@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import com.miruni.core.navigation.AppRoutes
+import com.miruni.core.navigation.MiruniRoute
 import com.miruni.core.navigation.NavigationDestination
 import com.miruni.designsystem.MiruniTheme
 
@@ -31,7 +31,7 @@ fun CalendarScreen(modifier: Modifier = Modifier
 
 class CalendarNavigation : NavigationDestination {
     override fun register(builder: NavGraphBuilder, navController: NavHostController) {
-        builder.composable(AppRoutes.CALENDAR) {
+        builder.composable(MiruniRoute.CALENDAR) {
             CalendarScreen()
         }
     }
