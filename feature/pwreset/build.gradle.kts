@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.miruni.feature.pwreset"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 24
@@ -54,8 +54,17 @@ dependencies {
     implementation(libs.androidx.ui.tooling)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.compose.ui.test.junit4)
 
+    // test dependencies
+    implementation(libs.mockito.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    // Dependencies for Compose testing
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    debugImplementation(libs.androidx.ui.test.manifest)
+    // Mockito
+    androidTestImplementation(libs.mockito.kotlin)
 }

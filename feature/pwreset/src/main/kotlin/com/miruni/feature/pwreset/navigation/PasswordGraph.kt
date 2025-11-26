@@ -4,8 +4,13 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.miruni.feature.pwreset.PwResetScreen
 
-fun NavGraphBuilder.passwordGraph(route: String) {
+fun NavGraphBuilder.passwordGraph(
+    route: String = "pwreset",
+    onLoginRestart: () -> Unit
+) {
     composable(route) {
-        PwResetScreen()
+        PwResetScreen(
+            onLoginRestart = onLoginRestart
+        )
     }
 }
