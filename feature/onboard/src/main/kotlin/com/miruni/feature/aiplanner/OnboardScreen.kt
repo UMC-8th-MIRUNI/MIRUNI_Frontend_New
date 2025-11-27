@@ -1,4 +1,4 @@
-package com.miruni.feature.calendar
+package com.miruni.feature.aiplanner
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,21 +11,21 @@ import androidx.compose.ui.unit.dp
 import com.miruni.designsystem.MiruniTheme
 
 @Composable
-private fun AiPlannerScreen(modifier: Modifier = Modifier
+private fun OnboardScreen(modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
             .fillMaxSize()
             .padding(24.dp)
     ) {
-        Text(text = "AiPlanner Screen")
+        Text(text = "Onboarding Screen")
     }
 }
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun AiPlannerScreenPreview() {
+private fun OnboardScreenPreview() {
     MiruniTheme {
-        AiPlannerScreen()
+        OnboardScreen()
     }
 }

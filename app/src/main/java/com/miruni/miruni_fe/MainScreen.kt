@@ -18,7 +18,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.navigation.MiruniRoute
 import com.miruni.core.navigation.NavigationDestination
-import com.miruni.feature.calendar.CalendarNavigation
+import com.miruni.feature.aiplanner.CalendarNavigation
 import com.miruni.feature.home.HomeNavigation
 import com.miruni.feature.mypage.MyPageNavigation
 import com.miruni.feature.splash.MiruniSplashNavigation
