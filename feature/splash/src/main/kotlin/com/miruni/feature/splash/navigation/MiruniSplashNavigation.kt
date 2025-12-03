@@ -1,5 +1,6 @@
 package com.miruni.feature.splash.navigation
 
+import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -8,7 +9,7 @@ import com.miruni.core.navigation.NavigationDestination
 import com.miruni.feature.splash.MiruniSplashScreen
 import jakarta.inject.Inject
 
-class MiruniSplashNavigation @Inject constructor() : NavigationDestination {
+class MiruniSplashNavigation @Inject constructor(override val arguments: List<NamedNavArgument>) : NavigationDestination {
 
     override val route: String = MiruniRoute.Splash.route
 

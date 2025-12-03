@@ -6,18 +6,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.miruni.core.navigation.MiruniRoute
-import com.miruni.core.navigation.NavigationDestination
 import com.miruni.designsystem.MiruniTheme
-import jakarta.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

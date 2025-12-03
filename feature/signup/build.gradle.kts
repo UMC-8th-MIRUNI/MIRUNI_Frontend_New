@@ -40,6 +40,7 @@ dependencies {
     implementation(project(":core:auth"))
     implementation(project(":domain:model"))
     implementation(project(":domain:usecase"))
+    implementation(project(":core:navigation"))
     implementation(project(":core:designsystem"))
 
     implementation(libs.androidx.core.ktx)

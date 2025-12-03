@@ -5,4 +5,7 @@ sealed class MiruniRoute(val route: String) {
     data object Home : MiruniRoute("home")
     data object Calendar : MiruniRoute("calendar")
     data object MyPage : MiruniRoute("myPage")
+    data object Login : MiruniRoute("login")
+    data object SignUp : MiruniRoute("signup")
+    data object PwReset : MiruniRoute("pwReset")
 }
