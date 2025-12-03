@@ -12,13 +12,16 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.miruni.core.navigation.MiruniRoute
 import com.miruni.core.navigation.NavigationDestination
 import com.miruni.designsystem.MiruniTheme
+import jakarta.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -30,18 +33,10 @@ fun HomeScreen(
     }
 }
 
-class HomeNavigation : NavigationDestination {
-    override fun register(builder: NavGraphBuilder, navController: NavHostController) {
-        builder.composable(MiruniRoute.HOME) {
-            HomeScreen()
-        }
-    }
-}
-
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun HomeScreenPreview() {
     MiruniTheme {
-        HomeScreen()
+        HomeScreen(navController = rememberNavController())
     }
 }

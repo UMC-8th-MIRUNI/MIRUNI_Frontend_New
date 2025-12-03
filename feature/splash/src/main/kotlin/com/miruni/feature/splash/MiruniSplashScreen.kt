@@ -9,15 +9,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.composable
-import com.miruni.core.navigation.MiruniRoute
-import com.miruni.core.navigation.NavigationDestination
+import androidx.navigation.compose.rememberNavController
 import com.miruni.designsystem.MiruniTheme
 
 @Composable
-private fun MiruniSplashScreen(
+fun MiruniSplashScreen(
+    navController: NavHostController,
     modifier: Modifier = Modifier,
     onTimeout: () -> Unit
 ) {
@@ -35,27 +33,10 @@ private fun MiruniSplashScreen(
     }
 }
 
-class MiruniSplashNavigation : NavigationDestination {
-    override fun register(
-        builder: NavGraphBuilder,
-        navController: NavHostController
-    ) {
-        builder.composable(MiruniRoute.SPLASH) {
-            MiruniSplashScreen(
-                onTimeout = {
-                    navController.navigate(MiruniRoute.HOME) {
-                        popUpTo(MiruniRoute.SPLASH) { inclusive = true }
-                    }
-                }
-            )
-        }
-    }
-}
-
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun MiruniSplashScreenPreview() {
     MiruniTheme {
-        MiruniSplashScreenPreview()
+        MiruniSplashScreen(navController = rememberNavController(), onTimeout = {})
     }
 }
