@@ -23,13 +23,6 @@ dependencyResolutionManagement {
 rootProject.name = "MIRUNI_FE"
 include(":app")
 
-include(":core:auth")
-include(":core:common")
-include(":core:designsystem")
-include(":core:di")
-include(":core:navigation")
-include(":core:config")
-
 include(":domain:model")
 include(":domain:repository")
 include(":domain:usecase")
@@ -52,3 +45,4 @@ include(":feature:pwreset")
 // convention plugin
 includeBuild("build-logic")
 //include(":build-logic:convention:lib")
+include(":core")

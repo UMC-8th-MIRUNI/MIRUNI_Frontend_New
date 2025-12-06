@@ -38,10 +38,9 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:auth"))
     implementation(project(":domain:model"))
     implementation(project(":domain:usecase"))
-    implementation(project(":core:designsystem"))
+    implementation(project(":core"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

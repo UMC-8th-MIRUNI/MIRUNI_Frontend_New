@@ -9,7 +9,9 @@ import com.miruni.core.navigation.NavigationDestination
 import com.miruni.feature.splash.MiruniSplashScreen
 import jakarta.inject.Inject
 
-class MiruniSplashNavigation @Inject constructor(override val arguments: List<NamedNavArgument>) : NavigationDestination {
+class MiruniSplashNavigation @Inject constructor(
+//    override val arguments: List<NamedNavArgument>
+) : NavigationDestination {
 
     override val route: String = MiruniRoute.Splash.route
 

@@ -11,7 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.miruni.designsystem.MiruniTheme
+import com.miruni.core.designsystem.MiruniTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

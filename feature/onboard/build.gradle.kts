@@ -38,9 +38,9 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:auth"))
     implementation(project(":domain:model"))
     implementation(project(":domain:usecase"))
+    implementation(project(":core"))
 
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.core.ktx)

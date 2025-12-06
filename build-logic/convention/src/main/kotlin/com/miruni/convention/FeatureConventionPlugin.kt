@@ -10,13 +10,9 @@ class FeatureConventionPlugin : Plugin<Project> {
         with(target) {
             with(pluginManager) {
                 apply("convention.hilt")
-//                apply("convention.ui.compose")
             }
 
             dependencies {
-                add("implementation", project(":core:designsystem"))
-                add("implementation", project(":core:common"))
-
                 add("implementation", libs.findLibrary("androidx.hilt.navigation.compose").get())
                 add("implementation", libs.findLibrary("androidx.lifecycle.runtimeCompose").get())
                 add("implementation", libs.findLibrary("androidx.lifecycle.viewmodel.compose").get())

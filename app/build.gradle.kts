@@ -42,8 +42,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:designsystem"))
-    implementation(project(":core:navigation"))
     implementation(project(":feature:home"))
     implementation(project(":feature:splash"))
     implementation(project(":feature:aiplanner"))
@@ -56,6 +54,7 @@ dependencies {
     implementation(project(":feature:signup"))
     implementation(project(":feature:splash"))
     implementation(project(":feature:survey"))
+    implementation(project(":core"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
