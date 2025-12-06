@@ -2,10 +2,11 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.convention.feature)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
-    namespace = "com.miruni.feature.calendar"
+    namespace = "com.miruni.feature.aiplanner"
     compileSdk = 35
 
     defaultConfig {
@@ -24,6 +25,9 @@ android {
             )
         }
     }
+    buildFeatures {
+        compose = true
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -34,16 +38,24 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:auth"))
     implementation(project(":domain:model"))
     implementation(project(":domain:usecase"))
+    implementation(project(":core"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation(libs.kotlinx.datetime)
+
+    // compose dependencies
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.tooling)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.activity.compose)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    implementation(libs.kotlinx.datetime)
 }

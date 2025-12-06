@@ -26,12 +26,6 @@
             <option value="$PROJECT_DIR$/build-logic" />
             <option value="$PROJECT_DIR$/build-logic/convention" />
             <option value="$PROJECT_DIR$/core" />
-            <option value="$PROJECT_DIR$/core/auth" />
-            <option value="$PROJECT_DIR$/core/common" />
-            <option value="$PROJECT_DIR$/core/config" />
-            <option value="$PROJECT_DIR$/core/designsystem" />
-            <option value="$PROJECT_DIR$/core/di" />
-            <option value="$PROJECT_DIR$/core/navigation" />
             <option value="$PROJECT_DIR$/data" />
             <option value="$PROJECT_DIR$/data/dto" />
             <option value="$PROJECT_DIR$/data/repository" />

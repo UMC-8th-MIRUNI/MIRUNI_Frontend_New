@@ -5,9 +5,17 @@
       <module name="MIRUNI_FE.aiplanner" target="21" />
       <module name="MIRUNI_FE.calendar" target="21" />
       <module name="MIRUNI_FE.component" target="21" />
+      <module name="MIRUNI_FE.core" target="21" />
+      <module name="MIRUNI_FE.core.auth" target="21" />
+      <module name="MIRUNI_FE.core.common" target="21" />
       <module name="MIRUNI_FE.core.component" target="21" />
+      <module name="MIRUNI_FE.core.config" target="21" />
+      <module name="MIRUNI_FE.core.designsystem" target="21" />
+      <module name="MIRUNI_FE.core.di" target="21" />
+      <module name="MIRUNI_FE.core.navigation" target="21" />
       <module name="MIRUNI_FE.data.datasource" target="21" />
       <module name="MIRUNI_FE.datasource" target="21" />
+      <module name="MIRUNI_FE.doyeon2" target="21" />
       <module name="MIRUNI_FE.dto" target="21" />
       <module name="MIRUNI_FE.home" target="21" />
       <module name="MIRUNI_FE.login" target="21" />
