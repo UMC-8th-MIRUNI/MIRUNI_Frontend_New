@@ -26,9 +26,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-data class BottomNavItem(
-    val route: String,
-    val label: String,
-    val icon: ImageVector,
-)
