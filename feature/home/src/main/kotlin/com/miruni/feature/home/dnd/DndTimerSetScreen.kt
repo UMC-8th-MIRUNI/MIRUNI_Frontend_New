@@ -5,7 +5,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,19 +12,22 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -41,13 +43,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.AppTypography
+import com.miruni.core.designsystem.MainColor
 import com.miruni.core.designsystem.MiruniTheme
 import com.miruni.feature.home.R
 import com.miruni.feature.home.dnd.component.DndTopBar
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import com.miruni.core.designsystem.MainColor
 import com.miruni.feature.home.dnd.component.InputTimeView
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,40 +59,57 @@ fun DndTimerSetScreen(
 
     // 시간 확정 여부
     var isTimeConfirmed by remember { mutableStateOf(false) }
-    // 포맷된 시간
+
+    // 사용자가 확정한 시간 저장용 상태
+    var confirmedHour by remember { mutableStateOf(0) }
+    var confirmedMinute by remember { mutableStateOf(0) }
+
+    // 화면에 표시할 텍스트
     val selectedTimeText = "%02d:%02d".format(timePickerState.hour, timePickerState.minute)
 
     // 화면 재구성 로그
-    Log.d("DndTimerSet", "Composable Recomposition. isTimeConfirmed=$isTimeConfirmed, time=$selectedTimeText")
+    Log.d(
+        "DndTimerSet",
+        "Composable Recomposition. isTimeConfirmed=$isTimeConfirmed, time=$selectedTimeText"
+    )
 
     // 시간 변경 로그
     LaunchedEffect(timePickerState.hour, timePickerState.minute) {
         Log.d("DndTimerSet", "Time changed -> ${timePickerState.hour}:${timePickerState.minute}")
     }
 
-    Surface(
-        color = Color.Transparent,
+    Scaffold(
+        topBar = {
+            DndTopBar(onClose = { navController.popBackStack() })
+        },
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        )
+        Surface(
+                color = Color.Transparent,
         modifier = Modifier.navigationBarsPadding()
-    ) { }
+        ) { }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFFFFFFF))
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFFFFFFF)),
+            contentAlignment = Alignment.Center
         ) {
-            DndTopBar(onClose = {
-                Log.d("DndTimerSet", "TopBar Close clicked")
-                navController.popBackStack()
-            })
+            DndTopBar(
+                onClose = {
+                    Log.d("DndTimerSet", "TopBar Close clicked")
+                    navController.popBackStack()
+                }
+            )
 
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
+                    .padding(bottom = 600.dp, start = 20.dp, end = 20.dp)
                     .height(65.dp)
                     .shadow(
                         elevation = 10.dp,
@@ -131,7 +147,9 @@ fun DndTimerSetScreen(
 
             if (!isTimeConfirmed) {
                 Log.d("DndTimerSet", "Showing InputTimeView")
-                InputTimeView(timePickerState = timePickerState)
+                InputTimeView(
+                    timePickerState = timePickerState
+                )
             } else {
                 Log.d("DndTimerSet", "Showing Confirmed Time Text: $selectedTimeText")
                 Text(
@@ -149,12 +167,19 @@ fun DndTimerSetScreen(
                 Button(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp),
+                        .padding(start = 20.dp, end = 20.dp, top = 750.dp),
                     shape = RoundedCornerShape(10.dp),
                     onClick = {
+                        confirmedHour = timePickerState.hour
+                        confirmedMinute = timePickerState.minute
+
                         isTimeConfirmed = true
-                        Log.d("DndTimerSet", "Confirm clicked -> hour=${timePickerState.hour}, minute=${timePickerState.minute}")
-                        onConfirm(timePickerState.hour, timePickerState.minute)
+
+                        Log.d(
+                            "DndTimerSet",
+                            "Confirm clicked -> hour=${confirmedHour}, minute=${confirmedMinute}"
+                        )
+                        onConfirm(confirmedHour, confirmedMinute)
                     }
                 ) {
                     Text(text = "확인")
@@ -198,20 +223,8 @@ fun DndTimerSetScreen(
             }
         }
     }
-}
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DndTimerSetCompleteScreen(
-    navController: NavHostController
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFFFFFFF))
-    ) {
 
-    }
 }
 
 @Preview(showBackground = true, showSystemUi = false)
@@ -223,10 +236,4 @@ fun DndTimerSetScreenPreview() {
             onConfirm = { _, _ -> }
         )
     }
-}
-
-@Preview(showBackground = true, showSystemUi = false)
-@Composable
-fun DndTimerSetCompleteScreenPreview() {
-
 }
