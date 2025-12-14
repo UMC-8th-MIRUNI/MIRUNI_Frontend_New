@@ -1,6 +1,7 @@
 plugins {
     id("java-library")
     alias(libs.plugins.jetbrains.kotlin.jvm)
+//    alias(libs.plugins.convention.ui.compose)
     `kotlin-dsl`
 }
 group = "com.miruni.buildlogic.convention"
@@ -21,6 +22,11 @@ dependencies {
     compileOnly(libs.com.google.devtools.ksp.gradle.plugin)
 }
 
+repositories {
+    google()
+    mavenCentral()
+}
+
 gradlePlugin {
     plugins {
         register("hilt") {
@@ -36,7 +42,8 @@ gradlePlugin {
     }
     plugins {
         register("uiCompose") {
-            id = libs.plugins.convention.ui.compose.get().pluginId
+            id = "convention.ui.compose"
+//            id = libs.plugins.convention.ui.compose.get().pluginId
             implementationClass = "com.miruni.convention.UiComposeConventionPlugin"
         }
     }
