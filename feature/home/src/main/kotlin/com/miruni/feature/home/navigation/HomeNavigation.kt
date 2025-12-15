@@ -6,6 +6,8 @@ import androidx.navigation.compose.composable
 import com.miruni.core.navigation.MiruniRoute
 import com.miruni.core.navigation.NavigationDestination
 import com.miruni.feature.home.HomeScreen
+import com.miruni.feature.home.dnd.DndOnboardingScreen
+import com.miruni.feature.home.dnd.DndTimerSetScreen
 import jakarta.inject.Inject
 
 class HomeNavigation @Inject constructor(
@@ -17,8 +19,21 @@ class HomeNavigation @Inject constructor(
         builder: NavGraphBuilder,
         navController: NavHostController
     ) {
-        builder.composable(route) {
+        builder.composable(MiruniRoute.Home.route) {
             HomeScreen(navController = navController)
+        }
+
+        builder.composable(MiruniRoute.HomeDndOnboarding.route) {
+            DndOnboardingScreen(
+                navController = navController
+            )
+        }
+
+        builder.composable(MiruniRoute.HomeDndTimerSetting.route) {
+            DndTimerSetScreen(
+                navController = navController,
+                onConfirm = { _, _ -> }
+            )
         }
     }
 }

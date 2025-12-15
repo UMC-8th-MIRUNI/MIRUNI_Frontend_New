@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.ui.graphics.vector.ImageVector
 import com.miruni.core.designsystem.MiruniTheme
 import com.miruni.core.navigation.NavigationDestination
 import dagger.hilt.android.AndroidEntryPoint

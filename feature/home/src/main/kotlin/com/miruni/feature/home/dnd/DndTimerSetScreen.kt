@@ -53,11 +53,12 @@ import com.miruni.feature.home.dnd.component.InputTimeView
 @Composable
 fun DndTimerSetScreen(
     navController: NavHostController,
-    onConfirm: (hour: Int, minute: Int) -> Unit
+    onConfirm: (hour: Int, minute: Int) -> Unit,
 ) {
-    val timePickerState = rememberTimePickerState(is24Hour = true)
+    val timePickerState = rememberTimePickerState(
+        is24Hour = true
+    )
 
-    // 시간 확정 여부
     var isTimeConfirmed by remember { mutableStateOf(false) }
 
     // 사용자가 확정한 시간 저장용 상태
@@ -99,13 +100,6 @@ fun DndTimerSetScreen(
                 .background(Color(0xFFFFFFFF)),
             contentAlignment = Alignment.Center
         ) {
-            DndTopBar(
-                onClose = {
-                    Log.d("DndTimerSet", "TopBar Close clicked")
-                    navController.popBackStack()
-                }
-            )
-
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -120,7 +114,9 @@ fun DndTimerSetScreen(
                 Log.d("DndTimerSet", "Top Card rendered")
 
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 100.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -148,7 +144,8 @@ fun DndTimerSetScreen(
             if (!isTimeConfirmed) {
                 Log.d("DndTimerSet", "Showing InputTimeView")
                 InputTimeView(
-                    timePickerState = timePickerState
+                    timePickerState = timePickerState,
+                    isTimeConfirmed = isTimeConfirmed
                 )
             } else {
                 Log.d("DndTimerSet", "Showing Confirmed Time Text: $selectedTimeText")
@@ -158,7 +155,8 @@ fun DndTimerSetScreen(
                         textAlign = TextAlign.Center
                     ),
                     modifier = Modifier
-                        .padding(horizontal = 12.dp),
+                        .padding(top = 500.dp)
+                        .padding(horizontal = 20.dp),
                     color = MainColor.miruni_green
                 )
             }
@@ -167,19 +165,21 @@ fun DndTimerSetScreen(
                 Button(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 20.dp, end = 20.dp, top = 750.dp),
+                        .padding(start = 20.dp, end = 20.dp, top = 700.dp),
                     shape = RoundedCornerShape(10.dp),
                     onClick = {
+
                         confirmedHour = timePickerState.hour
                         confirmedMinute = timePickerState.minute
 
                         isTimeConfirmed = true
 
+                        onConfirm(confirmedHour, confirmedMinute)
+
                         Log.d(
                             "DndTimerSet",
                             "Confirm clicked -> hour=${confirmedHour}, minute=${confirmedMinute}"
                         )
-                        onConfirm(confirmedHour, confirmedMinute)
                     }
                 ) {
                     Text(text = "확인")
@@ -189,11 +189,10 @@ fun DndTimerSetScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp),
+                        .padding(start = 20.dp, end = 20.dp, top = 700.dp),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
                     Button(
                         modifier = Modifier
                             .weight(1f)
@@ -223,11 +222,9 @@ fun DndTimerSetScreen(
             }
         }
     }
-
-
 }
 
-@Preview(showBackground = true, showSystemUi = false)
+@Preview(showBackground = true, )
 @Composable
 fun DndTimerSetScreenPreview() {
     MiruniTheme {

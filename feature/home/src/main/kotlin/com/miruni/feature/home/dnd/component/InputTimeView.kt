@@ -1,9 +1,11 @@
 package com.miruni.feature.home.dnd.component
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -14,7 +16,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TimePickerState
-import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,19 +31,30 @@ import com.miruni.core.designsystem.MainColor
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InputTimeView(
-    timePickerState: TimePickerState
+    timePickerState: TimePickerState,
+    isTimeConfirmed: Boolean
 ) {
-    val timePickerState = rememberTimePickerState(
-        is24Hour = true
-    )
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 20.dp)
+            .padding(top = 50.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(top = 500.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            MaterialTimeInputNoLabel(
+                state = timePickerState,
+                isTimeConfirmed = isTimeConfirmed
+            )
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        MaterialTimeInputNoLabel(state = timePickerState)
-
-        Spacer(
-            Modifier.height(60.dp)
-        )
-
+            Spacer(
+                Modifier.height(60.dp)
+            )
+        }
     }
 }
 
@@ -50,7 +62,8 @@ fun InputTimeView(
 @Composable
 fun MaterialTimeInputNoLabel(
     state: TimePickerState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isTimeConfirmed: Boolean
 ) {
     Row(
         modifier = modifier.padding(8.dp),
@@ -60,7 +73,8 @@ fun MaterialTimeInputNoLabel(
         TimeNumberField(
             value = state.hour,
             range = 0..23,
-            onValueChange = { state.hour = it }
+            isTimeConfirmed = isTimeConfirmed,
+            onValueChange = { state.hour = it },
         )
 
         Text(
@@ -72,7 +86,8 @@ fun MaterialTimeInputNoLabel(
         TimeNumberField(
             value = state.minute,
             range = 0..59,
-            onValueChange = { state.minute = it }
+            isTimeConfirmed = isTimeConfirmed,
+            onValueChange = { state.minute = it },
         )
     }
 }
@@ -82,20 +97,21 @@ fun MaterialTimeInputNoLabel(
 private fun TimeNumberField(
     value: Int,
     range: IntRange,
-    onValueChange: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    isTimeConfirmed: Boolean,
+    onValueChange: (Int) -> Unit
 ) {
-    var text by remember { mutableStateOf("") }
+    var text by remember(value) {
+        mutableStateOf(value.toString().padStart(2, '0')) }
 
     OutlinedTextField(
         value = text,
         onValueChange = { new ->
+            if (isTimeConfirmed) return@OutlinedTextField  // 확정 후 입력 막기
             // 1) 빈 값 → 대기
             if (new.isBlank()) {
                 text = ""
                 return@OutlinedTextField
             }
-
             // 2) 숫자가 아닌 경우 → 00
             if (new.any { !it.isDigit() }) {
                 text = "00"
@@ -109,11 +125,12 @@ private fun TimeNumberField(
 
             // 4) 범위 검사 후 처리
             if (numericValue in range) {
-                text = trimmed
-                onValueChange(range.first)
+//                text = trimmed
+                text = new
+                onValueChange(numericValue)
             } else {
                 text = "00"
-                onValueChange(range.first)
+                onValueChange(numericValue)
             }
 
             // 두 자리 미만이면 그대로 ("0", "1" 등)
@@ -122,19 +139,33 @@ private fun TimeNumberField(
             }
         },
         shape = RoundedCornerShape(10.dp),
+        enabled = !isTimeConfirmed,
         singleLine = true,
         textStyle = MaterialTheme.typography.headlineMedium.copy(
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            color = if (isTimeConfirmed)
+                MainColor.miruni_green
+            else
+                MaterialTheme.colorScheme.onSurface
         ),
         modifier = Modifier
             .width(80.dp),
         colors = TextFieldDefaults.colors(
             focusedIndicatorColor = MainColor.miruni_green,
             unfocusedIndicatorColor = Color.Transparent,
-            focusedContainerColor = Color(0x2A24C354),
-            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+
+            focusedContainerColor = if (isTimeConfirmed)
+                Color.Transparent
+            else
+                Color(0x2A24C354),
+
+            unfocusedContainerColor = if (isTimeConfirmed)
+                Color.Transparent
+            else
+                MaterialTheme.colorScheme.surface,
+
             disabledContainerColor = MaterialTheme.colorScheme.surface,
-            cursorColor = MaterialTheme.colorScheme.primary
+            cursorColor = MaterialTheme.colorScheme.primary,
         ),
         label = null,
         suffix = {},

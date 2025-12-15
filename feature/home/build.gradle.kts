@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.miruni.feature.home"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 24
