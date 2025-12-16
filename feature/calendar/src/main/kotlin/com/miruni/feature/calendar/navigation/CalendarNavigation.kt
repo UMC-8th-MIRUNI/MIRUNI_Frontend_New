@@ -1,11 +1,11 @@
-package com.miruni.feature.aiplanner.navigation
+package com.miruni.feature.calendar.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.miruni.core.navigation.MiruniRoute
 import com.miruni.core.navigation.NavigationDestination
-import com.miruni.feature.aiplanner.CalendarScreen
+import com.miruni.feature.calendar.CalendarScreen
 import jakarta.inject.Inject
 
 class CalendarNavigation @Inject constructor(

@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.miruni.feature.aiplanner"
+    namespace = "com.miruni.feature.calendar"
     compileSdk = 35
 
     defaultConfig {
