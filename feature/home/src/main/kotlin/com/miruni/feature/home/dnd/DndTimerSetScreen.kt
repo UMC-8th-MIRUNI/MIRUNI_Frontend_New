@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,10 +17,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,14 +41,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.AppTypography
-import com.miruni.core.designsystem.MainColor
 import com.miruni.core.designsystem.MiruniTheme
 import com.miruni.feature.home.R
 import com.miruni.feature.home.dnd.component.DndTopBar
 import com.miruni.feature.home.dnd.component.InputTimeView
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,27 +61,32 @@ fun DndTimerSetScreen(
         is24Hour = true
     )
 
-    var isTimeConfirmed by remember { mutableStateOf(false) }
-
-    // 사용자가 확정한 시간 저장용 상태
-    var confirmedHour by remember { mutableStateOf(0) }
-    var confirmedMinute by remember { mutableStateOf(0) }
-
-    // 타이머 ui 용
-    var remainingMinutes by remember { mutableStateOf(0) }
-    var isRunning by remember { mutableStateOf(false) }
-
-    val displayHour = remainingMinutes / 60
-    val displayMinute = remainingMinutes % 60
-
-    // 화면에 표시할 텍스트
-    val selectedTimeText = "%02d:%02d".format(timePickerState.hour, timePickerState.minute)
+    var hour by remember { mutableStateOf(0) }
+    var minute by remember { mutableStateOf(0) }
+    var running by remember { mutableStateOf(false) }
 
     // 화면 재구성 로그
     Log.d(
-        "DndTimerSet",
-        "Composable Recomposition. isTimeConfirmed=$isTimeConfirmed, time=$selectedTimeText"
+        "DndTimerSet", "Composable Recomposition."
     )
+
+    LaunchedEffect(running, hour, minute) {
+        if (!running) return@LaunchedEffect
+
+        if (hour == 0 && minute == 0) {
+            running = false
+            return@LaunchedEffect
+        }
+
+        delay(60_000L)
+
+        if (minute > 0) {
+            minute--
+        } else {
+            hour--
+            minute = 59
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -92,8 +99,8 @@ fun DndTimerSetScreen(
                 .padding(innerPadding)
         )
         Surface(
-                color = Color.Transparent,
-        modifier = Modifier.navigationBarsPadding()
+            color = Color.Transparent,
+            modifier = Modifier.navigationBarsPadding()
         ) { }
 
         Box(
@@ -117,8 +124,7 @@ fun DndTimerSetScreen(
 
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 100.dp),
+                        .fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -143,30 +149,15 @@ fun DndTimerSetScreen(
                     .size(126.dp)
             )
 
-            if (!isTimeConfirmed) {
+            // ⛔ 시작 후 TimePicker 숨김
+            if (!running) {
                 Log.d("DndTimerSet", "Showing InputTimeView")
                 InputTimeView(
                     timePickerState = timePickerState,
-                    isTimeConfirmed = isTimeConfirmed
+                    isTimeConfirmed = running
                 )
-            } else {
-                Log.d("DndTimerSet", "Showing Confirmed Time Text: $selectedTimeText")
-                Text(
-                    text = "$selectedTimeText",
-                    style = MaterialTheme.typography.headlineMedium.copy(
-                        textAlign = TextAlign.Center
-                    ),
-                    modifier = Modifier
-                        .padding(top = 500.dp)
-                        .padding(horizontal = 20.dp),
-                    color = MainColor.miruni_green
-                )
-            }
 
-            if (!isTimeConfirmed) {
-                LaunchedEffect(timePickerState.hour, timePickerState.minute) {
-                    Log.d("DndTimerSet", "Time changed -> ${timePickerState.hour}:${timePickerState.minute}")
-                }
+                Spacer(Modifier.height(16.dp))
 
                 Button(
                     modifier = Modifier
@@ -174,25 +165,30 @@ fun DndTimerSetScreen(
                         .padding(start = 20.dp, end = 20.dp, top = 700.dp),
                     shape = RoundedCornerShape(10.dp),
                     onClick = {
-                        confirmedHour = timePickerState.hour
-                        confirmedMinute = timePickerState.minute
-
-                        remainingMinutes = confirmedHour * 60 + confirmedMinute
-                        isTimeConfirmed = true
-                        isRunning = true
-
-                        onConfirm(confirmedHour, confirmedMinute)
+                        hour = timePickerState.hour
+                        minute = timePickerState.minute
+                        running = true
 
                         Log.d(
                             "DndTimerSet",
-                            "Confirm clicked -> hour=${confirmedHour}, minute=${confirmedMinute}"
+                            "Confirm clicked -> hour=${hour}, minute=${minute}"
                         )
                     }
                 ) {
                     Text(text = "확인")
                 }
-            } else {
-                Log.d("DndTimerSet", "Showing Stop/Complete buttons")
+            }
+
+            // ✅ 타이머 텍스트만 표시
+            if (running) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 20.dp)
+                        .padding(top = 50.dp),
+                    text = "%d:%02d".format(hour, minute),
+                    fontSize = 48.sp
+                )
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -231,7 +227,7 @@ fun DndTimerSetScreen(
     }
 }
 
-@Preview(showBackground = true, )
+@Preview(showBackground = true)
 @Composable
 fun DndTimerSetScreenPreview() {
     MiruniTheme {
