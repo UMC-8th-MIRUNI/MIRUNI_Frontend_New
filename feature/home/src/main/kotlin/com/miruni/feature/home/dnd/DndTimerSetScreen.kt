@@ -65,6 +65,13 @@ fun DndTimerSetScreen(
     var confirmedHour by remember { mutableStateOf(0) }
     var confirmedMinute by remember { mutableStateOf(0) }
 
+    // 타이머 ui 용
+    var remainingMinutes by remember { mutableStateOf(0) }
+    var isRunning by remember { mutableStateOf(false) }
+
+    val displayHour = remainingMinutes / 60
+    val displayMinute = remainingMinutes % 60
+
     // 화면에 표시할 텍스트
     val selectedTimeText = "%02d:%02d".format(timePickerState.hour, timePickerState.minute)
 
@@ -73,11 +80,6 @@ fun DndTimerSetScreen(
         "DndTimerSet",
         "Composable Recomposition. isTimeConfirmed=$isTimeConfirmed, time=$selectedTimeText"
     )
-
-    // 시간 변경 로그
-    LaunchedEffect(timePickerState.hour, timePickerState.minute) {
-        Log.d("DndTimerSet", "Time changed -> ${timePickerState.hour}:${timePickerState.minute}")
-    }
 
     Scaffold(
         topBar = {
@@ -162,17 +164,22 @@ fun DndTimerSetScreen(
             }
 
             if (!isTimeConfirmed) {
+                LaunchedEffect(timePickerState.hour, timePickerState.minute) {
+                    Log.d("DndTimerSet", "Time changed -> ${timePickerState.hour}:${timePickerState.minute}")
+                }
+
                 Button(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 20.dp, end = 20.dp, top = 700.dp),
                     shape = RoundedCornerShape(10.dp),
                     onClick = {
-
                         confirmedHour = timePickerState.hour
                         confirmedMinute = timePickerState.minute
 
+                        remainingMinutes = confirmedHour * 60 + confirmedMinute
                         isTimeConfirmed = true
+                        isRunning = true
 
                         onConfirm(confirmedHour, confirmedMinute)
 
