@@ -34,9 +34,9 @@ fun DndTopBar(
         },
         actions = {
             IconButton(onClick = onClose) {
+                // 홈페이지로 이동
                 Icon(
                     contentDescription = "닫기",
-                    tint = Color.Black,
                     imageVector = Icons.Filled.Close,
                 )
             }
