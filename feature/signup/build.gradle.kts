@@ -2,8 +2,6 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.convention.feature)
-    alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.convention.ui.compose)
     alias(libs.plugins.compose.compiler)
 }
 
@@ -26,21 +24,20 @@ android {
             )
         }
     }
-    buildFeatures {
-        compose = true
-    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
     }
 }
-
 dependencies {
     implementation(project(":domain:model"))
     implementation(project(":domain:usecase"))
@@ -64,10 +61,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    // Dependencies for Compose testing
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.test.manifest)
-    // Mockito
     androidTestImplementation(libs.mockito.kotlin)
 }
