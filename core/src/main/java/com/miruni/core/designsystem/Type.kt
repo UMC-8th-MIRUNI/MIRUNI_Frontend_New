@@ -25,6 +25,24 @@ object AppTypography {
             Font(R.font.pretendard_black, FontWeight.Black)
         )
 
+    val pretendard_medium =
+        TextStyle(
+            fontFamily = Pretendard,
+            fontWeight = FontWeight.Medium,
+            fontSize = 20.sp,
+            letterSpacing = (-0.01f).em,
+            lineHeight = (20 * 1.23).sp
+        )
+
+    val pretendard_bold_10 =
+        TextStyle(
+            fontFamily = Pretendard,
+            fontWeight = FontWeight.Bold,
+            fontSize = 10.sp,
+            letterSpacing = (-0.01f).em,
+            lineHeight = (10 * 1.50).sp
+        )
+
     val header_bold_16 =
         TextStyle(
             fontFamily = Pretendard,
