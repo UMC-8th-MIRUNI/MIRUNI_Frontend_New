@@ -1,5 +1,6 @@
 package com.miruni.feature.home.dnd
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -40,7 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.MiruniTheme
-import com.miruni.core.navigation.MiruniRoute
+import com.miruni.core.navigation.MiruniRoute.HomeDndTimerSetting
 import com.miruni.feature.home.R
 
 @Composable
@@ -84,10 +85,15 @@ fun DndOnboardingScreen(
                     .padding(end = 100.dp, top = 100.dp, bottom = 100.dp)
                     .size(190.dp)
             )
-
-            StartButton(onClick = {
-                navController.navigate(MiruniRoute.HomeDndTimerSetting.route)
-            })
+            StartButton(
+                onClick = {
+                    Log.d(
+                        "DndOnboardingScreen",
+                        "Navigate to = ${HomeDndTimerSetting.route}"
+                    )
+                    navController.navigate(HomeDndTimerSetting.route)
+                },
+            )
         }
     }
 }
@@ -100,10 +106,10 @@ fun StartButton(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { }
+            .clickable { onClick() }
             .padding(horizontal = 20.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.End
+        horizontalArrangement = Arrangement.End,
     ) {
         Text(
             text = "시작하기",

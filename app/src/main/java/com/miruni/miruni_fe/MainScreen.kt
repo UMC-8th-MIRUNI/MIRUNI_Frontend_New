@@ -39,7 +39,8 @@ fun MainScreen(
             startDestination = MiruniRoute.Splash.route, // 앱 시작할때마다 스플래쉬 띄워?
             modifier = Modifier.padding(padding)
         ) {
-            destinations.forEach { it.register(this, navController) }
+            destinations.forEach { destination ->
+                destination.register(this, navController) }
         }
     }
 }
