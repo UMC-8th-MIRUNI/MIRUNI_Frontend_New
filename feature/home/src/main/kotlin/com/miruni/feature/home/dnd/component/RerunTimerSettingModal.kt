@@ -54,84 +54,24 @@ import kotlinx.coroutines.flow.map
 
 private const val REPEAT_COUNT = 100
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun Picker(
-    items: List<String>,
-    state: PickerState = rememberPickerState(),
-    modifier: Modifier = Modifier,
-    startIndex: Int = 0,
-    visibleItemsCount: Int = 3,
-    textModifier: Modifier = Modifier,
-    textStyle: TextStyle = LocalTextStyle.current,
-) {
-    val visibleItemsMiddle = visibleItemsCount / 2
-    val listScrollCount = items.size * REPEAT_COUNT
-
-    fun getItem(index: Int) = items[index % items.size]
-
-    val listState = rememberLazyListState(
-        initialFirstVisibleItemIndex =
-            items.size * (repeatCount / 2) - visibleItemsMiddle + startIndex
-    )
-    val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
-
-    val itemHeightPixels = remember { mutableStateOf(0) }
-    val itemHeightDp = pixelsToDp(itemHeightPixels.value)
-
-    LaunchedEffect(listState) {
-        snapshotFlow { listState.firstVisibleItemIndex + visibleItemsMiddle }
-            .map { getItem(it) }
-            .distinctUntilChanged()
-            .collect { state.selectedItem = it }
-    }
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center
-    ) {
-        LazyColumn(
-            state = listState,
-            flingBehavior = flingBehavior,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(itemHeightDp * visibleItemsCount)
-        ) {
-            items(listScrollCount) { index ->
-                val centerIndex = listState.firstVisibleItemIndex + visibleItemsMiddle
-                val isCenterItem = index == centerIndex
-
-                Text(
-                    text = getItem(index),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    style = textStyle.copy(
-                        fontWeight = if (isCenterItem)
-                            FontWeight.SemiBold
-                        else FontWeight.Medium,
-                        color = if (isCenterItem)
-                            Color.Black
-                        else
-                            Color(0xFFCBCBCB)
-                    ),
-                    modifier = Modifier
-                        .onSizeChanged { itemHeightPixels.value = it.height }
-                        .then(textModifier)
-                )
-            }
-        }
-    }
-}
-
 @Composable
 fun RerunTimerSettingModal(
-    dividerColor: Color = MainColor.miruni_green,
+    onDismiss: () -> Unit,
+    onConfirm: (hour: Int, minute: Int) -> Unit
 ) {
+    val dividerColor: Color = MainColor.miruni_green
+
+    val hourItems = remember { (0..23).map { it.toString().padStart(2, '0') } }
+    val minuteItems = remember { (0..59).map { it.toString().padStart(2, '0') } }
+
+    val hourPickerState = rememberPickerState()
+    val minutePickerState = rememberPickerState()
+
     val itemHeightPixels = remember { mutableStateOf(0) }
     val itemHeightDp = pixelsToDp(itemHeightPixels.value)
 
     Dialog(
-        onDismissRequest = {},
+        onDismissRequest = onDismiss,
     ) {
         Surface(
             modifier = Modifier.size(330.dp),
@@ -145,12 +85,9 @@ fun RerunTimerSettingModal(
                 val hour = remember {
                     (0..23).map { it.toString().padStart(2, '0') }
                 }
-                val hourPickerState = rememberPickerState()
                 val minute = remember {
                     (0..59).map { it.toString().padStart(2, '0') }
                 }
-                val minutePickerState = rememberPickerState()
-
                 Text(
                     text = buildAnnotatedString {
                         append("지금 멈추시겠다면, 오늘 안에")
@@ -222,7 +159,7 @@ fun RerunTimerSettingModal(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Button(
-                        onClick = { },
+                        onClick = onDismiss,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFFCBCBCB)
                         ),
@@ -235,7 +172,9 @@ fun RerunTimerSettingModal(
                         Text(text = "취소", fontSize = 16.sp)
                     }
                     Button(
-                        onClick = { },
+                        onClick = {
+                            // TODO: 확인 버튼 클릭 시 홈페이지로 이동. 설정한 시간에 일정이 있는 경우 재실행 시간 설정 경고 모달 띄우기
+                        },
                         shape = RoundedCornerShape(10.dp),
                         modifier = Modifier
                             .weight(1f)
@@ -245,6 +184,75 @@ fun RerunTimerSettingModal(
                         Text(text = "확인", fontSize = 16.sp)
                     }
                 }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun Picker(
+    items: List<String>,
+    state: PickerState = rememberPickerState(),
+    modifier: Modifier = Modifier,
+    startIndex: Int = 0,
+    visibleItemsCount: Int = 3,
+    textModifier: Modifier = Modifier,
+    textStyle: TextStyle = LocalTextStyle.current,
+) {
+    val visibleItemsMiddle = visibleItemsCount / 2
+    val listScrollCount = items.size * REPEAT_COUNT
+
+    fun getItem(index: Int) = items[index % items.size]
+
+    val listState = rememberLazyListState(
+        initialFirstVisibleItemIndex =
+            items.size * (repeatCount / 2) - visibleItemsMiddle + startIndex
+    )
+    val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
+
+    val itemHeightPixels = remember { mutableStateOf(0) }
+    val itemHeightDp = pixelsToDp(itemHeightPixels.value)
+
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.firstVisibleItemIndex + visibleItemsMiddle }
+            .map { getItem(it) }
+            .distinctUntilChanged()
+            .collect { state.selectedItem = it }
+    }
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
+    ) {
+        LazyColumn(
+            state = listState,
+            flingBehavior = flingBehavior,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(itemHeightDp * visibleItemsCount)
+        ) {
+            items(listScrollCount) { index ->
+                val centerIndex = listState.firstVisibleItemIndex + visibleItemsMiddle
+                val isCenterItem = index == centerIndex
+
+                Text(
+                    text = getItem(index),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = textStyle.copy(
+                        fontWeight = if (isCenterItem)
+                            FontWeight.SemiBold
+                        else FontWeight.Medium,
+                        color = if (isCenterItem)
+                            Color.Black
+                        else
+                            Color(0xFFCBCBCB)
+                    ),
+                    modifier = Modifier
+                        .onSizeChanged { itemHeightPixels.value = it.height }
+                        .then(textModifier)
+                )
             }
         }
     }
@@ -264,6 +272,9 @@ class PickerState {
 @Composable
 fun RerunTimerSettingModalPreview() {
     MiruniTheme {
-        RerunTimerSettingModal()
+        RerunTimerSettingModal(
+            onDismiss = {},
+            onConfirm = { _, _ -> }
+        )
     }
 }
