@@ -43,6 +43,7 @@ fun SignupScreen(
     val currentIndex = remember(uiState.step) {
         steps.indexOf(uiState.step).coerceAtLeast(0)
     }
+
     Scaffold(
         topBar = {
             SignUpTopBar(
@@ -62,7 +63,13 @@ fun SignupScreen(
             SignUpBottomBar(
                 canNext = true,
                 onNextStep = {
-                    viewModel.setEvent(SignUpContract.Event.OnNextStepClicked)
+                    if (uiState.canNext) {
+                        if (uiState.step == SignupStateStep.Terms) {
+                            onSignUpSuccess()
+                        } else {
+                            viewModel.setEvent(SignUpContract.Event.OnNextStepClicked)
+                        }
+                    }
                 }
             )
         },

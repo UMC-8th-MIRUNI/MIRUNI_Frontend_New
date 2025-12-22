@@ -4,7 +4,7 @@ import com.miruni.feature.signup.common.BaseViewModel
 
 class SignupViewModel : BaseViewModel<SignUpContract.Event, SignUpContract.State, SignUpContract.Effect>() {
 
-    private val steps = SignUpContract.Companion.stepSequence
+    private val steps = SignUpContract.stepSequence
     override fun setInitialState(): SignUpContract.State = SignUpContract.State()
 
     override fun handleEvents(event: SignUpContract.Event) {
@@ -73,14 +73,20 @@ class SignupViewModel : BaseViewModel<SignUpContract.Event, SignUpContract.State
             }
 
             is SignUpContract.Event.OnPasswordChanged -> {
+                val pw = event.password
+                val ok = pw.length >= 8 && pw.any(Char::isLetter) && pw.any(Char::isDigit)
+
                 setState {
                     copy(
-                        password = password.copy(
-                            value = event.password
-                        ).clearError()
+                        password = if (ok) {
+                            password.copy(value = pw).clearError()
+                        } else {
+                            password.copy(value = pw).withError("영문, 숫자를 포함해서 8자 이상으로 설정해주세요.")
+                        }
                     )
                 }
             }
+
 
             is SignUpContract.Event.OnPasswordCheckChanged -> {
                 setState {

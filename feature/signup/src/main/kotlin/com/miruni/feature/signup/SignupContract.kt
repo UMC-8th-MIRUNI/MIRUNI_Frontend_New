@@ -55,7 +55,27 @@ class SignUpContract{
         val agreePrivacy: Boolean = false,
         val agreeMarketing: Boolean = false,
         val step: SignupStateStep = SignupStateStep.Profile,
-        ) : ViewState
+        ) : ViewState {
+        val canNext: Boolean
+            get() = when (step) {
+                SignupStateStep.Profile -> {
+                    name.value.isNotBlank() &&
+                            birth.value.length == 8 && birth.value.all(Char::isDigit) &&
+                            phone.value.length in 10..11 && phone.value.all(Char::isDigit)
+                }
+
+                SignupStateStep.Account -> {
+                    val emailOk = android.util.Patterns.EMAIL_ADDRESS.matcher(email.value).matches()
+                    val pwOk = password.value.length >= 8
+                    val pwMatch = password.value.isNotBlank() && password.value == passwordCheck.value
+                    emailOk && pwOk && pwMatch
+                }
+
+                SignupStateStep.Terms -> {
+                    nickName.value.isNotBlank() && agreeTerms && agreePrivacy
+                }
+            }
+    }
 
     sealed class Effect : ViewSideEffect {
         sealed class Navigation : Effect() {
