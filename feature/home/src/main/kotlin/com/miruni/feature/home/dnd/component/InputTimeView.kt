@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -27,32 +25,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.miruni.core.designsystem.MainColor
+import com.miruni.core.designsystem.MiruniTypography
+import org.w3c.dom.Text
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InputTimeView(
     timePickerState: TimePickerState,
-    isTimeConfirmed: Boolean
+    isTimeConfirmed: Boolean,
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp)
-            .padding(top = 50.dp),
         contentAlignment = Alignment.Center
     ) {
         Column(
-            modifier = Modifier
-                .padding(top = 500.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             MaterialTimeInputNoLabel(
                 state = timePickerState,
                 isTimeConfirmed = isTimeConfirmed
-            )
-
-            Spacer(
-                Modifier.height(60.dp)
             )
         }
     }
@@ -62,11 +53,9 @@ fun InputTimeView(
 @Composable
 fun MaterialTimeInputNoLabel(
     state: TimePickerState,
-    modifier: Modifier = Modifier,
     isTimeConfirmed: Boolean
 ) {
     Row(
-        modifier = modifier.padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
@@ -101,7 +90,8 @@ private fun TimeNumberField(
     onValueChange: (Int) -> Unit
 ) {
     var text by remember(value) {
-        mutableStateOf(value.toString().padStart(2, '0')) }
+        mutableStateOf(value.toString().padStart(2, '0'))
+    }
 
     OutlinedTextField(
         value = text,
@@ -141,7 +131,7 @@ private fun TimeNumberField(
         shape = RoundedCornerShape(10.dp),
         enabled = !isTimeConfirmed,
         singleLine = true,
-        textStyle = MaterialTheme.typography.headlineMedium.copy(
+        textStyle = MiruniTypography.displayMedium.copy(
             textAlign = TextAlign.Center,
             color = if (isTimeConfirmed)
                 MainColor.miruni_green
@@ -149,7 +139,8 @@ private fun TimeNumberField(
                 MaterialTheme.colorScheme.onSurface
         ),
         modifier = Modifier
-            .width(80.dp),
+            .height(86.dp)
+            .width(111.dp),
         colors = TextFieldDefaults.colors(
             focusedIndicatorColor = MainColor.miruni_green,
             unfocusedIndicatorColor = Color.Transparent,
