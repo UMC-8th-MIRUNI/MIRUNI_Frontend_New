@@ -72,6 +72,21 @@ fun DndTimerRunningScreen(
         }
     }
 
+    LaunchedEffect(currentHour, currentMinute) {
+        if (currentHour == 0 && currentMinute == 0) {
+            navController.navigate(
+                MiruniRoute.HomeDndComplete.createRoute(
+                    hour = hour,
+                    minute = minute
+                )
+            ) {
+                popUpTo(MiruniRoute.HomeDndTimerRunning.route) {
+                    inclusive = true
+                }
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
             DndTopBar(onClose = {
@@ -196,7 +211,12 @@ fun DndTimerRunningScreen(
                     onClick = {
                         Log.d("DndTimerSet", "Complete clicked")
                         // TODO: 완료 버튼 클릭 시 일정 실행 조기 완료 screen 으로 이동
-                        navController.navigate(MiruniRoute.HomeDndEarlyEnd.route)
+                        navController.navigate(
+                            MiruniRoute.HomeDndComplete.createRoute(
+                                hour = currentHour,
+                                minute = currentMinute
+                            )
+                        )
                     }
                 ) {
                     Text("완료")

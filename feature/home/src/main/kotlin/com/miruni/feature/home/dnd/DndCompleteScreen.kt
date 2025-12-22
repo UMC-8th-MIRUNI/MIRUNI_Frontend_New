@@ -3,8 +3,11 @@ package com.miruni.feature.home.dnd
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -19,20 +22,20 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.miruni.core.designsystem.Gray
 import com.miruni.core.designsystem.MiruniTheme
 
 @Composable
 fun DndCompleteScreen(
+    hour: Int,
+    minute: Int,
     navController: NavHostController
 ) {
     Box(
@@ -56,55 +59,60 @@ fun DndCompleteScreen(
                 .offset(x = (-100).dp, y = 300.dp)
                 .rotate(150f)
         )
-        Image(
-            painter = painterResource(id = com.miruni.feature.home.R.drawable.miruni_success),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
+        Column(
             modifier = Modifier
-                .padding(start = 100.dp, end = 100.dp, bottom = 200.dp)
-                .size(250.dp)
-        )
-        Text(
-            modifier = Modifier
-                .padding(top = 200.dp),
-            text = "00:00",
-            textAlign = TextAlign.Center,
-            fontSize = 50.sp,
-            color = Color(0xFFFFF608)
-        )
-        Text(
-            modifier = Modifier
-                .padding(top = 300.dp),
-            text = buildAnnotatedString {
-                append("만에")
-                withStyle(
-                    style = SpanStyle(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
-                    )
-                ) {
-                    append("\n성장 완료!")
-                }
-            },
-            textAlign = TextAlign.Center
-        )
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 20.dp, top = 700.dp, end = 20.dp),
-            shape = RoundedCornerShape(10.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0XFFF3F3F3)
-            ),
-            onClick = {
-                navController.navigate("home")
-            }
+                .fillMaxSize()
+                .padding(horizontal = 20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(
-                text = "확인",
-                color = Color.Black,
-                fontWeight = FontWeight.Bold,
+            Spacer(modifier = Modifier.height(120.dp))
+
+            Image(
+                painter = painterResource(id = com.miruni.feature.home.R.drawable.miruni_success),
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .size(250.dp)
             )
+
+            Spacer(modifier = Modifier.height(120.dp))
+
+            Text(
+                text = "%02d:%02d".format(hour, minute),
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 50.sp,
+                color = Color(0xFFFFF608)
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Text(
+                text = "만에\n성장 완료!",
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(60.dp))
+
+            Button(
+                modifier = Modifier
+                    .height(49.dp)
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Gray.gray_300
+                ),
+                onClick = {
+                    navController.navigate("home")
+                }
+            ) {
+                Text(
+                    text = "확인",
+                    color = Color.Black,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
         }
     }
 }
@@ -114,6 +122,8 @@ fun DndCompleteScreen(
 fun DndCompleteScreenPreview() {
     MiruniTheme {
         DndCompleteScreen(
+            hour = 0,
+            minute = 0,
             navController = rememberNavController()
         )
     }

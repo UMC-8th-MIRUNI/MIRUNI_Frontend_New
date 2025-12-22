@@ -12,6 +12,11 @@ sealed class MiruniRoute(val route: String) {
             return "home/dnd/timerRunning/$hour/$minute"
         }
     }
+    data object HomeDndComplete : MiruniRoute("home/dnd/complete/{hour}/{minute}") {
+        fun createRoute(hour: Int, minute: Int) : String {
+            return "home/dnd/complete/$hour/$minute"
+        }
+    }
 
     data object Calendar : MiruniRoute("calendar")
     data object MyPage : MiruniRoute("myPage")
