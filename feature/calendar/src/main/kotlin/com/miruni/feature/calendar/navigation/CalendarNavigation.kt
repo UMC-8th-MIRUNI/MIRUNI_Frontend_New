@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.miruni.core.navigation.MiruniRoute
 import com.miruni.core.navigation.NavigationDestination
-import com.miruni.feature.calendar.CalendarScreen
+import com.miruni.feature.calendar.CalendarRoute
 import jakarta.inject.Inject
 
 class CalendarNavigation @Inject constructor(
@@ -15,10 +15,10 @@ class CalendarNavigation @Inject constructor(
 
     override fun register(
         builder: NavGraphBuilder,
-        navController: NavHostController
+        navController: NavHostController,
     ) {
         builder.composable(route) {
-            CalendarScreen(navController = navController)
+            CalendarRoute()
         }
     }
 }
