@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -27,52 +26,55 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.miruni.designsystem.AppTypography
-import com.miruni.designsystem.Gray
-import com.miruni.designsystem.MainColor
+import com.miruni.core.designsystem.AppTypography
+import com.miruni.core.designsystem.Gray
+import com.miruni.core.designsystem.MainColor
 import com.miruni.feature.signup.R
-import com.miruni.signup.SignUpViewModel
-import com.miruni.signup.component.textfield.UnderlineTextField
-import com.miruni.signup.model.Term
+import com.miruni.feature.signup.SignUpContract
+import com.miruni.feature.signup.SignupViewModel
+import com.miruni.feature.signup.component.textfield.UnderlineTextField
+import com.miruni.feature.signup.model.TextInputField
+import com.miruni.feature.signup.model.Term
+
+@Composable
+fun SignUpTermStepRoute(
+    uiState: SignUpContract.State,
+    viewModel: SignupViewModel = viewModel(),
+) {
+    SignUpTermStep(
+        uiState = uiState,
+        onNickNameChange = { viewModel.setEvent(SignUpContract.Event.OnNickNameChanged(it)) },
+        onAgreeRealNameChange = { viewModel.setEvent(SignUpContract.Event.OnAgreeRealNameChanged(it)) },
+        onAgreeAllChange = { viewModel.setEvent(SignUpContract.Event.OnAgreeAllChanged(it)) },
+        onAgreeTermsChange = { viewModel.setEvent(SignUpContract.Event.OnAgreeTermsChanged(it)) },
+        onAgreePrivacyChange = { viewModel.setEvent(SignUpContract.Event.OnAgreePrivacyChanged(it)) },
+        onAgreeMarketingChange = { viewModel.setEvent(SignUpContract.Event.OnAgreeMarketingChanged(it)) },
+        onTermContentClick = { term ->
+            viewModel.setEvent(SignUpContract.Event.OnSelectedTermChanged(term))
+        }
+    )
+}
 
 @Composable
 fun SignUpTermStep(
-    onPrevStep: () -> Unit,
-    onNextStep: () -> Unit,
-    onSelectTermContent: (Term) -> Unit = {},
+    uiState: SignUpContract.State,
+    onNickNameChange: (String) -> Unit,
+    onAgreeRealNameChange: (Boolean) -> Unit,
+    onAgreeAllChange: (Boolean) -> Unit,
+    onAgreeTermsChange: (Boolean) -> Unit,
+    onAgreePrivacyChange: (Boolean) -> Unit,
+    onAgreeMarketingChange: (Boolean) -> Unit,
+    onTermContentClick: (Term) -> Unit,
 ) {
-    // 임시 상태(나중에 UiState로 옮겨도 됨)
-    var agreeProfile by remember { mutableStateOf(false) }
-    var agreeAll by remember { mutableStateOf(false) }
-    var agreeTerms by remember { mutableStateOf(false) }
-    var agreePrivacy by remember { mutableStateOf(false) }
-    var agreeMarketing by remember { mutableStateOf(false) }
-
-    // 전체동의 -> 하위 동기화(간단 버전)
-    LaunchedEffect(agreeAll) {
-        agreeTerms = agreeAll
-        agreePrivacy = agreeAll
-        agreeMarketing = agreeAll
-    }
-    // 하위 -> 전체동의 동기화
-    LaunchedEffect(agreeTerms, agreePrivacy, agreeMarketing) {
-        agreeAll = agreeTerms && agreePrivacy && agreeMarketing
-    }
-
+    val agreeAll = uiState.agreeTerms && uiState.agreePrivacy && uiState.agreeMarketing
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -113,28 +115,25 @@ fun SignUpTermStep(
                 .weight(1f),
         ) {
             UnderlineTextField(
-                state = rememberTextFieldState(""),
+                value = uiState.nickName.value,
+                onValueChange = onNickNameChange,
                 placeholder = "닉네임",
                 textStyle = AppTypography.sub_regular_16,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 modifier = Modifier.fillMaxWidth(),
-                onTextChange = { nickname ->
-
-                }
             )
+
             CheckBoxRow(
                 title = "실명으로 불러주세요!",
-                checked = false,
-                onCheckedChange = {
-
-                }
+                checked = uiState.agreeRealName,
+                onCheckedChange = onAgreeRealNameChange
             )
             Spacer(Modifier.weight(1f))
 
             CheckBoxRow(
                 title = "전체 동의",
                 checked = agreeAll,
-                onCheckedChange = { agreeAll = it },
+                onCheckedChange = onAgreeAllChange
             )
 
             HorizontalDivider(
@@ -147,31 +146,28 @@ fun SignUpTermStep(
             ) {
                 CheckBoxRow(
                     title = "이용약관 동의(필수)",
-                    checked = agreeTerms,
-                    onCheckedChange = { agreeTerms = it },
+                    checked = uiState.agreeTerms,
+                    onCheckedChange = onAgreeTermsChange,
                     trailingContent = {
                         TextButton(
-                            modifier = Modifier.size(65.dp,21.dp),
-                            contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
-                            onClick = {
-                                onSelectTermContent(Term.Service)
-                            },
+                            modifier = Modifier.size(65.dp, 21.dp),
+                            contentPadding = PaddingValues(0.dp),
+                            onClick = { onTermContentClick(Term.Service) },
                         ) {
                             Text("내용 보기", style = AppTypography.body_regular_14, color = Gray.gray_500)
                         }
                     }
                 )
+
                 CheckBoxRow(
                     title = "개인정보 수집 및 이용 동의(필수)",
-                    checked = agreePrivacy,
-                    onCheckedChange = { agreePrivacy = it },
+                    checked = uiState.agreePrivacy,
+                    onCheckedChange = onAgreePrivacyChange,
                     trailingContent = {
                         TextButton(
-                            modifier = Modifier.size(65.dp,21.dp),
-                            contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
-                            onClick = {
-                                onSelectTermContent(Term.Privacy)
-                            },
+                            modifier = Modifier.size(65.dp, 21.dp),
+                            contentPadding = PaddingValues(0.dp),
+                            onClick = { onTermContentClick(Term.Privacy) },
                         ) {
                             Text("내용 보기", style = AppTypography.body_regular_14, color = Gray.gray_500)
                         }
@@ -180,15 +176,13 @@ fun SignUpTermStep(
 
                 CheckBoxRow(
                     title = "마케팅 정보 수신 동의(선택)",
-                    checked = agreeMarketing,
-                    onCheckedChange = { agreeMarketing = it },
+                    checked = uiState.agreeMarketing,
+                    onCheckedChange = onAgreeMarketingChange,
                     trailingContent = {
                         TextButton(
-                            modifier = Modifier.size(65.dp,21.dp),
-                            contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
-                            onClick = {
-                                onSelectTermContent(Term.Marketing)
-                            },
+                            modifier = Modifier.size(65.dp, 21.dp),
+                            contentPadding = PaddingValues(0.dp),
+                            onClick = { onTermContentClick(Term.Marketing) },
                         ) {
                             Text("내용 보기", style = AppTypography.body_regular_14, color = Gray.gray_500)
                         }
@@ -234,11 +228,25 @@ private fun CheckBoxRow(
 
 @Preview(showBackground = true)
 @Composable
-fun SignUpTermStepPreview(
-    viewModel: SignUpViewModel = viewModel()
-) {
+private fun SignUpTermStepPreview() {
+    // Preview에서는 viewModel() 쓰면 환경에 따라 터질 수 있어서 간단히 직접 생성
+
+    val state = SignUpContract.State(
+        nickName = TextInputField(value = "미루니"),
+        agreeRealName = true,
+        agreeTerms = true,
+        agreePrivacy = false,
+        agreeMarketing = true,
+    )
+
     SignUpTermStep(
-        onPrevStep = {},
-        onNextStep = {},
+        uiState = state,
+        onNickNameChange = {},
+        onAgreeRealNameChange = {},
+        onAgreeAllChange = {},
+        onAgreeTermsChange = {},
+        onAgreePrivacyChange = {},
+        onAgreeMarketingChange = {},
+        onTermContentClick = {},
     )
 }

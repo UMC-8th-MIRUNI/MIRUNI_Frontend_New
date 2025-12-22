@@ -1,8 +1,8 @@
 package com.miruni.feature.signup.model
 
-sealed class SignUpStateStep() {
-    data object Profile : SignUpStateStep()
-    data object Account : SignUpStateStep()
+sealed class SignupStateStep() {
+    data object Profile : SignupStateStep()
+    data object Account : SignupStateStep()
 
-    data object Terms : SignUpStateStep()
+    data object Terms : SignupStateStep()
 }

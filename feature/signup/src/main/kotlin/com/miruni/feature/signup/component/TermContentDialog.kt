@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.miruni.core.designsystem.AppTypography
-import com.miruni.signup.model.Term
+import com.miruni.feature.signup.model.Term
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

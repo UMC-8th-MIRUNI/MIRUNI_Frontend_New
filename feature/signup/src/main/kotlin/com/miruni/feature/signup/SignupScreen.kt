@@ -1,6 +1,5 @@
 package com.miruni.feature.signup
 
-import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.tween
@@ -15,57 +14,45 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.MiruniTheme
-import com.miruni.signup.SignUpViewModel
-import com.miruni.signup.component.SignUpBottomBar
-import com.miruni.signup.component.SignUpTopBar
-import com.miruni.signup.component.TermContentDialog
-import com.miruni.signup.component.step.SignUpAccountStep
-import com.miruni.signup.component.step.SignUpProfileStep
-import com.miruni.signup.component.step.SignUpTermStep
-import com.miruni.signup.model.SignUpStateStep
+import com.miruni.feature.signup.component.SignUpBottomBar
+import com.miruni.feature.signup.component.SignUpTopBar
+import com.miruni.feature.signup.component.TermContentDialog
+import com.miruni.feature.signup.component.step.SignUpAccountStepRoute
+import com.miruni.feature.signup.component.step.SignUpProfileStepRoute
+import com.miruni.feature.signup.component.step.SignUpTermStepRoute
+import com.miruni.feature.signup.model.SignupStateStep
 
 
 @Composable
 fun SignupScreen(
     navController: NavHostController,
     onSignUpSuccess: () -> Unit,
-    viewModel: SignUpViewModel = viewModel()
+    viewModel: SignupViewModel = viewModel()
 ) {
-
-    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
-    val steps = remember {
-        listOf(
-            SignUpStateStep.Profile,
-            SignUpStateStep.Account,
-            SignUpStateStep.Terms,
-        )
+    val uiState = viewModel.viewState.value
+    val steps = remember { SignUpContract.stepSequence }
+    val currentIndex = remember(uiState.step) {
+        steps.indexOf(uiState.step).coerceAtLeast(0)
     }
-    var stepIndex by rememberSaveable { mutableStateOf(0) }
-
     Scaffold(
         topBar = {
             SignUpTopBar(
                 onPrevStep = {
-                    if (stepIndex > 0)  stepIndex--
+                    viewModel.setEvent(SignUpContract.Event.OnPrevStepClicked)
                 },
                 title = "회원 가입",
                 actions = {
                     Text(
-                        text = "${stepIndex + 1}/${steps.size}단계",
+                        text = "${currentIndex + 1}/${steps.size} 단계",
                         style = AppTypography.body_regular_12,
                     )
                 }
@@ -73,20 +60,20 @@ fun SignupScreen(
         },
         bottomBar = {
             SignUpBottomBar(
-                canNext = stepIndex < steps.lastIndex,
+                canNext = true,
                 onNextStep = {
-                    if (stepIndex < steps.lastIndex) stepIndex++
+                    viewModel.setEvent(SignUpContract.Event.OnNextStepClicked)
                 }
             )
         },
     ) { innerPadding ->
         AnimatedContent(
-            targetState = stepIndex,
+            targetState = uiState.step,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
             transitionSpec = {
-                val forward = targetState > initialState
+                val forward = steps.indexOf(targetState) > steps.indexOf(initialState)
                 val dur = 400
                 if (forward) {
                     (slideInHorizontally(
@@ -104,50 +91,31 @@ fun SignupScreen(
                             ) + fadeOut(tween(120)))
                 }.using(SizeTransform(clip = false, sizeAnimationSpec = { _, _ -> tween(0) }))
             },
-        ) { index ->
+        ) { step ->
             Box(
                 modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp)
             ){
-                when (steps[index]) {
-                    SignUpStateStep.Profile -> {
-                        SignUpProfileStep(
+                when (step) {
+                    SignupStateStep.Profile -> {
+                        SignUpProfileStepRoute(
+                            uiState = uiState,
                             viewModel = viewModel,
-                            onPrevStep = {
-                                if (index > 0) stepIndex--
-                            },
-                            onNextStep = {
-                                Log.d("SignUpScreen", "")
-//                            if (index < steps.lastIndex) {
-//                                stepIndex++
-//
-//                            }
-                            }
                         )
                     }
 
-                    SignUpStateStep.Account -> {
-                        SignUpAccountStep(
-                            onPrevStep = {
-                                if (index > 0) stepIndex--
-                            },
-                            onNextStep = {
-                                if (index < steps.lastIndex) stepIndex++
-                            }
+                    SignupStateStep.Account -> {
+                        SignUpAccountStepRoute(
+                            uiState = uiState,
+                            viewModel = viewModel,
                         )
                     }
 
-                    SignUpStateStep.Terms -> {
-                        SignUpTermStep(
-                            onPrevStep = {
-                                if (index > 0) stepIndex--
-                            },
-                            onNextStep = {
-                                if (index < steps.lastIndex) stepIndex++
-                            },
-                            onSelectTermContent = { term ->
-                                viewModel.updateSelectedTerm(term)
-                            }
+                    SignupStateStep.Terms -> {
+                        SignUpTermStepRoute(
+                            uiState = uiState,
+                            viewModel = viewModel,
                         )
+
                     }
                 }
             }
@@ -156,7 +124,7 @@ fun SignupScreen(
             TermContentDialog(
                 term = term,
                 onDismiss = {
-                    viewModel.updateSelectedTerm(null)
+                    viewModel.setEvent(SignUpContract.Event.OnSelectedTermChanged(null))
                 }
             )
         }
