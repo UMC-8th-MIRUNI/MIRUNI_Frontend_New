@@ -56,9 +56,20 @@ class HomeNavigation @Inject constructor(
             )
         }
 
-        builder.composable(MiruniRoute.HomeDndEarlyEnd.route) {
+        builder.composable(MiruniRoute.HomeDndEarlyEnd.route,
+            arguments = listOf(
+                navArgument("hour") { type = NavType.IntType},
+                navArgument("minute") { type = NavType.IntType}
+            )
+        ) { backStackEntry ->
+
+            val hour = backStackEntry.arguments?.getInt("hour") ?: 0
+            val minute = backStackEntry.arguments?.getInt("minute") ?: 0
+
             Log.d("HomeNavigation", "HomeDndEarlyEnd entered")
             DndEarlyEndScreen(
+                hour = hour,
+                minute = minute,
                 navController = navController,
             )
         }
