@@ -109,7 +109,7 @@ fun DndTimerSetScreen(
             Image(
                 painter = painterResource(id = R.drawable.miruni_basic),
                 contentDescription = null,
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .size(126.dp)
             )

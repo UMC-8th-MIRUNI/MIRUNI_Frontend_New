@@ -66,7 +66,7 @@ fun DndPauseScreen(
             Image(
                 painter = painterResource(id = R.drawable.miruni_basic),
                 contentDescription = null,
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .padding(100.dp)
                     .size(126.dp)

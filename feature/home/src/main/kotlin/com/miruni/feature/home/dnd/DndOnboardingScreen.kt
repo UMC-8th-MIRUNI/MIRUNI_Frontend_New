@@ -80,7 +80,7 @@ fun DndOnboardingScreen(
             Image(
                 painter = painterResource(id = R.drawable.miruni_basic),
                 contentDescription = null,
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .padding(end = 100.dp, top = 100.dp, bottom = 100.dp)
                     .size(190.dp)

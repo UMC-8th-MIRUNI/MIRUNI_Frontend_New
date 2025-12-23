@@ -136,7 +136,7 @@ fun DndTimerRunningScreen(
             Image(
                 painter = painterResource(id = R.drawable.miruni_basic),
                 contentDescription = null,
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .size(126.dp)
             )
@@ -199,7 +199,10 @@ fun DndTimerRunningScreen(
                         navController.navigate(MiruniRoute.HomeDndPause.route)
                     }
                 ) {
-                    Text("중지")
+                    Text(
+                        text = "중지",
+                        style = AppTypography.button_semibold_16
+                    )
                 }
 
                 Button(
@@ -212,14 +215,17 @@ fun DndTimerRunningScreen(
                         Log.d("DndTimerSet", "Complete clicked")
                         // TODO: 완료 버튼 클릭 시 일정 실행 조기 완료 screen 으로 이동
                         navController.navigate(
-                            MiruniRoute.HomeDndComplete.createRoute(
+                            MiruniRoute.HomeDndEarlyEnd.createRoute(
                                 hour = currentHour,
                                 minute = currentMinute
                             )
                         )
                     }
                 ) {
-                    Text("완료")
+                    Text(
+                        text = "완료",
+                        style = AppTypography.button_semibold_16
+                    )
                 }
             }
         }
