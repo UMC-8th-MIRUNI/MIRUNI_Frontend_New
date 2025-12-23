@@ -9,6 +9,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -39,12 +40,14 @@ fun SignupScreen(
     viewModel: SignupViewModel = viewModel()
 ) {
     val uiState = viewModel.viewState.value
-    val steps = remember { SignUpContract.stepSequence }
+    val onEvent: (SignUpContract.Event) -> Unit = viewModel::setEvent
+    val steps = SignUpContract.stepSequence // 상수로 생성
     val currentIndex = remember(uiState.step) {
         steps.indexOf(uiState.step).coerceAtLeast(0)
     }
 
     Scaffold(
+        contentWindowInsets = WindowInsets(0), //  상위 Insets 방지
         topBar = {
             SignUpTopBar(
                 onPrevStep = {
@@ -61,14 +64,13 @@ fun SignupScreen(
         },
         bottomBar = {
             SignUpBottomBar(
-                canNext = true,
+                canNext = uiState.canNext,
                 onNextStep = {
-                    if (uiState.canNext) {
-                        if (uiState.step == SignupStateStep.Terms) {
-                            onSignUpSuccess()
-                        } else {
-                            viewModel.setEvent(SignUpContract.Event.OnNextStepClicked)
-                        }
+                    if (!uiState.canNext) return@SignUpBottomBar
+                    if (uiState.step == SignupStateStep.Terms) {
+                        onSignUpSuccess()
+                    } else {
+                        onEvent(SignUpContract.Event.OnNextStepClicked)
                     }
                 }
             )
@@ -106,21 +108,21 @@ fun SignupScreen(
                     SignupStateStep.Profile -> {
                         SignUpProfileStepRoute(
                             uiState = uiState,
-                            viewModel = viewModel,
+                            onEvent = onEvent
                         )
                     }
 
                     SignupStateStep.Account -> {
                         SignUpAccountStepRoute(
                             uiState = uiState,
-                            viewModel = viewModel,
+                            onEvent = onEvent
                         )
                     }
 
                     SignupStateStep.Terms -> {
                         SignUpTermStepRoute(
                             uiState = uiState,
-                            viewModel = viewModel,
+                            onEvent = onEvent
                         )
 
                     }

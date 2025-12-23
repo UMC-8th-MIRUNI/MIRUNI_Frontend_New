@@ -25,13 +25,13 @@ import com.miruni.feature.signup.component.textfield.UnderlineTextField
 @Composable
 fun SignUpProfileStepRoute(
     uiState: SignUpContract.State,
-    viewModel: SignupViewModel,
+    onEvent: (SignUpContract.Event) -> Unit,
 ) {
     SignUpProfileStep(
         uiState = uiState,
-        onNameChange = { viewModel.setEvent(SignUpContract.Event.OnNameChanged(it)) },
-        onBirthChange = { viewModel.setEvent(SignUpContract.Event.OnBirthChanged(it)) },
-        onPhoneChange = { viewModel.setEvent(SignUpContract.Event.OnPhoneChanged(it)) },
+        onNameChange = { onEvent(SignUpContract.Event.OnNameChanged(it)) },
+        onBirthChange = { onEvent(SignUpContract.Event.OnBirthChanged(it)) },
+        onPhoneChange = { onEvent(SignUpContract.Event.OnPhoneChanged(it)) },
     )
 }
 

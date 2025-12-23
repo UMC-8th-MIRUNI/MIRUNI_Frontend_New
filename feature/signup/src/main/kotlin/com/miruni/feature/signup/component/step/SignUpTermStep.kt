@@ -47,18 +47,18 @@ import com.miruni.feature.signup.model.Term
 @Composable
 fun SignUpTermStepRoute(
     uiState: SignUpContract.State,
-    viewModel: SignupViewModel = viewModel(),
+    onEvent: (SignUpContract.Event) -> Unit,
 ) {
     SignUpTermStep(
         uiState = uiState,
-        onNickNameChange = { viewModel.setEvent(SignUpContract.Event.OnNickNameChanged(it)) },
-        onAgreeRealNameChange = { viewModel.setEvent(SignUpContract.Event.OnAgreeRealNameChanged(it)) },
-        onAgreeAllChange = { viewModel.setEvent(SignUpContract.Event.OnAgreeAllChanged(it)) },
-        onAgreeTermsChange = { viewModel.setEvent(SignUpContract.Event.OnAgreeTermsChanged(it)) },
-        onAgreePrivacyChange = { viewModel.setEvent(SignUpContract.Event.OnAgreePrivacyChanged(it)) },
-        onAgreeMarketingChange = { viewModel.setEvent(SignUpContract.Event.OnAgreeMarketingChanged(it)) },
+        onNickNameChange = { onEvent(SignUpContract.Event.OnNickNameChanged(it)) },
+        onAgreeRealNameChange = { onEvent(SignUpContract.Event.OnAgreeRealNameChanged(it)) },
+        onAgreeAllChange = { onEvent(SignUpContract.Event.OnAgreeAllChanged(it)) },
+        onAgreeTermsChange = { onEvent(SignUpContract.Event.OnAgreeTermsChanged(it)) },
+        onAgreePrivacyChange = { onEvent(SignUpContract.Event.OnAgreePrivacyChanged(it)) },
+        onAgreeMarketingChange = { onEvent(SignUpContract.Event.OnAgreeMarketingChanged(it)) },
         onTermContentClick = { term ->
-            viewModel.setEvent(SignUpContract.Event.OnSelectedTermChanged(term))
+            onEvent(SignUpContract.Event.OnSelectedTermChanged(term))
         }
     )
 }

@@ -40,14 +40,14 @@ import com.miruni.feature.signup.component.textfield.UnderlineTextField
 @Composable
 fun SignUpAccountStepRoute(
     uiState: SignUpContract.State,
-    viewModel: SignupViewModel = viewModel(),
+    onEvent: (SignUpContract.Event) -> Unit,
 ) {
     SignUpAccountStep(
         uiState = uiState,
-        onEmailChange = { viewModel.setEvent(SignUpContract.Event.OnEmailChanged(it)) },
-        onOtpChange = { viewModel.setEvent(SignUpContract.Event.OnOtpChanged(it)) },
-        onPasswordChange = { viewModel.setEvent(SignUpContract.Event.OnPasswordChanged(it)) },
-        onPasswordCheckChange = { viewModel.setEvent(SignUpContract.Event.OnPasswordCheckChanged(it)) },
+        onEmailChange = { onEvent(SignUpContract.Event.OnEmailChanged(it)) },
+        onOtpChange = { onEvent(SignUpContract.Event.OnOtpChanged(it)) },
+        onPasswordChange = { onEvent(SignUpContract.Event.OnPasswordChanged(it)) },
+        onPasswordCheckChange = { onEvent(SignUpContract.Event.OnPasswordCheckChanged(it)) },
 
         onRequestOtp = { /* TODO: 이벤트 연결 */ },
         onVerifyOtp = { /* TODO: 이벤트 연결 */ },
