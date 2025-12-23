@@ -2,10 +2,12 @@ package com.miruni.core.designsystem
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.miruni.core.R
@@ -25,23 +27,22 @@ object AppTypography {
             Font(R.font.pretendard_black, FontWeight.Black)
         )
 
-    val pretendard_medium =
-        TextStyle(
-            fontFamily = Pretendard,
-            fontWeight = FontWeight.Medium,
-            fontSize = 20.sp,
-            letterSpacing = (-0.01f).em,
-            lineHeight = (20 * 1.23).sp
-        )
-
-    val pretendard_bold_10 =
-        TextStyle(
-            fontFamily = Pretendard,
-            fontWeight = FontWeight.Bold,
-            fontSize = 10.sp,
-            letterSpacing = (-0.01f).em,
-            lineHeight = (10 * 1.50).sp
-        )
+    object PretendardTextStyle {
+        operator fun invoke(
+            fontWeight: FontWeight,
+            fontSize: TextUnit,
+            letterSpacing: TextUnit = (-0.01f).em,
+            lineHeightRatio: Float = 1.5f
+        ): TextStyle {
+            return TextStyle(
+                fontFamily = Pretendard,
+                fontWeight = fontWeight,
+                fontSize = fontSize,
+                letterSpacing = letterSpacing,
+                lineHeight = (fontSize.value * lineHeightRatio).sp
+            )
+        }
+    }
 
     val header_bold_16 =
         TextStyle(
