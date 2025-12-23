@@ -47,7 +47,6 @@ fun SignupScreen(
     }
 
     Scaffold(
-        contentWindowInsets = WindowInsets(0), //  상위 Insets 방지
         topBar = {
             SignUpTopBar(
                 onPrevStep = {
