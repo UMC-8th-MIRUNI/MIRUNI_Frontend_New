@@ -26,6 +26,18 @@ object AppTypography {
             Font(R.font.pretendard_extrabold, FontWeight.ExtraBold),
             Font(R.font.pretendard_black, FontWeight.Black)
         )
+    internal val Alexandria =
+        FontFamily(
+            Font(R.font.alexandria_thin, FontWeight.Thin),
+            Font(R.font.alexandria_extralight, FontWeight.ExtraLight),
+            Font(R.font.alexandria_light, FontWeight.Light),
+            Font(R.font.alexandria_regular, FontWeight.Normal),
+            Font(R.font.alexandria_medium, FontWeight.Medium),
+            Font(R.font.alexandria_semibold, FontWeight.SemiBold),
+            Font(R.font.alexandria_bold, FontWeight.Bold),
+            Font(R.font.alexandria_extrabold, FontWeight.ExtraBold),
+            Font(R.font.alexandria_black, FontWeight.Black)
+        )
 
     object PretendardTextStyle {
         operator fun invoke(
@@ -36,6 +48,22 @@ object AppTypography {
         ): TextStyle {
             return TextStyle(
                 fontFamily = Pretendard,
+                fontWeight = fontWeight,
+                fontSize = fontSize,
+                letterSpacing = letterSpacing,
+                lineHeight = (fontSize.value * lineHeightRatio).sp
+            )
+        }
+    }
+    object AlexandriaTextStyle {
+        operator fun invoke(
+            fontWeight: FontWeight,
+            fontSize: TextUnit,
+            letterSpacing: TextUnit = (-0.01f).em,
+            lineHeightRatio: Float = 1.5f
+        ): TextStyle {
+            return TextStyle(
+                fontFamily = Alexandria,
                 fontWeight = fontWeight,
                 fontSize = fontSize,
                 letterSpacing = letterSpacing,
