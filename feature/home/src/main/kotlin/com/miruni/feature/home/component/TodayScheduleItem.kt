@@ -1,9 +1,8 @@
-package com.miruni.feature.home.common
+package com.miruni.feature.home.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.MainColor
 import com.miruni.feature.home.R
-import com.miruni.feature.home.component.CircleText
 import com.miruni.feature.home.domain.TodaySchedule
 
 /**
