@@ -1,4 +1,4 @@
-package com.miruni.core.common
+package com.miruni.feature.home.common
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
