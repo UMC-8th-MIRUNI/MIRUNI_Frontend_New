@@ -18,8 +18,12 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,6 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.AppTypography
@@ -40,59 +45,112 @@ import com.miruni.core.navigation.MiruniRoute
 import com.miruni.feature.home.R
 import com.miruni.feature.home.dnd.component.DndTopBar
 import com.miruni.feature.home.dnd.component.InputTimeView
+import com.miruni.feature.home.dnd.model.DndTimerSetEvent
+import com.miruni.feature.home.dnd.model.DndTimerSetSideEffect
+import com.miruni.feature.home.dnd.model.DndTimerSetState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DndTimerSetScreen(
     navController: NavHostController,
+    viewModel: DndTimerSetViewModel = viewModel()
 ) {
+    val state by viewModel.state.collectAsState()
+
     val timePickerState = rememberTimePickerState(
-        is24Hour = true
+        is24Hour = true,
+        initialHour = state.hour,
+        initialMinute = state.minute
     )
 
-    // 화면 재구성 로그
     Log.d(
         "DndTimerSet", "Composable Recomposition."
     )
 
+    // SideEffect 처리 (Navigation)
+    LaunchedEffect(Unit) {
+        viewModel.sideEffect.collect { effect ->
+            when (effect) {
+                is DndTimerSetSideEffect.NavigateToRunning -> {
+                    navController.navigate(
+                        MiruniRoute.HomeDndTimerRunning.createRoute(
+                            hour = effect.hour,
+                            minute = effect.minute
+                        )
+                    )
+                }
+
+                DndTimerSetSideEffect.NavigateToHome -> {
+                    navController.navigate(MiruniRoute.Home.route) {
+                        popUpTo(MiruniRoute.Home.route) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
+            }
+        }
+    }
+
+    // TimePicker → Event 변환
+    LaunchedEffect(timePickerState.hour, timePickerState.minute) {
+        viewModel.onEvent(
+            DndTimerSetEvent.TimeChanged(
+                hour = timePickerState.hour,
+                minute = timePickerState.minute
+            )
+        )
+    }
+
+    DndTimerSetContent(
+        state = state,
+        timePickerState = timePickerState,
+        onCloseClick = {
+            viewModel.onEvent(DndTimerSetEvent.CloseClicked)
+        },
+        onConfirmClick = {
+            viewModel.onEvent(DndTimerSetEvent.ConfirmClicked)
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DndTimerSetContent(
+    state: DndTimerSetState,
+    timePickerState: TimePickerState,
+    onCloseClick: () -> Unit,
+    onConfirmClick: () -> Unit,
+) {
+    Log.d("DndTimerSet", "Composable Recomposition.")
+
     Scaffold(
         topBar = {
-            DndTopBar(onClose = {
-                navController.navigate(MiruniRoute.Home.route) {
-                    popUpTo(MiruniRoute.Home.route) {
-                        inclusive = false
-                    }
-                    launchSingleTop = true
-                }
-            })
-        },
+            DndTopBar(onClose = onCloseClick)
+        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFFFFFFF))
+                .background(Color.White)
                 .padding(horizontal = 20.dp)
                 .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+
             Spacer(Modifier.height(20.dp))
+
             Card(
                 colors = CardDefaults.cardColors(
                     containerColor = Color(0x1A24C354)
                 ),
-                modifier = Modifier
-                    .height(65.dp)
+                modifier = Modifier.height(65.dp)
             ) {
-                Log.d("DndTimerSet", "Top Card rendered")
-
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = buildAnnotatedString {
-                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                            withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
                                 append("다른 어플 사용을 제한")
                             }
                             append("하고, 할 일에 더 집중해보세요.")
@@ -105,19 +163,17 @@ fun DndTimerSetScreen(
 
             Spacer(Modifier.height(60.dp))
 
-            Log.d("DndTimerSet", "Main Image rendered")
             Image(
                 painter = painterResource(id = R.drawable.miruni_basic),
                 contentDescription = null,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .size(126.dp)
+                modifier = Modifier.size(126.dp)
             )
 
             Spacer(Modifier.height(100.dp))
+
             InputTimeView(
                 timePickerState = timePickerState,
-                isTimeConfirmed = false,
+                isTimeConfirmed = state.isTimeConfirmed
             )
 
             Spacer(Modifier.height(50.dp))
@@ -127,20 +183,14 @@ fun DndTimerSetScreen(
                     .fillMaxWidth()
                     .height(49.dp),
                 shape = RoundedCornerShape(10.dp),
-                onClick = {
-                    navController.navigate(
-                        MiruniRoute.HomeDndTimerRunning.createRoute(
-                            hour = timePickerState.hour,
-                            minute = timePickerState.minute
-                        )
-                    )
-                }
+                onClick = onConfirmClick
             ) {
-                Text(text = "확인")
+                Text("확인")
             }
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

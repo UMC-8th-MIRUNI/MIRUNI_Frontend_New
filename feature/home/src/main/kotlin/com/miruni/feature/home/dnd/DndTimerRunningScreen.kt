@@ -24,10 +24,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,6 +35,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.AppTypography
@@ -46,8 +47,9 @@ import com.miruni.core.designsystem.MiruniTheme
 import com.miruni.core.designsystem.MiruniTypography
 import com.miruni.core.navigation.MiruniRoute
 import com.miruni.feature.home.R
-import com.miruni.feature.home.dnd.component.DndTopBar
-import kotlinx.coroutines.delay
+import com.miruni.feature.home.dnd.model.DndTimerRunningEvent
+import com.miruni.feature.home.dnd.model.DndTimerRunningSideEffect
+import com.miruni.feature.home.dnd.model.DndTimerRunningState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,49 +58,67 @@ fun DndTimerRunningScreen(
     minute: Int,
     navController: NavHostController,
 ) {
-    var currentHour by remember { mutableStateOf(hour) }
-    var currentMinute by remember { mutableStateOf(minute) }
+
+    val viewModel: DndTimerRunningViewModel =
+        viewModel(factory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return DndTimerRunningViewModel(hour, minute) as T
+            }
+        })
+
+    val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
-        while (currentHour > 0 || currentMinute > 0) {
-            delay(60_000L)
+        viewModel.sideEffect.collect { effect ->
+            when (effect) {
 
-            if (currentMinute > 0) {
-                currentMinute--
-            } else {
-                currentHour--
-                currentMinute = 59
-            }
-        }
-    }
-
-    LaunchedEffect(currentHour, currentMinute) {
-        if (currentHour == 0 && currentMinute == 0) {
-            navController.navigate(
-                MiruniRoute.HomeDndComplete.createRoute(
-                    hour = hour,
-                    minute = minute
-                )
-            ) {
-                popUpTo(MiruniRoute.HomeDndTimerRunning.route) {
-                    inclusive = true
-                }
-            }
-        }
-    }
-
-    Scaffold(
-        topBar = {
-            DndTopBar(onClose = {
-                navController.navigate(MiruniRoute.Home.route) {
-                    popUpTo(MiruniRoute.Home.route) {
-                        inclusive = false
+                DndTimerRunningSideEffect.NavigateToComplete -> {
+                    navController.navigate(
+                        MiruniRoute.HomeDndComplete.createRoute(
+                            hour = hour,
+                            minute = minute
+                        )
+                    ) {
+                        popUpTo(MiruniRoute.HomeDndTimerRunning.route) {
+                            inclusive = true
+                        }
                     }
-                    launchSingleTop = true
                 }
-            })
+
+                DndTimerRunningSideEffect.NavigateToPause -> {
+                    navController.navigate(MiruniRoute.HomeDndPause.route)
+                }
+
+                is DndTimerRunningSideEffect.NavigateToEarlyEnd -> {
+                    navController.navigate(
+                        MiruniRoute.HomeDndEarlyEnd.createRoute(
+                            hour = effect.hour,
+                            minute = effect.minute
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    DndTimerRunningContent(
+        state = state,
+        onStopClick = {
+            viewModel.onEvent(DndTimerRunningEvent.StopClicked)
         },
-    ) { innerPadding ->
+        onCompleteClick = {
+            viewModel.onEvent(DndTimerRunningEvent.CompleteClicked)
+        }
+    )
+}
+
+@Composable
+fun DndTimerRunningContent(
+    state: DndTimerRunningState,
+    onStopClick: () -> Unit,
+    onCompleteClick: () -> Unit,
+) {
+    Scaffold() { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -152,7 +172,7 @@ fun DndTimerRunningScreen(
                         .padding(top = 50.dp),
                     style = MiruniTypography.displayMedium,
                     color = MainColor.miruni_green,
-                    text = "%02d".format(currentHour),
+                    text = "%02d".format(state.hour),
                     fontSize = 48.sp
                 )
                 Spacer(Modifier.width(10.dp))
@@ -170,7 +190,7 @@ fun DndTimerRunningScreen(
                         .padding(top = 50.dp),
                     style = MiruniTypography.displayMedium,
                     color = MainColor.miruni_green,
-                    text = "%02d".format(currentMinute),
+                    text = "%02d".format(state.minute),
                     fontSize = 48.sp
                 )
             }
@@ -193,11 +213,7 @@ fun DndTimerRunningScreen(
                         .width(157.dp)
                         .height(49.dp),
                     shape = RoundedCornerShape(10.dp),
-                    onClick = {
-                        Log.d("DndTimerSet", "Stop clicked")
-                        // TODO: 중지 버튼 클릭 시 일정 실행 중지 screen 으로 이동
-                        navController.navigate(MiruniRoute.HomeDndPause.route)
-                    }
+                    onClick = onStopClick
                 ) {
                     Text(
                         text = "중지",
@@ -211,16 +227,7 @@ fun DndTimerRunningScreen(
                         .width(157.dp)
                         .height(49.dp),
                     shape = RoundedCornerShape(10.dp),
-                    onClick = {
-                        Log.d("DndTimerSet", "Complete clicked")
-                        // TODO: 완료 버튼 클릭 시 일정 실행 조기 완료 screen 으로 이동
-                        navController.navigate(
-                            MiruniRoute.HomeDndEarlyEnd.createRoute(
-                                hour = currentHour,
-                                minute = currentMinute
-                            )
-                        )
-                    }
+                    onClick = onCompleteClick
                 ) {
                     Text(
                         text = "완료",
@@ -231,6 +238,7 @@ fun DndTimerRunningScreen(
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
