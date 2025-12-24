@@ -3,6 +3,7 @@ package com.miruni.feature.home
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -12,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.MiruniTheme
+import com.miruni.core.navigation.MiruniRoute
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -25,13 +27,21 @@ fun HomeScreen(
             .padding(24.dp)
     ) {
         Text(text = "Home Screen")
+        // 임시 버튼
+        Button(
+            onClick = { navController.navigate(MiruniRoute.HomeDndOnboarding.route) },
+        ) {
+            Text(text = "dnd")
+        }
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true, showSystemUi = false)
 @Composable
 private fun HomeScreenPreview() {
     MiruniTheme {
-        HomeScreen(navController = rememberNavController())
+        HomeScreen(
+            navController = rememberNavController()
+        )
     }
 }
