@@ -51,7 +51,8 @@ import com.miruni.feature.home.common.convertBold
 import com.miruni.feature.home.component.LinearProgressBar
 
 /** 더미 데이터 */
-var achievementRate: Float = 0.12f // 임시
+val achievementRate: Float = 0.12f // 임시
+val peanut: Int = 0
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -217,7 +218,7 @@ fun HeaderRow(
             contentDescription = "peanut"
         )
         Text(
-            text = "0",
+            text = peanut.toString(),
             style = AppTypography.header_bold_16,
             modifier = Modifier.padding(horizontal = 8.dp)
         )
