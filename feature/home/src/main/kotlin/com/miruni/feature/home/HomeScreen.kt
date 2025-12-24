@@ -1,76 +1,123 @@
 package com.miruni.feature.home
 
-import android.widget.Space
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.Gray
 import com.miruni.core.designsystem.MainColor
 import com.miruni.core.designsystem.MiruniTheme
-import com.miruni.feature.home.dnd.component.LinearProgressBar
+import com.miruni.core.navigation.MiruniRoute
+import com.miruni.feature.home.common.TodayScheduleItem
+import com.miruni.feature.home.common.convertBold
+import com.miruni.feature.home.component.LinearProgressBar
 
-/** State */
+/** 더미 데이터 */
 var achievementRate: Float = 0.12f // 임시
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    modifier: Modifier = Modifier,
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
-    Surface (
-        modifier = modifier.fillMaxSize(),
-        color = MainColor.miruni_green
-    ) {
-        HomeContent(modifier = modifier)
+    val state = viewModel.viewState.collectAsState().value
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is HomeContract.Effect.Navigation.ToExecution -> {
+//                    navController.navigate(
+//                        MiruniRoute.일정 실행
+//                    )
+                }
+            }
+        }
+    }
+
+    Scaffold(
+        containerColor = MainColor.miruni_green,
+        topBar = {
+            HeaderRow(modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 18.dp, vertical = 16.dp)
+        ) }
+    ) { innerPadding ->
+        HomeContent(
+            state = state,
+            onEvent = viewModel::setEvent,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = innerPadding.calculateTopPadding())
+        )
     }
 }
 
 @Composable
 fun HomeContent(
-    modifier: Modifier
+    state: HomeContract.State,
+    onEvent: (HomeContract.Event) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Column (
-        modifier = Modifier
-            .fillMaxSize()
+    LazyColumn (
+        modifier = modifier.fillMaxSize(),
+//  만약 바텀 네비게이션으로 UI 가려지면 해당 주석 풀기
+//        contentPadding = PaddingValues(
+//            bottom = WindowInsets.navigationBars
+//                .asPaddingValues()
+//                .calculateBottomPadding()
+//        )
     ) {
-        TopSection(modifier = Modifier.wrapContentHeight())
-        BottomSection(modifier = Modifier.weight(1f))
+        item {
+            TopSection(modifier = Modifier.wrapContentHeight())
+        }
+
+        item {
+            BottomSection(
+                state = state,
+                onEvent = onEvent,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }
 
@@ -80,12 +127,12 @@ fun TopSection(
 ) {
     Box (modifier = modifier
         .fillMaxWidth()
-        .padding(24.dp)) {
+        .padding(horizontal = 18.dp)
+    ) {
         Column (
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            HeaderRow()
             DescriptionSection()
             ProgressBarSection()
             ButtonSection()
@@ -95,17 +142,42 @@ fun TopSection(
 
 @Composable
 fun BottomSection(
+    state: HomeContract.State,
+    onEvent: (HomeContract.Event) -> Unit,
     modifier: Modifier
 ) {
-    LazyColumn(
+    Column(
         modifier = modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+            .background(
+                color = Color.White,
+                shape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp))
     ) {
-//        item {
-//            TodayScheduleSection()
-//        }
+        Text(
+            text = "오늘의 일정",
+            style = AppTypography.PretendardTextStyle(
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
+            ),
+            color = Color.Black,
+            modifier = Modifier.padding(start = 21.dp, top = 27.dp)
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        state.schedules.forEach { schedule ->
+            TodayScheduleItem(
+                item = schedule,
+                isSelected = state.selectedScheduleId == schedule.id,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 17.dp),
+                onClick = {
+                    onEvent(HomeContract.Event.OnScheduleClick(schedule.id))
+                }
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+        }
     }
 }
 
@@ -113,9 +185,11 @@ fun BottomSection(
  * 헤더
  */
 @Composable
-fun HeaderRow() {
+fun HeaderRow(
+    modifier: Modifier = Modifier
+) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -125,9 +199,13 @@ fun HeaderRow() {
         )
 
         Text(
-            text = "Miruni",
+            text = "MIRUNI",
             fontSize = 18.sp,
-//            fontFamily = FontFamily.Alexandria
+            style = AppTypography.AlexandriaTextStyle(
+                fontWeight = FontWeight.Normal,
+                fontSize = 18.sp,
+                letterSpacing = 0f.em
+            ),
             modifier = Modifier
                 .padding(start = 8.dp)
         )
@@ -163,10 +241,13 @@ fun DescriptionSection(
             .height(270.dp)
             .padding(bottom = 26.dp)
     ) {
-
         Text(
             text = convertBold("'가영'님,\n오늘은 더 나은 하루가 될거예요.\n'미루니가 함께해요!'"),
-            style = AppTypography.pretendard_medium,
+            style = AppTypography.PretendardTextStyle(
+                fontWeight = FontWeight.Medium,
+                fontSize = 20.sp,
+                lineHeightRatio = 1.23f
+            ),
             color = Color.White,
             modifier = Modifier
                 .align(Alignment.TopStart)
@@ -281,7 +362,10 @@ fun ButtonSection(
 
             Text(
                 text = "AI 플래너 바로가기",
-                style = AppTypography.pretendard_bold_10,
+                style = AppTypography.PretendardTextStyle(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 10.sp
+                ),
                 color = Gray.gray_700,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -320,7 +404,10 @@ fun ButtonSection(
 
             Text(
                 text = "방해금지 모드 바로가기",
-                style = AppTypography.pretendard_bold_10,
+                style = AppTypography.PretendardTextStyle(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 10.sp
+                ),
                 color = Gray.gray_700,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)

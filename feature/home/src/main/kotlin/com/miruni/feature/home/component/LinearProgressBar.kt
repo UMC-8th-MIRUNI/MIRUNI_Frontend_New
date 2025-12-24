@@ -1,4 +1,4 @@
-package com.miruni.feature.home.dnd.component
+package com.miruni.feature.home.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
