@@ -54,17 +54,14 @@ fun PwResetNavigator(
         ){
             composable(PwResetRoute.Email.route) {
                 PwResetEmailScreen(
-                    onPrevClicked = onExit,
                     onNextClicked = {
                         pwResetNavController.navigate(PwResetRoute.Notice.route)
-                    }
+                    },
+                    onLoginRestart = onLoginRestart
                 )
             }
             composable(PwResetRoute.Notice.route) {
                 PwResetNoticeScreen(
-                    onPrevClicked = {
-                        pwResetNavController.navigate(PwResetRoute.Email.route)
-                    },
                     onNextClicked = {
                         pwResetNavController.navigate(PwResetRoute.Notice.route)
                     }
@@ -72,9 +69,6 @@ fun PwResetNavigator(
             }
             composable(PwResetRoute.Check.route) {
                 PwResetCheckScreen(
-                    onPrevClicked = {
-                        pwResetNavController.navigate(PwResetRoute.Notice.route)
-                    },
                     onNextClicked = {
                         pwResetNavController.navigate(PwResetRoute.Check.route)
                     }
@@ -82,9 +76,6 @@ fun PwResetNavigator(
             }
             composable(PwResetRoute.SetPassword.route) {
                 PwResetSetPasswordScreen(
-                    onPrevClicked = {
-                        pwResetNavController.navigate(PwResetRoute.Check.route)
-                    },
                     onNextClicked = {
                         pwResetNavController.navigate(PwResetRoute.Success.route)
                     }
@@ -92,9 +83,6 @@ fun PwResetNavigator(
             }
             composable(PwResetRoute.Success.route) {
                 PwResetSuccessScreen(
-                    onPrevClicked = {
-
-                    },
                     onNextClicked = onLoginRestart
                 )
             }
