@@ -7,6 +7,9 @@ import com.miruni.feature.home.domain.TodaySchedule
 
 class HomeContract {
     sealed class Event : ViewEvent {
+        object OnAlarmClick : Event() // 알람 기록 클릭
+        object OnAiPlannerClick : Event() // AI 플래너 바로가기 클릭
+        object OnDndClick : Event() // 방해금지 모드 바로가기 클릭
         data class OnScheduleClick(val scheduleId: Long) : Event() // 일정 클릭 이벤트
     }
 
