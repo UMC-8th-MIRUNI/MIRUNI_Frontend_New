@@ -17,6 +17,9 @@ class HomeViewModel @Inject constructor() : BaseViewModel<HomeContract.Event, Ho
     /** 이벤트 핸들링 */
     override fun handleEvents(event: HomeContract.Event) {
         when (event) {
+            HomeContract.Event.OnAlarmClick -> setEffect { HomeContract.Effect.Navigation.ToAlarms }
+            HomeContract.Event.OnAiPlannerClick -> setEffect { HomeContract.Effect.Navigation.ToAiPlanner }
+            HomeContract.Event.OnDndClick -> setEffect { HomeContract.Effect.Navigation.ToDnd }
             is HomeContract.Event.OnScheduleClick -> handleScheduleClick(event.scheduleId)
         }
     }
