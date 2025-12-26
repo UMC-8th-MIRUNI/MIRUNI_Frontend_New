@@ -2,6 +2,7 @@ package com.miruni.feature.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.AppTypography
@@ -72,17 +74,21 @@ fun HomeScreen(
     Scaffold(
         containerColor = MainColor.miruni_green,
         topBar = {
-            HeaderRow(modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 18.dp, vertical = 16.dp)
-        ) }
+            HeaderRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 18.dp, vertical = 16.dp),
+                viewModel = viewModel
+            )
+        }
     ) { innerPadding ->
         HomeContent(
             state = state,
             onEvent = viewModel::setEvent,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = innerPadding.calculateTopPadding())
+                .padding(top = innerPadding.calculateTopPadding()),
+            viewModel = viewModel
         )
     }
 }
@@ -91,7 +97,8 @@ fun HomeScreen(
 fun HomeContent(
     state: HomeContract.State,
     onEvent: (HomeContract.Event) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel
 ) {
     LazyColumn (
         modifier = modifier.fillMaxSize(),
@@ -103,7 +110,10 @@ fun HomeContent(
 //        )
     ) {
         item {
-            TopSection(modifier = Modifier.wrapContentHeight())
+            TopSection(
+                modifier = Modifier.wrapContentHeight(),
+                viewModel = viewModel
+            )
         }
 
         item {
@@ -118,7 +128,8 @@ fun HomeContent(
 
 @Composable
 fun TopSection(
-    modifier: Modifier
+    modifier: Modifier,
+    viewModel: HomeViewModel
 ) {
     Box (modifier = modifier
         .fillMaxWidth()
@@ -130,7 +141,7 @@ fun TopSection(
         ) {
             DescriptionSection()
             ProgressBarSection()
-            ButtonSection()
+            ButtonSection(viewModel = viewModel)
         }
     }
 }
@@ -181,7 +192,8 @@ fun BottomSection(
  */
 @Composable
 fun HeaderRow(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel
 ) {
     Row(
         modifier = modifier
@@ -218,7 +230,10 @@ fun HeaderRow(
         )
         Image(
             painter = painterResource(id = R.drawable.bell),
-            contentDescription = "bell"
+            contentDescription = "bell",
+            modifier = Modifier.clickable {
+                viewModel.setEvent(HomeContract.Event.OnAlarmClick)
+            }
         )
     }
 }
@@ -317,7 +332,8 @@ fun ProgressBarSection(
 
 @Composable
 fun ButtonSection(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel
 ) {
     Row(
         modifier = modifier
@@ -331,9 +347,11 @@ fun ButtonSection(
                 .height(126.dp)
                 .background(color = Color(0xFFB9E8C6), shape = RoundedCornerShape(10.dp))
                 .padding(start = 25.dp, end = 15.dp, top = 15.dp, bottom = 15.dp)
+                .clickable { viewModel.setEvent(HomeContract.Event.OnAiPlannerClick) }
         ) {
             Column(
-                modifier = Modifier.align(Alignment.TopStart),
+                modifier = Modifier
+                    .align(Alignment.TopStart),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
@@ -373,6 +391,7 @@ fun ButtonSection(
                 .height(126.dp)
                 .background(color = Color(0xFFB9E8C6), shape = RoundedCornerShape(10.dp))
                 .padding(start = 25.dp, end = 15.dp, top = 15.dp, bottom = 15.dp)
+                .clickable { viewModel.setEvent(HomeContract.Event.OnDndClick) }
         ) {
             Column(
                 modifier = Modifier.align(Alignment.TopStart),
@@ -380,7 +399,7 @@ fun ButtonSection(
             ) {
                 Image(
                     painter = painterResource(R.drawable.miruni_lock),
-                    contentDescription = "AI Planner",
+                    contentDescription = "DND",
                     modifier = Modifier
                         .width(65.dp)
                         .height(52.dp)
