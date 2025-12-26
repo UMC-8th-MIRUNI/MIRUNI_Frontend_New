@@ -18,6 +18,9 @@ class HomeContract {
     sealed class Effect: ViewSideEffect {
         /** Navigation */
         sealed class Navigation : Effect() {
+            object ToAlarms : Navigation()
+            object ToAiPlanner : Navigation()
+            object ToDnd : Navigation()
             data class ToExecution(val scheduleId: Long) : Navigation()
         }
     }
