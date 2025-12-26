@@ -37,6 +37,9 @@ fun MiruniOutlinedTextField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     label: String? = null,
+    labelStyle: TextStyle = AppTypography.body_regular_12.copy(color = Gray.gray_500),
+    placeholder: String? = null,
+    placeholderStyle: TextStyle = AppTypography.body_regular_12.copy(color = Gray.gray_500),
     textFieldModifier: Modifier = Modifier.fillMaxWidth(),
     textStyle: TextStyle = AppTypography.body_regular_14,
     singleLine: Boolean = true,
@@ -62,8 +65,7 @@ fun MiruniOutlinedTextField(
         if (label != null) {
             Text(
                 label,
-                style = AppTypography.body_regular_12,
-                color = Gray.gray_500
+                style = labelStyle,
             )
             Spacer(modifier = Modifier.height(4.dp))
         }
@@ -78,6 +80,11 @@ fun MiruniOutlinedTextField(
             shape = shape,
             leadingIcon = leadingIcon,
             trailingIcon = trailingIcon,
+            placeholder = {
+                if (!placeholder.isNullOrEmpty()) {
+                    Text(text = placeholder, style = placeholderStyle)
+                }
+            },
             visualTransformation = visualTransformation,
             isError = isError,
             keyboardOptions = keyboardOptions,

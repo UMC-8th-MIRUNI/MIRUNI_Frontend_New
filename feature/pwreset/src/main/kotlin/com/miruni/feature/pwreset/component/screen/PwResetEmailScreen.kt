@@ -23,6 +23,7 @@ import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.Gray
 import com.miruni.core.designsystem.MainColor
 import com.miruni.core.designsystem.White
+import com.miruni.feature.pwreset.component.button.MiruniButton
 import com.miruni.feature.pwreset.component.textfield.MiruniOutlinedTextField
 
 @Composable
@@ -30,36 +31,20 @@ fun PwResetEmailScreen(
     onNextClicked: () -> Unit,
     onLoginRestart: () -> Unit
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp),
+    PwResetTheme(
+        headerText = "비밀번호를 잊으셨나요?",
+        subHeaderText = "가입하신 이메일 주소를 입력하시면, 비밀번호를\n재설정할 수 있는 안내 메일을 보내드릴게요."
     ) {
-        Column {
-            Text("비밀번호를 잊으셨나요?", style = AppTypography.header_bold_20)
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(
-                "가입하신 이메일 주소를 입력하시면, 비밀번호를\n재설정할 수 있는 안내 메일을 보내드릴게요.",
-                style = AppTypography.body_regular_12,
-                color = Gray.gray_500
-            )
-            Spacer(modifier = Modifier.height(42.dp))
-            MiruniOutlinedTextField(
-                value = "",
-                onValueChange = {},
-                label = "이메일",
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                modifier = Modifier.fillMaxWidth().height(55.dp),
-                onClick = onNextClicked,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MainColor.miruni_green,
-                    contentColor = White
-                ),
-                shape = MaterialTheme.shapes.medium
-            ) {
-                Text("다음", style = AppTypography.button_semibold_16)
-            }
-        }
+        Spacer(modifier = Modifier.height(42.dp))
+        MiruniOutlinedTextField(
+            value = "",
+            onValueChange = {},
+            label = "이메일",
+        )
+        Spacer(modifier = Modifier.height(48.dp))
+        MiruniButton(
+            onClick = onNextClicked,
+        )
         Row(
             modifier = Modifier.fillMaxWidth().weight(1f).padding(bottom = 24.dp),
             verticalAlignment = Alignment.Bottom,

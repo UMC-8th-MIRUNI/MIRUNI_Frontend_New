@@ -63,19 +63,21 @@ fun PwResetNavigator(
             composable(PwResetRoute.Notice.route) {
                 PwResetNoticeScreen(
                     onNextClicked = {
-                        pwResetNavController.navigate(PwResetRoute.Notice.route)
+                        pwResetNavController.navigate(PwResetRoute.Check.route)
                     }
                 )
             }
             composable(PwResetRoute.Check.route) {
                 PwResetCheckScreen(
+                    email = "",
                     onNextClicked = {
-                        pwResetNavController.navigate(PwResetRoute.Check.route)
+                        pwResetNavController.navigate(PwResetRoute.SetPassword.route)
                     }
                 )
             }
             composable(PwResetRoute.SetPassword.route) {
                 PwResetSetPasswordScreen(
+                    onLoginRestart = onLoginRestart,
                     onNextClicked = {
                         pwResetNavController.navigate(PwResetRoute.Success.route)
                     }
