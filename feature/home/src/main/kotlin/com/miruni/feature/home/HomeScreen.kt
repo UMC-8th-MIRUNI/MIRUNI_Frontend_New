@@ -39,6 +39,7 @@ import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.Gray
 import com.miruni.core.designsystem.MainColor
 import com.miruni.core.designsystem.MiruniTheme
+import com.miruni.core.navigation.MiruniRoute
 import com.miruni.feature.home.component.TodayScheduleItem
 import com.miruni.feature.home.common.convertBold
 import com.miruni.feature.home.component.LinearProgressBar
@@ -59,11 +60,11 @@ fun HomeScreen(
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                is HomeContract.Effect.Navigation.ToExecution -> {
-//                    navController.navigate(
-//                        MiruniRoute.일정 실행
-//                    )
-                }
+                HomeContract.Effect.Navigation.ToAiPlanner -> navController.navigate(MiruniRoute.AiPlanner) // AI 플래너
+                HomeContract.Effect.Navigation.ToAiPlannerOnboarding -> navController.navigate(MiruniRoute.AiPlannerOnboarding) // AI 플래너 온보딩
+                HomeContract.Effect.Navigation.ToAlarms -> navController.navigate(MiruniRoute.AlarmLogs) // 알람 기록
+                HomeContract.Effect.Navigation.ToDnd -> navController.navigate(MiruniRoute.Dnd) // 방해금지 모드
+                is HomeContract.Effect.Navigation.ToExecution -> navController.navigate(MiruniRoute.Execution) // 일정 실행
             }
         }
     }

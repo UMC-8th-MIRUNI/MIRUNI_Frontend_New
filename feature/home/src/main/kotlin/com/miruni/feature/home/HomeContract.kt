@@ -20,6 +20,7 @@ class HomeContract {
         sealed class Navigation : Effect() {
             object ToAlarms : Navigation()
             object ToAiPlanner : Navigation()
+            object ToAiPlannerOnboarding : Navigation()
             object ToDnd : Navigation()
             data class ToExecution(val scheduleId: Long) : Navigation()
         }
