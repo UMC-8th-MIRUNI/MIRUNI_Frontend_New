@@ -69,6 +69,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
 
+    // The Preferences DataStore library
+    implementation(libs.androidx.datastore.preferences)
 
     // test dependencies
     androidTestImplementation(libs.androidx.junit)
