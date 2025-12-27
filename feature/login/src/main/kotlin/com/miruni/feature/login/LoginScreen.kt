@@ -41,6 +41,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.Black
 import com.miruni.core.designsystem.Gray
@@ -49,12 +52,15 @@ import com.miruni.core.designsystem.MiruniTheme
 import com.miruni.core.designsystem.White
 import com.miruni.core.designsystem.Yellow
 import com.miruni.feature.login.component.MiruniOutlinedTextField
+import com.miruni.feature.login.component.screen.LoginScreen
+import com.miruni.feature.login.component.screen.NotificationScreen
 import com.miruni.feature.login.extension.noRippleClickable
 import com.miruni.feature.login.model.TextInputField
+import com.miruni.feature.login.navigation.LoginRoute
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun LoginRoute(
+fun LoginNavigator(
     onLoginSuccess: () -> Unit,
     onSignUpClick: () -> Unit,
     onResetPasswordClick: () -> Unit,
@@ -62,6 +68,8 @@ fun LoginRoute(
 ) {
     val uiState = viewModel.viewState.value
     val onEvent: (LoginContract.Event) -> Unit = viewModel::setEvent
+    val navController = rememberNavController()
+
 
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
@@ -69,330 +77,43 @@ fun LoginRoute(
                 is LoginContract.Effect.Navigation.ToHome -> onLoginSuccess()
                 is LoginContract.Effect.Navigation.ToSignUp -> onSignUpClick()
                 is LoginContract.Effect.Navigation.ToResetPassword -> onResetPasswordClick()
-
+                is LoginContract.Effect.Navigation.ToNotification -> navController.navigate(LoginRoute.Notification.route)
+                is LoginContract.Effect.Navigation.ToStart -> navController.navigate(LoginRoute.Start.route)
                 is LoginContract.Effect.Message.Toast -> {
                 }
             }
         }
     }
-
-    LoginScreen(
-        uiState = uiState,
-        onIdChange = { onEvent(LoginContract.Event.OnIdChanged(it)) },
-        onPwChange = { onEvent(LoginContract.Event.OnPwChanged(it)) },
-        onTogglePasswordVisible = { onEvent(LoginContract.Event.OnTogglePasswordVisible) },
-        onAutoLoginChange = { onEvent(LoginContract.Event.OnAutoLoginChanged(it)) },
-        onClearError = { onEvent(LoginContract.Event.OnClearError) },
-        onLoginClick = { onEvent(LoginContract.Event.OnLoginClicked) },
-        onSignUpClick = { onEvent(LoginContract.Event.OnSignUpClicked) },
-        onResetPasswordClick = { onEvent(LoginContract.Event.OnResetPasswordClicked) },
-        onGoogleLoginClick = { /*TODO */ },
-        onKakaoLoginClick = { /* TODO */ },
-    )
-}
-
-@Composable
-fun LoginScreen(
-    uiState: LoginContract.State,
-    onIdChange: (String) -> Unit,
-    onPwChange: (String) -> Unit,
-    onTogglePasswordVisible: () -> Unit,
-    onAutoLoginChange: (Boolean) -> Unit,
-    onClearError: () -> Unit,
-    onLoginClick: () -> Unit,
-    onSignUpClick: () -> Unit,
-    onResetPasswordClick: () -> Unit,
-    onGoogleLoginClick: () -> Unit,
-    onKakaoLoginClick: () -> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp),
-    ) {
-        // 상단 로고 영역
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .weight(1f),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(R.drawable.ic_miruni),
-                contentDescription = "logo",
-            )
-            Spacer(Modifier.width(15.dp))
-            Image(
-                painter = painterResource(R.drawable.tx_miruni),
-                contentDescription = "logo",
+    NavHost(
+        navController = navController,
+        startDestination = LoginRoute.Login.route
+    ){
+        composable(LoginRoute.Login.route){
+            LoginScreen(
+                uiState = uiState,
+                onIdChange = { onEvent(LoginContract.Event.OnIdChanged(it)) },
+                onPwChange = { onEvent(LoginContract.Event.OnPwChanged(it)) },
+                onTogglePasswordVisible = { onEvent(LoginContract.Event.OnTogglePasswordVisible) },
+                onAutoLoginChange = { onEvent(LoginContract.Event.OnAutoLoginChanged(it)) },
+                onClearError = { onEvent(LoginContract.Event.OnClearError) },
+                onLoginClick = { onEvent(LoginContract.Event.OnLoginClicked) },
+                onSignUpClick = { onEvent(LoginContract.Event.OnSignUpClicked) },
+                onResetPasswordClick = { onEvent(LoginContract.Event.OnResetPasswordClicked) },
+                onGoogleLoginClick = { /*TODO */ },
+                onKakaoLoginClick = { /* TODO */ },
             )
         }
-
-        // 입력 영역
-        Column(modifier = Modifier.weight(3f)) {
-
-            // 이메일 라벨
-            Text(
-                text = "이메일",
-                style = AppTypography.body_regular_14,
-                color = Gray.gray_700,
-                modifier = Modifier.padding(start = 5.dp, bottom = 2.dp)
+        composable(LoginRoute.Notification.route){
+            NotificationScreen(
+                isDialogOpen = uiState.isDialogOpen,
+                onOpenDialog = { onEvent(LoginContract.Event.OnOpenDialog) },
+                onCloseDialog = { onEvent(LoginContract.Event.OnCloseDialog) },
+                onNextClicked = { onEvent(LoginContract.Event.OnNotificationClicked) },
             )
+        }
+        composable(LoginRoute.Start.route){
 
-            // 이메일 입력
-            MiruniOutlinedTextField(
-                value = uiState.id.value,
-                onValueChange = onIdChange,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(76.dp),
-                singleLine = true,
-                isError = uiState.id.isError,
-                supportingText = {
-                    uiState.id.errorMessage?.let {
-                        Text(it, color = MaterialTheme.colorScheme.error)
-                    }
-                },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions(onNext = { }),
-            )
-
-            // 비밀번호 라벨
-            Text(
-                text = "비밀번호",
-                style = AppTypography.body_regular_14,
-                color = Gray.gray_700,
-                modifier = Modifier.padding(start = 5.dp, bottom = 2.dp)
-            )
-
-            // 비밀번호 visualTransformation
-            val pwVisualTransformation =
-                if (uiState.passwordVisible) VisualTransformation.None
-                else PasswordVisualTransformation()
-
-            // 비밀번호 입력
-            MiruniOutlinedTextField(
-                value = uiState.password.value,
-                onValueChange = onPwChange,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(88.dp),
-                singleLine = true,
-                visualTransformation = pwVisualTransformation,
-                trailingIcon = {
-                    val (icon, description) =
-                        if (uiState.passwordVisible) R.drawable.ic_ep to "비밀번호 숨기기"
-                        else R.drawable.ic_ep_hide to "비밀번호 보기"
-
-                    IconButton(onClick = onTogglePasswordVisible) {
-                        Icon(
-                            painter = painterResource(icon),
-                            contentDescription = description,
-                            tint = Gray.gray_500
-                        )
-                    }
-                },
-                isError = uiState.password.isError,
-                supportingText = {
-                    if (uiState.password.isError) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Start,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Info,
-                                contentDescription = "error",
-                                tint = MaterialTheme.colorScheme.error
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = uiState.password.errorMessage ?: "",
-                                color = MaterialTheme.colorScheme.error,
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
-                    }
-                },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = { onLoginClick() }),
-            )
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(end = 3.dp)
-                    .noRippleClickable { onClearError() },
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End
-            ) {
-                CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
-                    Checkbox(
-                        checked = uiState.autoLogin,
-                        onCheckedChange = onAutoLoginChange,
-                        colors = CheckboxDefaults.colors(
-                            checkedColor = MainColor.miruni_green
-                        )
-                    )
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "자동 로그인",
-                    style = AppTypography.body_regular_14,
-                )
-            }
-
-            Spacer(modifier = Modifier.height(42.dp))
-
-            // 로그인 버튼
-            Button(
-                onClick = onLoginClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(49.dp),
-                enabled = uiState.canLogin,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MainColor.miruni_green,
-                    contentColor = White
-                ),
-                shape = RoundedCornerShape(10.dp)
-            ) {
-                Text("로그인")
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // 회원가입 / 비밀번호 변경
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                TextButton(onClick = onSignUpClick) {
-                    Text(
-                        text = "회원가입",
-                        style = AppTypography.body_regular_12,
-                        color = Gray.gray_500
-                    )
-                }
-                Spacer(modifier = Modifier.width(10.dp))
-                TextButton(onClick = onResetPasswordClick) {
-                    Text(
-                        text = "비밀번호 변경",
-                        style = AppTypography.body_regular_12,
-                        color = Gray.gray_500
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(50.dp))
-
-            // 구분선
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                HorizontalDivider(
-                    modifier = Modifier.weight(1f),
-                    color = Black.copy(alpha = 0.25f),
-                    thickness = 1.dp
-                )
-                Text(
-                    text = "또는",
-                    style = AppTypography.body_regular_12,
-                    color = Black.copy(alpha = 0.25f),
-                    modifier = Modifier.padding(horizontal = 10.dp)
-                )
-                HorizontalDivider(
-                    modifier = Modifier.weight(1f),
-                    color = Black.copy(alpha = 0.25f),
-                    thickness = 1.dp
-                )
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // 구글 로그인 버튼
-            Button(
-                onClick = onGoogleLoginClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(45.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Gray.gray_300,
-                    contentColor = Black
-                ),
-                shape = RoundedCornerShape(10.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.ic_google),
-                        contentDescription = "google",
-                    )
-                    Text("구글 로그인")
-                    Box {}
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // 카카오 로그인 버튼
-            Button(
-                onClick = onKakaoLoginClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(45.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Yellow.kakao,
-                    contentColor = Black
-                ),
-                shape = RoundedCornerShape(10.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.ic_kakao),
-                        contentDescription = "kakao",
-                    )
-                    Text("카카오 로그인")
-                    Box {}
-                }
-            }
         }
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-private fun LoginScreenPreview() {
-    val previewState = LoginContract.State(
-        id = TextInputField(value = "test@miruni.com"),
-        password = TextInputField(value = "password123"),
-        passwordVisible = false,
-        autoLogin = false,
-        isLoading = false
-    )
-
-    MiruniTheme {
-        LoginScreen(
-            uiState = previewState,
-            onIdChange = {},
-            onPwChange = {},
-            onTogglePasswordVisible = {},
-            onAutoLoginChange = {},
-            onClearError = {},
-            onLoginClick = {},
-            onSignUpClick = {},
-            onResetPasswordClick = {},
-            onGoogleLoginClick = {},
-            onKakaoLoginClick = {},
-        )
-    }
-}

@@ -18,7 +18,10 @@ class LoginContract {
         data object OnSignUpClicked : Event()
         data object OnResetPasswordClicked : Event()
 
+        data object OnNotificationClicked : Event()
         data object OnClearError : Event()
+        data object OnOpenDialog : Event()
+        data object OnCloseDialog : Event()
     }
 
     data class State(
@@ -27,9 +30,11 @@ class LoginContract {
         val passwordVisible: Boolean = false,
         val autoLogin: Boolean = false,
         val isLoading: Boolean = false,
+        val isDialogOpen: Boolean = false,
     ) : ViewState {
         val canLogin: Boolean
-            get() = id.value.isNotBlank() && password.value.isNotBlank() && !isLoading
+            // get() = id.value.isNotBlank() && password.value.isNotBlank() && !isLoading
+            get() = true
     }
 
     sealed class Effect : ViewSideEffect {
@@ -37,6 +42,9 @@ class LoginContract {
             data object ToHome : Navigation()
             data object ToSignUp : Navigation()
             data object ToResetPassword : Navigation()
+
+            data object ToNotification : Navigation()
+            data object ToStart : Navigation()
         }
 
         sealed class Message : Effect() {

@@ -53,6 +53,21 @@ class LoginViewModel :
             }
 
             LoginContract.Event.OnLoginClicked -> {
+                if (viewState.value.canLogin) {
+                    setEffect { LoginContract.Effect.Navigation.ToNotification }
+                }
+            }
+
+            LoginContract.Event.OnNotificationClicked -> {
+                setEffect { LoginContract.Effect.Navigation.ToStart }
+            }
+
+            LoginContract.Event.OnOpenDialog -> {
+                setState { copy(isDialogOpen = true) }
+            }
+
+            LoginContract.Event.OnCloseDialog -> {
+                setState { copy(isDialogOpen = false) }
             }
 
         }

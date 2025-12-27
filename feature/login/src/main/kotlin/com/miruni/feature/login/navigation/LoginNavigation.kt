@@ -5,8 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.miruni.core.navigation.MiruniRoute
 import com.miruni.core.navigation.NavigationDestination
-import com.miruni.feature.login.LoginRoute
-import com.miruni.feature.login.LoginScreen
+import com.miruni.feature.login.LoginNavigator
 import jakarta.inject.Inject
 
 class LoginNavigation @Inject constructor(
@@ -19,7 +18,7 @@ class LoginNavigation @Inject constructor(
         navController: NavHostController
     ) {
         builder.composable(route) {
-            LoginRoute(
+            LoginNavigator(
                 onLoginSuccess = {
                     navController.navigate(MiruniRoute.Home.route)
                 },
