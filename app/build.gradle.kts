@@ -17,6 +17,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"a6d5fba55b484d0f56f6d1ad2f7cfe8b\"")
     }
 
     buildTypes {
@@ -38,7 +39,10 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
+
+
 }
 
 dependencies {
@@ -69,6 +73,10 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
 
+    // kakao dependencies
+//    implementation("com.kakao.sdk:v2-all:2.23.1")
+    implementation("com.kakao.sdk:v2-common:2.23.1")
+    implementation("com.kakao.sdk:v2-user:2.23.1")
 
     // test dependencies
     androidTestImplementation(libs.androidx.junit)
