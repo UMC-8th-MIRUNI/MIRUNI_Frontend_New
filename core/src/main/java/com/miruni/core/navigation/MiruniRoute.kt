@@ -10,7 +10,6 @@ sealed class MiruniRoute(val route: String) {
     data object PwReset : MiruniRoute("pwReset")
     data object AlarmLogs : MiruniRoute("alarmLogs")
     data object AiPlanner : MiruniRoute("aiPlanner")
-    data object AiPlannerOnboarding : MiruniRoute("aiPlannerOnboarding")
     data object Dnd : MiruniRoute("dnd")
     data object Execution : MiruniRoute("execution")
 }
