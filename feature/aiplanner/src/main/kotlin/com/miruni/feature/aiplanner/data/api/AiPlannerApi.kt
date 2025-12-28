@@ -1,10 +1,11 @@
 package com.miruni.feature.aiplanner.data.api
 
+import retrofit2.http.GET
+
 interface AiPlannerApi {
 
-//    @Get
+    @GET("/")
     suspend fun getAiPlans(): ApiResponse<List<AiPlannerResponse>>
-
 }
 
 /**
