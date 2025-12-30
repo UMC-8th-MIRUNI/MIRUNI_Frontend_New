@@ -1,18 +1,15 @@
-package com.miruni.datastore
+package com.miruni.core.datastore
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import com.miruni.feature.aiplanner.domain.OnboardingRepository
-import com.miruni.feature.aiplanner.onboarding.OnboardingKey
+import com.miruni.core.domain.onboarding.OnboardingRepository
+import com.miruni.core.domain.onboarding.OnboardingKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class OnboardingRepositoryImpl @Inject constructor(
+class OnboardingRepositoryImpl(
     private val dataStore: DataStore<Preferences>
 ) : OnboardingRepository {
 

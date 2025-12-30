@@ -5,6 +5,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.navigation.MiruniRoute
 import com.miruni.core.navigation.NavigationDestination
@@ -15,8 +16,19 @@ fun MainScreen(
 ) {
     val navController = rememberNavController()
 
+    val currentRoute = navController
+        .currentBackStackEntryAsState().value?.destination?.route
+    // 바텀 네비게이션 바 숨기는 화면
+    val hideBottomBarRoutes = setOf(
+        MiruniRoute.AiPlannerOnboarding.route
+    )
+
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController = navController)}
+        bottomBar = {
+            if (currentRoute !in hideBottomBarRoutes) {
+                BottomNavigationBar(navController = navController)
+            }
+        }
     ) { padding ->
         NavHost(
             navController = navController,

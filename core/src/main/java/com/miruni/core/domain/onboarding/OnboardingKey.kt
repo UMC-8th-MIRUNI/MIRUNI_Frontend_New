@@ -1,4 +1,4 @@
-package com.miruni.feature.aiplanner.onboarding
+package com.miruni.core.domain.onboarding
 
 /**
  * core로 옮길 필요 있음

@@ -3,10 +3,9 @@ package com.miruni.feature.aiplanner.presentation
 import androidx.lifecycle.viewModelScope
 import com.miruni.feature.aiplanner.common.BaseViewModel
 import com.miruni.feature.aiplanner.domain.AiPlannerRepository
-import com.miruni.feature.aiplanner.domain.OnboardingRepository
-import com.miruni.feature.aiplanner.onboarding.OnboardingKey
+import com.miruni.core.domain.onboarding.OnboardingRepository
+import com.miruni.core.domain.onboarding.OnboardingKey
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,27 +19,11 @@ class AiPlannerViewModel @Inject constructor(
 
     override fun handleEvents(event: AiPlannerContract.Event) {
         when (event) {
-            AiPlannerContract.Event.Enter -> checkOnboarding()
             AiPlannerContract.Event.CompleteOnboarding -> completeOnboarding()
         }
     }
 
-    /**
-     * 온보딩 완료 체크
-     */
-    private fun checkOnboarding() {
-        viewModelScope.launch {
-            val completed = onboardingRepository
-                .isCompleted(OnboardingKey.AI_PLANNER)
-                .first()
-
-            setState { copy(showOnboarding = !completed) } // 완료되지 않았다면 온보딩 노출
-
-            if (completed) {
-                loadAiPlanner()
-            }
-        }
-    }
+    init { loadAiPlanner() }
 
     /**
      * 온보딩 완료 처리
@@ -48,8 +31,6 @@ class AiPlannerViewModel @Inject constructor(
     private fun completeOnboarding() {
         viewModelScope.launch {
             onboardingRepository.completeOnboarding(OnboardingKey.AI_PLANNER)
-
-            setState { copy(showOnboarding = false) }
 
             loadAiPlanner()
         }

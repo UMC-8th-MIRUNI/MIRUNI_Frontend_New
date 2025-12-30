@@ -1,6 +1,5 @@
-package com.miruni.feature.aiplanner.domain
+package com.miruni.core.domain.onboarding
 
-import com.miruni.feature.aiplanner.onboarding.OnboardingKey
 import kotlinx.coroutines.flow.Flow
 
 interface OnboardingRepository {

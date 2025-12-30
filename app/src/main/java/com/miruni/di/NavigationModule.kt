@@ -1,6 +1,7 @@
 package com.miruni.di
 
 import com.miruni.core.navigation.NavigationDestination
+import com.miruni.feature.aiplanner.navigation.AiPlannerNavigation
 import com.miruni.feature.aiplanner.navigation.CalendarNavigation
 import com.miruni.feature.home.navigation.HomeNavigation
 import com.miruni.feature.login.navigation.LoginNavigation
@@ -58,5 +59,11 @@ abstract class NavigationModule {
     @IntoSet
     abstract fun bindMyPageNavigation(
         navigation: MyPageNavigation
+    ): NavigationDestination
+
+    @Binds
+    @IntoSet
+    abstract fun bindAiPlannerNavigation(
+        navigation: AiPlannerNavigation
     ): NavigationDestination
 }

@@ -38,6 +38,9 @@ android {
 }
 
 dependencies {
+    // The Preferences DataStore library
+    implementation(libs.androidx.datastore.preferences)
+
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
