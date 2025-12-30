@@ -8,19 +8,38 @@ import javax.inject.Singleton
 
 @Singleton
 class AiPlannerRepositoryImpl @Inject constructor(
-    private val api: AiPlannerApi
+//    private val api: AiPlannerApi
 ) : AiPlannerRepository {
     override suspend fun getAiPlans(): List<AiPlannerUiModel> {
-        val response = api.getAiPlans()
-        return response.result.map {
+//        val response = api.getAiPlans()
+//        return response.result.map {
+//            AiPlannerUiModel(
+//                id = it.id,
+//                title = it.title,
+//                isDone = it.isDone,
+//                doneCount = it.doneCount,
+//                totalCount = it.totalCount,
+//                progressRate = it.progressRate
+//            )
+//        }
+
+        return listOf(
             AiPlannerUiModel(
-                id = it.id,
-                title = it.title,
-                isDone = it.isDone,
-                doneCount = it.doneCount,
-                totalCount = it.totalCount,
-                progressRate = it.progressRate
+                id = 1,
+                title = "UMC",
+                isDone = false,
+                doneCount = 2,
+                totalCount = 10,
+                progressRate = 20
+            ),
+            AiPlannerUiModel(
+                id = 2,
+                title = "CMC",
+                isDone = false,
+                doneCount = 4,
+                totalCount = 10,
+                progressRate = 40
             )
-        }
+        )
     }
 }
