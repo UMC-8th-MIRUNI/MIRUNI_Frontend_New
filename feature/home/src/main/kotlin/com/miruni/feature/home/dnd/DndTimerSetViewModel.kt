@@ -3,72 +3,90 @@ package com.miruni.feature.home.dnd
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.miruni.feature.home.dnd.model.DndTimerSetEvent
-import com.miruni.feature.home.dnd.model.DndTimerSetSideEffect
 import com.miruni.feature.home.dnd.model.DndTimerSetState
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable.isActive
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.runningFold
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class DndTimerSetViewModel : ViewModel() {
 
-    private val events = Channel<DndTimerSetEvent>(Channel.BUFFERED)
-    private val _sideEffect = Channel<DndTimerSetSideEffect>(Channel.BUFFERED)
+    // 내부에서만 변경 가능한 State
+    private val _state = MutableStateFlow(DndTimerSetState())
 
-    val sideEffect = _sideEffect.receiveAsFlow()
+    // View에 노출되는 읽기 전용 State
+    val state: StateFlow<DndTimerSetState> = _state
 
-    val state: StateFlow<DndTimerSetState> =
-        events
-            .receiveAsFlow()
-            .runningFold(DndTimerSetState(), ::reduceState)
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.Eagerly,
-                initialValue = DndTimerSetState()
+    // 타이머 코루틴 Job
+    private var timerJob: Job? = null
+
+    // View 에서 들어온 Intent 를 처리하는 단일 진입점
+    fun processEvent(event: DndTimerSetEvent) {
+        when (event) {
+            is DndTimerSetEvent.SetTime -> setTime(event.hour, event.minute)
+
+            DndTimerSetEvent.Start -> start()
+            DndTimerSetEvent.Pause -> pause()
+        }
+    }
+
+    private fun setTime(
+        hour: Int,
+        minute: Int,
+    ) {
+
+        // 시 + 분을 분 단위로 변환
+        val total = (hour * 60 + minute).coerceAtLeast(0)
+
+        // 실행 상태로 변경
+        _state.update {
+            it.copy(
+                remainingMinute = total,
+                isDone = false,
+                isRunning = true
             )
-
-    fun onEvent(event: DndTimerSetEvent) {
-        viewModelScope.launch {
-            events.send(event)
         }
     }
 
-    private fun reduceState(
-        current: DndTimerSetState,
-        event: DndTimerSetEvent
-    ): DndTimerSetState {
-        return when (event) {
+    private fun start() {
+        val current = _state.value
+        // 이미 실행 중이거나 시간이 없으면 무시
+        if (current.isRunning || current.remainingMinute <= 0) return
 
-            is DndTimerSetEvent.TimeChanged -> {
-                current.copy(
-                    hour = event.hour,
-                    minute = event.minute
-                )
+        // 실행 상태로 변경
+        _state.update { it.copy(isRunning = true, isDone = false) }
+
+        startTimer()
+    }
+
+    private fun startTimer() {
+        timerJob?.cancel()
+        timerJob = viewModelScope.launch {
+            // 타이머가 살아 있고, 시간이 남아 있는 동안 반복
+            while (isActive && _state.value.remainingMinute > 0) {
+                delay(60_000)
+
+                // 1분 감소
+                _state.update {
+                    it.copy(remainingMinute = it.remainingMinute - 1)
+                }
             }
 
-            DndTimerSetEvent.ConfirmClicked -> {
-                emitSideEffect(
-                    DndTimerSetSideEffect.NavigateToRunning(
-                        hour = current.hour,
-                        minute = current.minute
-                    )
-                )
-                current.copy(isTimeConfirmed = true)
-            }
-
-            DndTimerSetEvent.CloseClicked -> {
-                emitSideEffect(DndTimerSetSideEffect.NavigateToHome)
-                current
+            // 시간이 끝나면 실행 상태 해제
+            _state.update {
+                it.copy(isRunning = false, isDone = true)
             }
         }
     }
 
-    private fun emitSideEffect(effect: DndTimerSetSideEffect) {
-        viewModelScope.launch {
-            _sideEffect.send(effect)
-        }
+    private fun pause() {
+        timerJob?.cancel() // 코루틴 중단
+//        timerJob = null
+
+        // 실행 상태 해제
+        _state.update { it.copy(isRunning = false) }
     }
 }
