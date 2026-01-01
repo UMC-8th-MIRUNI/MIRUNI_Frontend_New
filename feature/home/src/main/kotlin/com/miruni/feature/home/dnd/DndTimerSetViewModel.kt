@@ -1,9 +1,12 @@
 package com.miruni.feature.home.dnd
 
+import android.R.attr.mode
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.miruni.feature.home.dnd.model.DndTimerSetEvent
 import com.miruni.feature.home.dnd.model.DndTimerSetState
+import com.miruni.feature.home.dnd.model.TimerMode
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable.isActive
 import kotlinx.coroutines.delay
@@ -23,6 +26,8 @@ class DndTimerSetViewModel : ViewModel() {
     // 타이머 코루틴 Job
     private var timerJob: Job? = null
 
+
+
     // View 에서 들어온 Intent 를 처리하는 단일 진입점
     fun processEvent(event: DndTimerSetEvent) {
         when (event) {
@@ -33,6 +38,7 @@ class DndTimerSetViewModel : ViewModel() {
         }
     }
 
+    // 사용자가 시간을 세팅
     private fun setTime(
         hour: Int,
         minute: Int,
@@ -46,18 +52,28 @@ class DndTimerSetViewModel : ViewModel() {
             it.copy(
                 remainingMinute = total,
                 isDone = false,
-                isRunning = true
+                isRunning = false,
+                mode = TimerMode.SET
             )
         }
+
+        start()
     }
 
+    // 타이머 실행
     private fun start() {
         val current = _state.value
         // 이미 실행 중이거나 시간이 없으면 무시
         if (current.isRunning || current.remainingMinute <= 0) return
 
         // 실행 상태로 변경
-        _state.update { it.copy(isRunning = true, isDone = false) }
+        _state.update {
+            it.copy(
+                isRunning = true,
+                isDone = false,
+                mode = TimerMode.RUNNING
+            )
+        }
 
         startTimer()
     }
@@ -73,6 +89,7 @@ class DndTimerSetViewModel : ViewModel() {
                 _state.update {
                     it.copy(remainingMinute = it.remainingMinute - 1)
                 }
+                Log.d("DndTimerSetViewModel", "1분 감소")
             }
 
             // 시간이 끝나면 실행 상태 해제
@@ -87,6 +104,11 @@ class DndTimerSetViewModel : ViewModel() {
 //        timerJob = null
 
         // 실행 상태 해제
-        _state.update { it.copy(isRunning = false) }
+        _state.update {
+            it.copy(
+                isRunning = false,
+                mode = TimerMode.PAUSED
+            )
+        }
     }
 }

@@ -54,6 +54,7 @@ import com.miruni.feature.home.dnd.component.DndTopBar
 import com.miruni.feature.home.dnd.component.InputTimeView
 import com.miruni.feature.home.dnd.model.DndTimerSetEvent
 import com.miruni.feature.home.dnd.model.DndTimerSetState
+import com.miruni.feature.home.dnd.model.TimerMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -152,48 +153,53 @@ fun DndTimerSetContent(
 
             Spacer(Modifier.height(100.dp))
 
-            if (!state.isRunning) {
-                InputTimeView(
-                    timePickerState = timePickerState,
-                    isRunning = false ,
-                )
-                Spacer(Modifier.height(50.dp))
-            } else {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        modifier = Modifier
-                            .padding(top = 50.dp),
-                        style = MiruniTypography.displayMedium,
-                        color = MainColor.miruni_green,
-                        text = "%02d".format(state.hours),
-                        fontSize = 48.sp
+            when (state.mode) {
+                TimerMode.SET -> {
+                    InputTimeView(
+                        timePickerState = timePickerState,
+                        isRunning = false ,
                     )
-                    Spacer(Modifier.width(10.dp))
-                    Text(
-                        modifier = Modifier
-                            .padding(top = 50.dp),
-                        style = MiruniTypography.displayMedium,
-                        color = Color.Black,
-                        text = ":",
-                        fontSize = 48.sp
-                    )
-                    Spacer(Modifier.width(10.dp))
-                    Text(
-                        modifier = Modifier
-                            .padding(top = 50.dp),
-                        style = MiruniTypography.displayMedium,
-                        color = MainColor.miruni_green,
-                        text = "%02d".format(state.minutes),
-                        fontSize = 48.sp
-                    )
-                }
+                    Spacer(Modifier.height(50.dp))
 
-                Spacer(Modifier.height(80.dp))
+                }
+                TimerMode.RUNNING -> {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .padding(top = 50.dp),
+                            style = MiruniTypography.displayMedium,
+                            color = MainColor.miruni_green,
+                            text = "%02d".format(state.hours),
+                            fontSize = 48.sp
+                        )
+                        Spacer(Modifier.width(10.dp))
+                        Text(
+                            modifier = Modifier
+                                .padding(top = 50.dp),
+                            style = MiruniTypography.displayMedium,
+                            color = Color.Black,
+                            text = ":",
+                            fontSize = 48.sp
+                        )
+                        Spacer(Modifier.width(10.dp))
+                        Text(
+                            modifier = Modifier
+                                .padding(top = 50.dp),
+                            style = MiruniTypography.displayMedium,
+                            color = MainColor.miruni_green,
+                            text = "%02d".format(state.minutes),
+                            fontSize = 48.sp
+                        )
+                    }
+
+                    Spacer(Modifier.height(80.dp))
+                }
+                TimerMode.PAUSED -> { }
             }
 
             val context = LocalContext.current
