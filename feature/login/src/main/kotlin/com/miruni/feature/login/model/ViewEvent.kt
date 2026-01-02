@@ -1,4 +1,4 @@
-package com.miruni.feature.login.common
+package com.miruni.feature.login.model
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State

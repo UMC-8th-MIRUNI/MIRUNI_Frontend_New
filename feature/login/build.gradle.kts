@@ -55,7 +55,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
 
     // kakao dependencies
-    implementation("com.kakao.sdk:v2-user:2.23.1")
+    implementation(libs.kakao.sdk.v2.user)
     // test dependencies
     implementation(libs.mockito.android)
     testImplementation(libs.junit)

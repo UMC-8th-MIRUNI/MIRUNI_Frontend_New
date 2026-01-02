@@ -1,7 +1,6 @@
 package com.miruni.feature.login
 
-import android.util.Patterns
-import com.miruni.feature.login.common.BaseViewModel
+import com.miruni.feature.login.model.BaseViewModel
 
 class LoginViewModel :
     BaseViewModel<LoginContract.Event, LoginContract.State, LoginContract.Effect>() {
@@ -56,6 +55,22 @@ class LoginViewModel :
                 if (viewState.value.canLogin) {
                     setEffect { LoginContract.Effect.Navigation.ToNotification }
                 }
+            }
+
+            LoginContract.Event.OnGoogleLoginClicked -> {
+                setEffect { LoginContract.Effect.Navigation.ToNotification }
+            }
+
+            LoginContract.Event.OnKakaoLoginClicked -> {
+                setEffect { LoginContract.Effect.KakaoLogin }
+            }
+            is LoginContract.Event.OnKakaoLoginSuccess -> {
+                // TODO: 서버에 accessToken 보내서 JWT 교환
+                setEffect { LoginContract.Effect.Navigation.ToNotification }
+            }
+
+            is LoginContract.Event.OnKakaoLoginFail -> {
+                setEffect { LoginContract.Effect.Message.Toast(event.message) }
             }
 
             LoginContract.Event.OnNotificationClicked -> {

@@ -74,9 +74,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
 
     // kakao dependencies
-//    implementation("com.kakao.sdk:v2-all:2.23.1")
-    implementation("com.kakao.sdk:v2-common:2.23.1")
-    implementation("com.kakao.sdk:v2-user:2.23.1")
+    implementation(libs.kakao.sdk.v2.common)
 
     // test dependencies
     androidTestImplementation(libs.androidx.junit)

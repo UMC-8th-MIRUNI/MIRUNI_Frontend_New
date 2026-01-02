@@ -1,8 +1,8 @@
 package com.miruni.feature.login
 
-import com.miruni.feature.login.common.ViewEvent
-import com.miruni.feature.login.common.ViewSideEffect
-import com.miruni.feature.login.common.ViewState
+import com.miruni.feature.login.model.ViewEvent
+import com.miruni.feature.login.model.ViewSideEffect
+import com.miruni.feature.login.model.ViewState
 import com.miruni.feature.login.model.TextInputField
 
 class LoginContract {
@@ -17,6 +17,11 @@ class LoginContract {
         data object OnLoginClicked : Event()
         data object OnSignUpClicked : Event()
         data object OnResetPasswordClicked : Event()
+
+        data object OnGoogleLoginClicked : Event()
+        data object OnKakaoLoginClicked : Event()
+        data class OnKakaoLoginSuccess(val accessToken: String) : Event()
+        data class OnKakaoLoginFail(val message: String) : Event()
 
         data object OnNotificationClicked : Event()
         data object OnClearError : Event()
@@ -50,5 +55,6 @@ class LoginContract {
         sealed class Message : Effect() {
             data class Toast(val message: String) : Message()
         }
+        data object KakaoLogin : Effect()
     }
 }

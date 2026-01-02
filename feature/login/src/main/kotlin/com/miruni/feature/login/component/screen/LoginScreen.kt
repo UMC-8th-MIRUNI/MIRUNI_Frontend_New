@@ -42,13 +42,12 @@ import com.miruni.core.designsystem.Black
 import com.miruni.core.designsystem.Gray
 import com.miruni.core.designsystem.MainColor
 import com.miruni.core.designsystem.MiruniTheme
-import com.miruni.core.designsystem.White
 import com.miruni.core.designsystem.Yellow
 import com.miruni.feature.login.LoginContract
 import com.miruni.feature.login.R
 import com.miruni.feature.login.component.MiruniButton
 import com.miruni.feature.login.component.MiruniOutlinedTextField
-import com.miruni.feature.login.extension.noRippleClickable
+import com.miruni.feature.login.utils.extension.noRippleClickable
 import com.miruni.feature.login.model.TextInputField
 
 @Composable

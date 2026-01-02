@@ -1,4 +1,4 @@
-package com.miruni.feature.login.extension
+package com.miruni.feature.login.utils.extension
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
