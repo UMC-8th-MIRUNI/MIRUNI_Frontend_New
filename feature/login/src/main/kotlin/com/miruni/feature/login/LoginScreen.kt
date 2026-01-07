@@ -12,8 +12,10 @@ import com.miruni.feature.login.navigation.LoginRoute
 import kotlinx.coroutines.flow.collectLatest
 import android.app.Activity
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import com.kakao.sdk.user.UserApiClient
 import com.kakao.sdk.auth.model.OAuthToken
+import com.miruni.feature.login.component.screen.StartScreen
 import com.miruni.feature.login.utils.helper.kakaoLogin
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
@@ -30,6 +32,7 @@ fun LoginNavigator(
     val onEvent: (LoginContract.Event) -> Unit = viewModel::setEvent
     val navController = rememberNavController()
     val context = LocalContext.current
+    val currentRoute = navController.currentBackStackEntry?.destination?.route
 
 
     LaunchedEffect(Unit) {
@@ -56,7 +59,7 @@ fun LoginNavigator(
     }
     NavHost(
         navController = navController,
-        startDestination = LoginRoute.Login.route
+        startDestination = LoginRoute.Start.route,
     ){
         composable(LoginRoute.Login.route){
             LoginScreen(
@@ -82,9 +85,21 @@ fun LoginNavigator(
             )
         }
         composable(LoginRoute.Start.route){
-
+            StartScreen(
+                onStartedClicked = { onEvent(LoginContract.Event.OnStartedClicked) }
+            )
         }
     }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun LoginNavigatorPreview() {
+    LoginNavigator(
+        onLoginSuccess = {},
+        onSignUpClick = {},
+        onResetPasswordClick = {},
+    )
 }
 
 

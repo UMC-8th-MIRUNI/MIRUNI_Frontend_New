@@ -85,6 +85,10 @@ class LoginViewModel :
                 setState { copy(isDialogOpen = false) }
             }
 
+            LoginContract.Event.OnStartedClicked -> {
+                setEffect { LoginContract.Effect.Navigation.ToHome }
+            }
+
         }
     }
 

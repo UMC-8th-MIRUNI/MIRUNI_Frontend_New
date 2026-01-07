@@ -24,6 +24,7 @@ class LoginContract {
         data class OnKakaoLoginFail(val message: String) : Event()
 
         data object OnNotificationClicked : Event()
+        data object OnStartedClicked : Event()
         data object OnClearError : Event()
         data object OnOpenDialog : Event()
         data object OnCloseDialog : Event()
