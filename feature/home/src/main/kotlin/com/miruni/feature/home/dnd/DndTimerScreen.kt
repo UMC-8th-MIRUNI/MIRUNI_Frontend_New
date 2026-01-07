@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,15 +25,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -46,29 +43,30 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.AppTypography
+import com.miruni.core.designsystem.Gray
 import com.miruni.core.designsystem.MainColor
 import com.miruni.core.designsystem.MiruniTheme
 import com.miruni.core.designsystem.MiruniTypography
+import com.miruni.core.navigation.MiruniRoute
 import com.miruni.feature.home.R
 import com.miruni.feature.home.dnd.component.DndTopBar
 import com.miruni.feature.home.dnd.component.InputTimeView
-import com.miruni.feature.home.dnd.model.DndTimerSetEvent
-import com.miruni.feature.home.dnd.model.DndTimerSetState
-import com.miruni.feature.home.dnd.model.TimerMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DndTimerSetScreen(
+fun DndTimerScreen(
     navController: NavHostController,
-    viewModel: DndTimerSetViewModel = viewModel()
+    viewModel: DndTimerViewModel = viewModel()
 ) {
 
     // StateFlow → Compose State로 변환
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.viewState
 
-    // UI 전용 로컬 상태 (입력값)
-    var inputHour by remember { mutableStateOf("0") }
-    var inputMinute by remember { mutableStateOf("0") }
+    Log.d(
+        "DndTimerUI",
+        "Recompose | remaining=${state.remainingMinute} " +
+                "(${state.hours}:${"%02d".format(state.minutes)})"
+    )
 
     val timePickerState = rememberTimePickerState(
         is24Hour = true,
@@ -80,6 +78,27 @@ fun DndTimerSetScreen(
         "DndTimerSet", "Composable Recomposition."
     )
 
+    // sideEffect 수신 (완료 시 DndCompleteScreen 으로 이동)
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                DndContract.Effect.TimeFinished -> {
+                    navController.navigate(
+                        MiruniRoute.HomeDndComplete.createRoute(
+                            hour = timePickerState.hour,
+                            minute = timePickerState.minute
+                        )
+                    ) {
+                        // 타이머 화면 스택에서 제거
+                        popUpTo(MiruniRoute.HomeDndTimerSetting.route) {
+                            inclusive = true
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     DndTimerSetContent(
         state = state,
         timePickerState = timePickerState,
@@ -87,7 +106,20 @@ fun DndTimerSetScreen(
             navController.popBackStack()
         },
         onConfirmClick = {
-            viewModel.processEvent(DndTimerSetEvent.SetTime(timePickerState.hour, timePickerState.minute))
+            viewModel.setEvent(
+                DndContract.Event.SetTime(
+                    hour = timePickerState.hour,
+                    minute = timePickerState.minute
+                )
+            )
+            Log.d("DndTimerScreen", "mode = ${state.mode}")
+
+        },
+        onStopClick = {
+            viewModel.setEvent(DndContract.Event.Pause)
+        },
+        onEarlyEndClick = {
+            viewModel.setEvent(DndContract.Event.Pause)
         }
     )
 }
@@ -95,14 +127,14 @@ fun DndTimerSetScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DndTimerSetContent(
-    state: DndTimerSetState,
+    state: DndContract.State,
     timePickerState: TimePickerState,
     onCloseClick: () -> Unit,
     onConfirmClick: () -> Unit,
+    onStopClick: () -> Unit,
+    onEarlyEndClick: () -> Unit,
 ) {
     Log.d("DndTimerSet", "Composable Recomposition.")
-
-    var showInputTimeView by remember { mutableStateOf(true) }
 
     Scaffold(
         topBar = {
@@ -142,7 +174,6 @@ fun DndTimerSetContent(
                     )
                 }
             }
-
             Spacer(Modifier.height(60.dp))
 
             Image(
@@ -157,73 +188,126 @@ fun DndTimerSetContent(
                 TimerMode.SET -> {
                     InputTimeView(
                         timePickerState = timePickerState,
-                        isRunning = false ,
+                        isRunning = false,
                     )
+
                     Spacer(Modifier.height(50.dp))
 
-                }
-                TimerMode.RUNNING -> {
-                    Row(
+                    Button(
                         modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
+                            .fillMaxWidth()
+                            .height(49.dp),
+                        shape = RoundedCornerShape(10.dp),
+                        onClick = {
+                            onConfirmClick()
+                        },
                     ) {
-                        Text(
-                            modifier = Modifier
-                                .padding(top = 50.dp),
-                            style = MiruniTypography.displayMedium,
-                            color = MainColor.miruni_green,
-                            text = "%02d".format(state.hours),
-                            fontSize = 48.sp
-                        )
-                        Spacer(Modifier.width(10.dp))
-                        Text(
-                            modifier = Modifier
-                                .padding(top = 50.dp),
-                            style = MiruniTypography.displayMedium,
-                            color = Color.Black,
-                            text = ":",
-                            fontSize = 48.sp
-                        )
-                        Spacer(Modifier.width(10.dp))
-                        Text(
-                            modifier = Modifier
-                                .padding(top = 50.dp),
-                            style = MiruniTypography.displayMedium,
-                            color = MainColor.miruni_green,
-                            text = "%02d".format(state.minutes),
-                            fontSize = 48.sp
-                        )
+                        Text("확인")
                     }
-
-                    Spacer(Modifier.height(80.dp))
                 }
-                TimerMode.PAUSED -> { }
-            }
 
-            val context = LocalContext.current
+                TimerMode.RUNNING -> {
+                    RunningTimerView(
+                        state = state,
+                        onStopClick = onStopClick,
+                        onEarlyEndClick = onEarlyEndClick)
 
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(49.dp),
-                shape = RoundedCornerShape(10.dp),
-                onClick = {
-                    onConfirmClick()
-                },
-            ) {
-                Text("확인")
+
+                }
+
+                TimerMode.PAUSED -> {}
             }
+        }
+    }
+}
+
+@Composable
+private fun RunningTimerView(
+    state: DndContract.State,
+    onStopClick: () -> Unit,
+    onEarlyEndClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            modifier = Modifier
+                .padding(top = 50.dp),
+            style = MiruniTypography.displayMedium,
+            color = MainColor.miruni_green,
+            text = "%02d".format(state.hours),
+            fontSize = 48.sp
+        )
+        Spacer(Modifier.width(10.dp))
+        Text(
+            modifier = Modifier
+                .padding(top = 50.dp),
+            style = MiruniTypography.displayMedium,
+            color = Color.Black,
+            text = ":",
+            fontSize = 48.sp
+        )
+        Spacer(Modifier.width(10.dp))
+        Text(
+            modifier = Modifier
+                .padding(top = 50.dp),
+            style = MiruniTypography.displayMedium,
+            color = MainColor.miruni_green,
+            text = "%02d".format(state.minutes),
+            fontSize = 48.sp
+        )
+    }
+
+    Spacer(Modifier.height(80.dp))
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(32.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Button(
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Gray.gray_500,
+                contentColor = Color.White
+            ),
+            modifier = Modifier
+                .weight(1f)
+                .width(157.dp)
+                .height(49.dp),
+            shape = RoundedCornerShape(10.dp),
+            onClick = onStopClick
+        ) {
+            Text(
+                text = "중지",
+                style = AppTypography.button_semibold_16
+            )
+        }
+
+        Button(
+            modifier = Modifier
+                .weight(1f)
+                .width(157.dp)
+                .height(49.dp),
+            shape = RoundedCornerShape(10.dp),
+            onClick = onEarlyEndClick
+        ) {
+            Text(
+                text = "완료",
+                style = AppTypography.button_semibold_16
+            )
         }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun DndTimerSetScreenPreview() {
+fun DndTimerScreenPreview() {
     MiruniTheme {
-        DndTimerSetScreen(
+        DndTimerScreen(
             navController = rememberNavController(),
         )
     }

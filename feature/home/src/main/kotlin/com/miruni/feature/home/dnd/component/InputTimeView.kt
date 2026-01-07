@@ -31,7 +31,7 @@ import com.miruni.core.designsystem.MiruniTypography
 @Composable
 fun InputTimeView(
     timePickerState: TimePickerState,
-    isTimeConfirmed: Boolean,
+    isRunning: Boolean,
 ) {
     Box(
         contentAlignment = Alignment.Center
@@ -42,7 +42,7 @@ fun InputTimeView(
         ) {
             MaterialTimeInputNoLabel(
                 state = timePickerState,
-                isTimeConfirmed = isTimeConfirmed
+                isRunning = isRunning,
             )
         }
     }
@@ -52,17 +52,22 @@ fun InputTimeView(
 @Composable
 fun MaterialTimeInputNoLabel(
     state: TimePickerState,
-    isTimeConfirmed: Boolean
+    isRunning: Boolean,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
+        // hour
         TimeNumberField(
             value = state.hour,
             range = 0..23,
-            isTimeConfirmed = isTimeConfirmed,
-            onValueChange = { state.hour = it },
+            isRunning = isRunning,
+            onValueChange = { value ->
+                val hour = if (value == 24) 0 else value
+
+                state.hour = hour
+            },
         )
 
         Text(
@@ -71,11 +76,14 @@ fun MaterialTimeInputNoLabel(
             modifier = Modifier.padding(horizontal = 12.dp)
         )
 
+        // MINUTE
         TimeNumberField(
             value = state.minute,
             range = 0..59,
-            isTimeConfirmed = isTimeConfirmed,
-            onValueChange = { state.minute = it },
+            isRunning = isRunning,
+            onValueChange = { value ->
+                state.minute = value
+            },
         )
     }
 }
@@ -85,7 +93,7 @@ fun MaterialTimeInputNoLabel(
 private fun TimeNumberField(
     value: Int,
     range: IntRange,
-    isTimeConfirmed: Boolean,
+    isRunning: Boolean,
     onValueChange: (Int) -> Unit
 ) {
     var text by remember(value) {
@@ -95,7 +103,7 @@ private fun TimeNumberField(
     OutlinedTextField(
         value = text,
         onValueChange = { new ->
-            if (isTimeConfirmed) return@OutlinedTextField  // 확정 후 입력 막기
+            if (isRunning) return@OutlinedTextField  // 확정 후 입력 막기
             // 1) 빈 값 → 대기
             if (new.isBlank()) {
                 text = ""
@@ -128,11 +136,11 @@ private fun TimeNumberField(
             }
         },
         shape = RoundedCornerShape(10.dp),
-        enabled = !isTimeConfirmed,
+        enabled = !isRunning,
         singleLine = true,
         textStyle = MiruniTypography.displayMedium.copy(
             textAlign = TextAlign.Center,
-            color = if (isTimeConfirmed)
+            color = if (isRunning)
                 MainColor.miruni_green
             else
                 MaterialTheme.colorScheme.onSurface
@@ -144,12 +152,12 @@ private fun TimeNumberField(
             focusedIndicatorColor = MainColor.miruni_green,
             unfocusedIndicatorColor = Color.Transparent,
 
-            focusedContainerColor = if (isTimeConfirmed)
+            focusedContainerColor = if (isRunning)
                 Color.Transparent
             else
                 Color(0x2A24C354),
 
-            unfocusedContainerColor = if (isTimeConfirmed)
+            unfocusedContainerColor = if (isRunning)
                 Color.Transparent
             else
                 MaterialTheme.colorScheme.surface,

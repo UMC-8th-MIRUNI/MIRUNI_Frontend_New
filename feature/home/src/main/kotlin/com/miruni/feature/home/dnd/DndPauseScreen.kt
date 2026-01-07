@@ -47,6 +47,7 @@ fun DndPauseScreen(
             Column {
                 CancelOrConfirmButton(
                     onCancelClick = {
+                        Log.d("DndPauseScreen", "Pause → popBackStack")
                         navController.popBackStack()
                     },
                     onConfirmClick = { showRerunTimerSettingModal = true }

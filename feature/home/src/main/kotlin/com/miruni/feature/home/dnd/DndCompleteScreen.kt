@@ -116,7 +116,6 @@ fun DndCompleteScreen(
         }
     }
 }
-
 @Preview(showBackground = true)
 @Composable
 fun DndCompleteScreenPreview() {

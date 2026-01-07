@@ -13,8 +13,7 @@ import com.miruni.feature.home.dnd.DndCompleteScreen
 import com.miruni.feature.home.dnd.DndEarlyEndScreen
 import com.miruni.feature.home.dnd.DndOnboardingScreen
 import com.miruni.feature.home.dnd.DndPauseScreen
-import com.miruni.feature.home.dnd.DndTimerRunningScreen
-import com.miruni.feature.home.dnd.DndTimerSetScreen
+import com.miruni.feature.home.dnd.DndTimerScreen
 import jakarta.inject.Inject
 
 class HomeNavigation @Inject constructor(
@@ -44,7 +43,7 @@ class HomeNavigation @Inject constructor(
 
         builder.composable(MiruniRoute.HomeDndTimerSetting.route) {
             Log.d("HomeNavigation", "HomeDndTimerSetting entered")
-            DndTimerSetScreen(
+            DndTimerScreen(
                 navController = navController,
             )
         }
@@ -56,10 +55,11 @@ class HomeNavigation @Inject constructor(
             )
         }
 
-        builder.composable(MiruniRoute.HomeDndEarlyEnd.route,
+        builder.composable(
+            MiruniRoute.HomeDndEarlyEnd.route,
             arguments = listOf(
-                navArgument("hour") { type = NavType.IntType},
-                navArgument("minute") { type = NavType.IntType}
+                navArgument("hour") { type = NavType.IntType },
+                navArgument("minute") { type = NavType.IntType }
             )
         ) { backStackEntry ->
 
@@ -75,29 +75,10 @@ class HomeNavigation @Inject constructor(
         }
 
         builder.composable(
-            MiruniRoute.HomeDndTimerRunning.route,
-            arguments = listOf(
-                navArgument("hour") { type = NavType.IntType},
-                navArgument("minute") { type = NavType.IntType}
-            )
-        ) { backStackEntry ->
-
-            val hour = backStackEntry.arguments?.getInt("hour") ?: 0
-            val minute = backStackEntry.arguments?.getInt("minute") ?: 0
-
-            Log.d("HomeNavigation", "HomeDndTimerRunning entered")
-            DndTimerRunningScreen(
-                hour = hour,
-                minute = minute,
-                navController = navController,
-            )
-        }
-
-        builder.composable(
             MiruniRoute.HomeDndComplete.route,
             arguments = listOf(
-                navArgument("hour") { type = NavType.IntType},
-                navArgument("minute") { type = NavType.IntType}
+                navArgument("hour") { type = NavType.IntType },
+                navArgument("minute") { type = NavType.IntType }
             )
         ) { backStackEntry ->
 
