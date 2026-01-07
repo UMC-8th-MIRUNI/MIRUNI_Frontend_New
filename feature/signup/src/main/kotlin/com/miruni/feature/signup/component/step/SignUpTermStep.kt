@@ -45,27 +45,13 @@ import com.miruni.feature.signup.model.TextInputField
 import com.miruni.feature.signup.model.Term
 
 @Composable
-fun SignUpTermStepRoute(
-    uiState: SignUpContract.State,
-    onEvent: (SignUpContract.Event) -> Unit,
-) {
-    SignUpTermStep(
-        uiState = uiState,
-        onNickNameChange = { onEvent(SignUpContract.Event.OnNickNameChanged(it)) },
-        onAgreeRealNameChange = { onEvent(SignUpContract.Event.OnAgreeRealNameChanged(it)) },
-        onAgreeAllChange = { onEvent(SignUpContract.Event.OnAgreeAllChanged(it)) },
-        onAgreeTermsChange = { onEvent(SignUpContract.Event.OnAgreeTermsChanged(it)) },
-        onAgreePrivacyChange = { onEvent(SignUpContract.Event.OnAgreePrivacyChanged(it)) },
-        onAgreeMarketingChange = { onEvent(SignUpContract.Event.OnAgreeMarketingChanged(it)) },
-        onTermContentClick = { term ->
-            onEvent(SignUpContract.Event.OnSelectedTermChanged(term))
-        }
-    )
-}
-
-@Composable
 fun SignUpTermStep(
-    uiState: SignUpContract.State,
+    nickName: String,
+    agreeRealName: Boolean,
+    agreeTerms: Boolean,
+    agreePrivacy: Boolean,
+    agreeMarketing: Boolean,
+
     onNickNameChange: (String) -> Unit,
     onAgreeRealNameChange: (Boolean) -> Unit,
     onAgreeAllChange: (Boolean) -> Unit,
@@ -74,10 +60,10 @@ fun SignUpTermStep(
     onAgreeMarketingChange: (Boolean) -> Unit,
     onTermContentClick: (Term) -> Unit,
 ) {
-    val agreeAll = uiState.agreeTerms && uiState.agreePrivacy && uiState.agreeMarketing
+    val agreeAll = agreeTerms && agreePrivacy && agreeMarketing
+
     Column(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Column(
@@ -95,7 +81,7 @@ fun SignUpTermStep(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(R.drawable.ic_miruni_default), // 준비된 리소스로 바꿔줘
+                    painter = painterResource(R.drawable.ic_miruni_default),
                     contentDescription = "profile",
                     modifier = Modifier
                         .size(84.dp, 77.dp)
@@ -109,13 +95,14 @@ fun SignUpTermStep(
                 color = Gray.gray_500
             )
         }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .weight(1f),
         ) {
             UnderlineTextField(
-                value = uiState.nickName.value,
+                value = nickName,
                 onValueChange = onNickNameChange,
                 placeholder = "닉네임",
                 textStyle = AppTypography.sub_regular_16,
@@ -125,9 +112,10 @@ fun SignUpTermStep(
 
             CheckBoxRow(
                 title = "실명으로 불러주세요!",
-                checked = uiState.agreeRealName,
+                checked = agreeRealName,
                 onCheckedChange = onAgreeRealNameChange
             )
+
             Spacer(Modifier.weight(1f))
 
             CheckBoxRow(
@@ -141,12 +129,11 @@ fun SignUpTermStep(
                 thickness = 1.dp,
                 color = Gray.gray_500.copy(alpha = 0.5f)
             )
-            Column(
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
+
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 CheckBoxRow(
                     title = "이용약관 동의(필수)",
-                    checked = uiState.agreeTerms,
+                    checked = agreeTerms,
                     onCheckedChange = onAgreeTermsChange,
                     trailingContent = {
                         TextButton(
@@ -161,7 +148,7 @@ fun SignUpTermStep(
 
                 CheckBoxRow(
                     title = "개인정보 수집 및 이용 동의(필수)",
-                    checked = uiState.agreePrivacy,
+                    checked = agreePrivacy,
                     onCheckedChange = onAgreePrivacyChange,
                     trailingContent = {
                         TextButton(
@@ -176,7 +163,7 @@ fun SignUpTermStep(
 
                 CheckBoxRow(
                     title = "마케팅 정보 수신 동의(선택)",
-                    checked = uiState.agreeMarketing,
+                    checked = agreeMarketing,
                     onCheckedChange = onAgreeMarketingChange,
                     trailingContent = {
                         TextButton(
@@ -189,11 +176,12 @@ fun SignUpTermStep(
                     }
                 )
             }
+
             Spacer(modifier = Modifier.height(40.dp))
         }
-
     }
 }
+
 
 @Composable
 private fun CheckBoxRow(
@@ -240,7 +228,11 @@ private fun SignUpTermStepPreview() {
     )
 
     SignUpTermStep(
-        uiState = state,
+        nickName = state.nickName.value,
+        agreeRealName = state.agreeRealName,
+        agreeTerms = state.agreeTerms,
+        agreePrivacy = state.agreePrivacy,
+        agreeMarketing = state.agreeMarketing,
         onNickNameChange = {},
         onAgreeRealNameChange = {},
         onAgreeAllChange = {},
