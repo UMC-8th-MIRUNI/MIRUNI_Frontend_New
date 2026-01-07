@@ -16,7 +16,6 @@ import com.miruni.core.designsystem.AppTypography
 import com.miruni.feature.signup.component.SignUpBottomBar
 import com.miruni.feature.signup.component.SignUpTopBar
 import com.miruni.feature.signup.component.TermContentDialog
-import com.miruni.feature.signup.component.step.SignUpAccountStep
 import com.miruni.feature.signup.component.step.SignUpProfileStep
 import com.miruni.feature.signup.component.step.SignUpTermStep
 import com.miruni.feature.signup.navigation.SignupRoute
