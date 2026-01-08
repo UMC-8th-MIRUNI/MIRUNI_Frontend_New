@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.miruni.core.navigation.MiruniRoute
 import com.miruni.core.navigation.NavigationDestination
-import com.miruni.feature.pwreset.PwResetScreen
+import com.miruni.feature.pwreset.PwResetNavigator
 import jakarta.inject.Inject
 
 class PwResetNavigation @Inject constructor(
@@ -18,9 +18,9 @@ class PwResetNavigation @Inject constructor(
         navController: NavHostController
     ) {
         builder.composable(route) {
-            PwResetScreen(
-                navController = navController,
-                onLoginRestart = {}
+            PwResetNavigator(
+                onExit = {},
+                onLoginRestart = { navController.navigate(MiruniRoute.Login.route)}
             )
         }
     }
