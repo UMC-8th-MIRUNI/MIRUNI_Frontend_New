@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.BasicTextField
@@ -28,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.Black
@@ -122,6 +124,7 @@ private fun UnderlineTextFieldImpl(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    minFieldHeight: Dp = 24.dp,
     label: String? = null,
     placeholder: String? = null,
     isError: Boolean = false,
@@ -184,6 +187,7 @@ private fun UnderlineTextFieldImpl(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .heightIn(min = minFieldHeight)
                         .padding(bottom = 4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
