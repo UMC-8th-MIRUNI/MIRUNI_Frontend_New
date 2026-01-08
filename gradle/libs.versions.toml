@@ -39,6 +39,7 @@ uiTooling = "1.9.5"
 navigationCommonKtx = "2.9.6"
 navigationRuntimeKtx = "2.9.6"
 
+kizitonwoseCalendar = "2.6.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -68,7 +69,7 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinGradlePlugin" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-material-icons-core = { group = "androidx.compose.material", name = "material-icons-core"}
+material-icons-core = { group = "androidx.compose.material", name = "material-icons-core" }
 material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
@@ -94,6 +95,8 @@ androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navig
 #compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "compose" }
 #compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "compose" }
 #compose-runtime-rxjava2 = { group = "androidx.compose.runtime", name = "runtime-rxjava2", version.ref = "compose" }
+
+kizitonwose-calendar = { group = "com.kizitonwose.calendar", name = "compose", version.ref = "kizitonwoseCalendar" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
