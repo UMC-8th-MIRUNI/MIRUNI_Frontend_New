@@ -1,4 +1,4 @@
-package com.miruni.feature.login.component.screen
+package com.miruni.feature.login.presentation.component.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -45,10 +45,10 @@ import com.miruni.core.designsystem.MiruniTheme
 import com.miruni.core.designsystem.Yellow
 import com.miruni.feature.login.LoginContract
 import com.miruni.feature.login.R
-import com.miruni.feature.login.component.MiruniButton
-import com.miruni.feature.login.component.MiruniOutlinedTextField
+import com.miruni.feature.login.presentation.component.MiruniButton
+import com.miruni.feature.login.presentation.component.MiruniOutlinedTextField
 import com.miruni.feature.login.utils.extension.noRippleClickable
-import com.miruni.feature.login.model.TextInputField
+import com.miruni.feature.login.presentation.model.TextInputField
 
 @Composable
 fun LoginScreen(

@@ -1,4 +1,4 @@
-package com.miruni.feature.login.component.screen
+package com.miruni.feature.login.presentation.component.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,7 +30,7 @@ import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.Gray
 import com.miruni.core.designsystem.White
 import com.miruni.feature.login.R
-import com.miruni.feature.login.component.MiruniButton
+import com.miruni.feature.login.presentation.component.MiruniButton
 
 @Composable
 fun NotificationScreen(

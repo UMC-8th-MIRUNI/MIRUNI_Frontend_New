@@ -1,4 +1,4 @@
-package com.miruni.feature.login.navigation
+package com.miruni.feature.login.presentation.component.navigation
 
 sealed class LoginRoute(val route: String) {
     data object Login : LoginRoute("login")

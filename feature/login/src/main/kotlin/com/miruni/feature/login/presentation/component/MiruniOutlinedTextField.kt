@@ -1,4 +1,4 @@
-package com.miruni.feature.login.component
+package com.miruni.feature.login.presentation.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +12,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
@@ -39,7 +40,7 @@ fun MiruniOutlinedTextField(
     shape: Shape = RoundedCornerShape(10.dp),
     colors: TextFieldColors = OutlinedTextFieldDefaults.colors(
         focusedContainerColor = MainColor.input_focus,
-        unfocusedContainerColor = White,
+        unfocusedContainerColor = Color.White,
         focusedBorderColor = MainColor.miruni_green,
         unfocusedBorderColor = MainColor.miruni_green,
     ),

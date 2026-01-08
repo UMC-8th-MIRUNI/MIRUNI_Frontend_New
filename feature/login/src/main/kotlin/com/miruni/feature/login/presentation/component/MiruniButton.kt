@@ -1,4 +1,4 @@
-package com.miruni.feature.login.component
+package com.miruni.feature.login.presentation.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height

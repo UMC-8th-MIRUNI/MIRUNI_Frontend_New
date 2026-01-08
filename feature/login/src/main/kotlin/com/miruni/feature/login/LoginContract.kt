@@ -1,9 +1,9 @@
 package com.miruni.feature.login
 
-import com.miruni.feature.login.model.ViewEvent
-import com.miruni.feature.login.model.ViewSideEffect
-import com.miruni.feature.login.model.ViewState
-import com.miruni.feature.login.model.TextInputField
+import com.miruni.feature.login.presentation.model.ViewEvent
+import com.miruni.feature.login.presentation.model.ViewSideEffect
+import com.miruni.feature.login.presentation.model.ViewState
+import com.miruni.feature.login.presentation.model.TextInputField
 
 class LoginContract {
 

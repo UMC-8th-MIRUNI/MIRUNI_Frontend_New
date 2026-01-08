@@ -8,19 +8,30 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.navigation.MiruniRoute
 import com.miruni.core.navigation.NavigationDestination
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 @Composable
-fun MainScreen(
-    destinations: Set<NavigationDestination>
-) {
+fun MainScreen(destinations: Set<NavigationDestination>) {
     val navController = rememberNavController()
+    val navBackStackEntry = navController.currentBackStackEntryAsState().value
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val hideBottomNavItem = setOf(
+        MiruniRoute.Login.route,
+        MiruniRoute.SignUp.route,
+        MiruniRoute.Splash.route,
+    )
 
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController = navController)}
+        bottomBar = {
+            if (currentRoute !in hideBottomNavItem) {
+                BottomNavigationBar(navController)
+            }
+        }
     ) { padding ->
         NavHost(
             navController = navController,
-            startDestination = MiruniRoute.Splash.route, // 앱 시작할때마다 스플래쉬 띄워?
+            startDestination = MiruniRoute.Login.route,
             modifier = Modifier.padding(padding)
         ) {
             destinations.forEach { it.register(this, navController) }

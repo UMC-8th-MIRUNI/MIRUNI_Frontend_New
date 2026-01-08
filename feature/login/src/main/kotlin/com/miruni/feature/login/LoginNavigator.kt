@@ -2,23 +2,18 @@ package com.miruni.feature.login
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.miruni.feature.login.component.screen.LoginScreen
-import com.miruni.feature.login.component.screen.NotificationScreen
-import com.miruni.feature.login.navigation.LoginRoute
-import kotlinx.coroutines.flow.collectLatest
-import android.app.Activity
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
-import com.kakao.sdk.user.UserApiClient
-import com.kakao.sdk.auth.model.OAuthToken
-import com.miruni.feature.login.component.screen.StartScreen
+import com.miruni.feature.login.presentation.component.screen.LoginScreen
+import com.miruni.feature.login.presentation.component.screen.NotificationScreen
+import com.miruni.feature.login.presentation.component.screen.StartScreen
+import com.miruni.feature.login.presentation.component.navigation.LoginRoute
 import com.miruni.feature.login.utils.helper.kakaoLogin
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
+import kotlinx.coroutines.flow.collectLatest
 
 
 @Composable
@@ -59,7 +54,7 @@ fun LoginNavigator(
     }
     NavHost(
         navController = navController,
-        startDestination = LoginRoute.Start.route,
+        startDestination = LoginRoute.Login.route,
     ){
         composable(LoginRoute.Login.route){
             LoginScreen(

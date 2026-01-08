@@ -1,4 +1,4 @@
-package com.miruni.feature.login.model
+package com.miruni.feature.login.presentation.model
 
 
 data class TextInputField(

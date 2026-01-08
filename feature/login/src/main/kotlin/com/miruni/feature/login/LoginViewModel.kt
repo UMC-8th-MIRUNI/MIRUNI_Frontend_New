@@ -1,6 +1,6 @@
 package com.miruni.feature.login
 
-import com.miruni.feature.login.model.BaseViewModel
+import com.miruni.feature.login.presentation.model.BaseViewModel
 
 class LoginViewModel :
     BaseViewModel<LoginContract.Event, LoginContract.State, LoginContract.Effect>() {
