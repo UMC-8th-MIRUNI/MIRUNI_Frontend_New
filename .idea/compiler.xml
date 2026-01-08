@@ -5,7 +5,6 @@
       <module name="MIRUNI_FE.aiplanner" target="21" />
       <module name="MIRUNI_FE.calendar" target="21" />
       <module name="MIRUNI_FE.component" target="21" />
-      <module name="MIRUNI_FE.core" target="21" />
       <module name="MIRUNI_FE.core.auth" target="21" />
       <module name="MIRUNI_FE.core.common" target="21" />
       <module name="MIRUNI_FE.core.component" target="21" />
