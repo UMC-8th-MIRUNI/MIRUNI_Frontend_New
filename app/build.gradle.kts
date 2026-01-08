@@ -69,6 +69,9 @@ dependencies {
     // material for Icons. 지워도 상관x
     implementation("androidx.compose.material:material-icons-core:1.7.8")
 
+    // The Preferences DataStore library
+    implementation(libs.androidx.datastore.preferences)
+
     // compose dependencies
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)

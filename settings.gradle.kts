@@ -25,14 +25,6 @@ dependencyResolutionManagement {
 rootProject.name = "MIRUNI_FE"
 include(":app")
 
-include(":domain:model")
-include(":domain:repository")
-include(":domain:usecase")
-
-include(":data:service")
-include(":data:dto")
-include(":data:repository")
-
 include(":feature:aiplanner")
 include(":feature:home")
 include(":feature:login")

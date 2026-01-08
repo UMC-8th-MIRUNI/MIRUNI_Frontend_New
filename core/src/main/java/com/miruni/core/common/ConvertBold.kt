@@ -1,4 +1,4 @@
-package com.miruni.feature.home.common
+package com.miruni.core.common
 
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
