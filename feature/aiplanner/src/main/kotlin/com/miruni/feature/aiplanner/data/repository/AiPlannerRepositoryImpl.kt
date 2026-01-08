@@ -42,4 +42,11 @@ class AiPlannerRepositoryImpl @Inject constructor(
             )
         )
     }
+
+    override suspend fun getRemain(): Int {
+//        val response = api.getRemain()
+//        return response.result.remain
+
+        return 0
+    }
 }

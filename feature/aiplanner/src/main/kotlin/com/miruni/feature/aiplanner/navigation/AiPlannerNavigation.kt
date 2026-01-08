@@ -6,7 +6,7 @@ import androidx.navigation.compose.composable
 import com.miruni.core.navigation.MiruniRoute
 import com.miruni.core.navigation.NavigationDestination
 import com.miruni.feature.aiplanner.presentation.AiPlannerOnboardingScreen
-import com.miruni.feature.aiplanner.presentation.AiPlannerScreen
+import com.miruni.feature.aiplanner.presentation.AiPlannerMainScreen
 import javax.inject.Inject
 
 class AiPlannerNavigation @Inject constructor() : NavigationDestination {
@@ -22,7 +22,7 @@ class AiPlannerNavigation @Inject constructor() : NavigationDestination {
         }
         // AI 플래너 메인
         builder.composable(route) {
-            AiPlannerScreen(navController = navController)
+            AiPlannerMainScreen(navController = navController)
         }
     }
 }

@@ -23,7 +23,9 @@ class AiPlannerViewModel @Inject constructor(
         }
     }
 
-    init { loadAiPlanner() }
+    init {
+        loadAiPlanner()
+    }
 
     /**
      * 온보딩 완료 처리
@@ -41,7 +43,16 @@ class AiPlannerViewModel @Inject constructor(
      */
     private fun loadAiPlanner() =
         viewModelScope.launch {
+            setState { copy(isLoading = true) }
+
             val aiPlans = aiPlannerRepository.getAiPlans()
-            setState { copy(aiPlans = aiPlans) }
+            val remain = aiPlannerRepository.getRemain()
+            setState {
+                copy(
+                    aiPlans = aiPlans,
+                    remain = remain,
+                    isLoading = false
+                )
+            }
         }
 }

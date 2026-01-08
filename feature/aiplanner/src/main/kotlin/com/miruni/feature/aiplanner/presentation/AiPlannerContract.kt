@@ -11,7 +11,9 @@ object AiPlannerContract {
     }
 
     data class State(
-        val aiPlans: List<AiPlannerUiModel>? = emptyList()
+        val isLoading: Boolean = false, // AI 플래너 서버 데이터 로딩중 여부
+        val aiPlans: List<AiPlannerUiModel> = emptyList(), // AI 플랜
+        val remain: Int = 0 // AI 플래닝 사용 잔여 횟수
     ) : ViewState
 
     sealed class Effect : ViewSideEffect
