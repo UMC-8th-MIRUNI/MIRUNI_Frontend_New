@@ -35,7 +35,6 @@ sealed class MiruniRoute(val route: String) {
     data object Dnd : MiruniRoute("dnd")
     data object Execution : MiruniRoute("execution")
 }
-}
 
 sealed class ModalRoute(val route: String) {
     data object Error : ModalRoute("home/rerun/TimerErrorModal")

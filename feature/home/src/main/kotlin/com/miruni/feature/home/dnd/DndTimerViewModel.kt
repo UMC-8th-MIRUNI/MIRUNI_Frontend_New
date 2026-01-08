@@ -2,10 +2,10 @@ package com.miruni.feature.home.dnd
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.miruni.feature.home.common.BaseViewModel
-import com.miruni.feature.home.common.ViewEvent
-import com.miruni.feature.home.common.ViewSideEffect
-import com.miruni.feature.home.common.ViewState
+import com.miruni.core.common.BaseViewModel
+import com.miruni.core.common.ViewEvent
+import com.miruni.core.common.ViewSideEffect
+import com.miruni.core.common.ViewState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable.isActive
 import kotlinx.coroutines.delay

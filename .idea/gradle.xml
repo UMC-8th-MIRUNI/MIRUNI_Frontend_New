@@ -26,14 +26,6 @@
             <option value="$PROJECT_DIR$/build-logic" />
             <option value="$PROJECT_DIR$/build-logic/convention" />
             <option value="$PROJECT_DIR$/core" />
-            <option value="$PROJECT_DIR$/data" />
-            <option value="$PROJECT_DIR$/data/dto" />
-            <option value="$PROJECT_DIR$/data/repository" />
-            <option value="$PROJECT_DIR$/data/service" />
-            <option value="$PROJECT_DIR$/domain" />
-            <option value="$PROJECT_DIR$/domain/model" />
-            <option value="$PROJECT_DIR$/domain/repository" />
-            <option value="$PROJECT_DIR$/domain/usecase" />
             <option value="$PROJECT_DIR$/feature" />
             <option value="$PROJECT_DIR$/feature/aiplanner" />
             <option value="$PROJECT_DIR$/feature/calendar" />

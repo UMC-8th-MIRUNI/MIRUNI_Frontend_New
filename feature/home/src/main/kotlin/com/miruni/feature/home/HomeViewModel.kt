@@ -1,6 +1,6 @@
 package com.miruni.feature.home
 
-import com.miruni.feature.home.common.BaseViewModel
+import com.miruni.core.common.BaseViewModel
 import com.miruni.feature.home.domain.TodaySchedule
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject

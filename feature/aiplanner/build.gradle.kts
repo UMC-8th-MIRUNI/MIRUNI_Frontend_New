@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.convention.feature)
     alias(libs.plugins.compose.compiler)
+
+    alias(libs.plugins.convention.retrofit)
 }
 
 android {
@@ -38,8 +40,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":domain:model"))
-    implementation(project(":domain:usecase"))
     implementation(project(":core"))
 
     implementation(libs.androidx.core.ktx)

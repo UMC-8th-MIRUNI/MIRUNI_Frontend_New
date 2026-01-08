@@ -1,6 +1,7 @@
 [versions]
 agp = "8.9.1"
-comGoogleDevtoolsKspGradlePlugin = "2.1.10-1.0.30"
+comGoogleDevtoolsKspGradlePlugin = "2.0.20-1.0.25"
+datastorePreferences = "1.2.0"
 glide = "5.0.5"
 gradle = "8.10.1"
 kotlin = "2.0.20"
@@ -20,11 +21,11 @@ jetbrainsKotlinJvm = "2.0.20"
 mockitoKotlin = "5.2.1"
 mockitoAndroid = "5.20.0"
 
-ksp = "2.1.10-1.0.30"
+ksp = "2.0.20-1.0.25"
 hilt = "2.57.1"
 hiltNavigationCompose = "1.2.0"
 
-androidxNavigation = "2.8.8"
+androidxNavigation = "2.9.6"
 kotlinxCoroutinesCore = "1.8.0"
 coreSplashscreen = "1.0.1"
 
@@ -45,6 +46,7 @@ kizitonwoseCalendar = "2.6.0"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 com-google-devtools-ksp-gradle-plugin = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "comGoogleDevtoolsKspGradlePlugin" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
