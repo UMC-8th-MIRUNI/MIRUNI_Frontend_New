@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.convention.hilt)
     alias(libs.plugins.compose.compiler)
+
+    alias(libs.plugins.convention.retrofit)
 }
 
 android {
@@ -17,6 +19,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"a6d5fba55b484d0f56f6d1ad2f7cfe8b\"")
     }
 
     buildTypes {
@@ -38,7 +41,10 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
+
+
 }
 
 dependencies {
@@ -69,6 +75,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
 
+    // kakao dependencies
+    implementation(libs.kakao.sdk.v2.common)
 
     // test dependencies
     androidTestImplementation(libs.androidx.junit)

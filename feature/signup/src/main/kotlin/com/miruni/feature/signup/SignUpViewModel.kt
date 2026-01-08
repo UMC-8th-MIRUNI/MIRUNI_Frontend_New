@@ -1,10 +1,11 @@
 package com.miruni.feature.signup
 
 import com.miruni.feature.signup.common.BaseViewModel
+import com.miruni.feature.signup.navigation.SignupRoute
 
 class SignupViewModel : BaseViewModel<SignUpContract.Event, SignUpContract.State, SignUpContract.Effect>() {
 
-    private val steps = SignUpContract.stepSequence
+    private val routes = SignupRoute.sequence
     override fun setInitialState(): SignUpContract.State = SignUpContract.State()
 
     override fun handleEvents(event: SignUpContract.Event) {
@@ -101,9 +102,6 @@ class SignupViewModel : BaseViewModel<SignUpContract.Event, SignUpContract.State
                 setState { copy(selectedTerm = event.term) }
             }
 
-            is SignUpContract.Event.OnStepChanged -> {
-                setState { copy(step = event.step) }
-            }
 
             is SignUpContract.Event.OnAgreeRealNameChanged -> {
                 setState { copy(agreeRealName = event.agree) }
@@ -131,25 +129,31 @@ class SignupViewModel : BaseViewModel<SignUpContract.Event, SignUpContract.State
                 }
             }
 
+            is SignUpContract.Event.OnRouteChanged -> {
+                setState { copy(currentRoute = event.route) }
+            }
+
             SignUpContract.Event.OnNextStepClicked -> {
-                setState {
-                    val currentIndex = steps.indexOf(step)
-                    if (currentIndex < steps.lastIndex) {
-                        copy(step = steps[currentIndex + 1])
-                    } else {
-                        this
-                    }
+                val current = viewState.value.currentRoute
+                val idx = routes.indexOf(current).coerceAtLeast(0)
+
+                if (idx >= routes.lastIndex) {
+                    setEffect { SignUpContract.Effect.Navigation.Done }
+                } else {
+                    val next = routes[idx + 1]
+                    setEffect { SignUpContract.Effect.Navigation.ToRoute(next) }
                 }
             }
 
             SignUpContract.Event.OnPrevStepClicked -> {
-                setState {
-                    val currentIndex = steps.indexOf(step)
-                    if (currentIndex > 0) {
-                        copy(step = steps[currentIndex - 1])
-                    } else {
-                        this
-                    }
+                val current = viewState.value.currentRoute
+                val idx = routes.indexOf(current).coerceAtLeast(0)
+
+                if (idx <= 0) {
+                    setEffect { SignUpContract.Effect.Navigation.Back }
+                } else {
+                    val prev = routes[idx - 1]
+                    setEffect { SignUpContract.Effect.Navigation.ToRoute(prev) }
                 }
             }
 

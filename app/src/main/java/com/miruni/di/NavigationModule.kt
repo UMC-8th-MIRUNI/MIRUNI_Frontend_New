@@ -1,9 +1,9 @@
 package com.miruni.di
 
 import com.miruni.core.navigation.NavigationDestination
-import com.miruni.feature.aiplanner.navigation.CalendarNavigation
+import com.miruni.feature.calendar.navigation.CalendarNavigation
 import com.miruni.feature.home.navigation.HomeNavigation
-import com.miruni.feature.login.navigation.LoginNavigation
+import com.miruni.feature.login.presentation.component.navigation.LoginNavigation
 import com.miruni.feature.mypage.navigation.MyPageNavigation
 import com.miruni.feature.pwreset.navigation.PwResetNavigation
 import com.miruni.feature.signup.navigation.SignUpNavigation

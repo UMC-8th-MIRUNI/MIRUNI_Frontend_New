@@ -1,5 +1,6 @@
 package com.miruni.feature.home.common
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import com.miruni.feature.home.dnd.DndContract
 import kotlinx.coroutines.launch
 
 interface ViewEvent
@@ -52,6 +54,7 @@ abstract class BaseViewModel<Event: ViewEvent, UiState: ViewState, Effect: ViewS
     }
 
     fun setEvent(event: Event) {
+        Log.d("BaseViewModel", "setEvent: $event")
         viewModelScope.launch { _event.emit(event) }
     }
 
