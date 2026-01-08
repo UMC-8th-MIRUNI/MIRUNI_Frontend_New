@@ -6,5 +6,5 @@ package com.miruni.core.network
 data class ApiResponse<T>(
     val errorCode: String,
     val message: String,
-    val result: T
+    val result?: T
 )
