@@ -54,6 +54,8 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.activity.compose)
 
+    // kakao dependencies
+    implementation(libs.kakao.sdk.v2.user)
     // test dependencies
     implementation(libs.mockito.android)
     testImplementation(libs.junit)

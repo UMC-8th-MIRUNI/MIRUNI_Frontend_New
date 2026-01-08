@@ -1,7 +1,7 @@
 package com.miruni.miruni_fe
 
 import android.app.Application
-import com.miruni.network.TokenProvider
+import com.kakao.sdk.common.KakaoSdk
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,6 +15,7 @@ class MiruniApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        KakaoSdk.init(this, BuildConfig.KAKAO_NATIVE_APP_KEY)
 
         CoroutineScope(Dispatchers.IO).launch {
             tokenProvider.init()
