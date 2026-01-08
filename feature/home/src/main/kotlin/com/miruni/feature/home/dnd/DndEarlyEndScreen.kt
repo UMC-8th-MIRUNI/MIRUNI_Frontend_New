@@ -1,6 +1,5 @@
 package com.miruni.feature.home.dnd
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
