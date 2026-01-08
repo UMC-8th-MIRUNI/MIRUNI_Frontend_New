@@ -1,6 +1,6 @@
 package com.miruni.feature.home.dnd
 
-import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,11 +26,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.Gray
 import com.miruni.core.designsystem.MiruniTheme
+import com.miruni.core.navigation.MiruniRoute
 import com.miruni.feature.home.R
 import com.miruni.feature.home.dnd.component.CancelOrConfirmButton
 import com.miruni.feature.home.dnd.component.RerunTimerSettingModal
@@ -39,15 +41,22 @@ import com.miruni.feature.home.dnd.component.RerunTimerSettingModal
 @Composable
 fun DndPauseScreen(
     navController: NavHostController,
+    viewModel: DndTimerViewModel = viewModel()
 ) {
     var showRerunTimerSettingModal by remember { mutableStateOf(false) }
+    var showErrorModal by remember { mutableStateOf(false) }
+
+    BackHandler {
+        viewModel.setEvent(DndContract.Event.Resume)
+        navController.popBackStack()
+    }
 
     Scaffold(
         bottomBar = {
             Column {
                 CancelOrConfirmButton(
                     onCancelClick = {
-                        Log.d("DndPauseScreen", "Pause → popBackStack")
+                        viewModel.setEvent(DndContract.Event.Resume)
                         navController.popBackStack()
                     },
                     onConfirmClick = { showRerunTimerSettingModal = true }
@@ -90,16 +99,16 @@ fun DndPauseScreen(
             )
         }
     }
+
+    // setting modal
     if (showRerunTimerSettingModal) {
         RerunTimerSettingModal(
-            onDismiss = {
+            onGoSetting = {
                 showRerunTimerSettingModal = false
+                navController.navigate(MiruniRoute.Home.route)
             },
-            onConfirm = { hour, minute ->
-                showRerunTimerSettingModal = false
+            onClose = {
 
-                // TODO: 재실행 시간 저장
-                Log.d("Modal", "rerun at $hour:$minute")
             }
         )
     }

@@ -6,6 +6,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.miruni.feature.home.dnd.DndContract
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -24,6 +25,7 @@ abstract class BaseViewModel<Event: ViewEvent, UiState: ViewState, Effect: ViewS
     abstract fun setInitialState(): UiState
     abstract fun handleEvents(event: Event)
 
+    lateinit var event: DndContract.Event.SetTime
     private val initialState: UiState by lazy { setInitialState() }
 
     private val _viewState: MutableState<UiState> = mutableStateOf(initialState)

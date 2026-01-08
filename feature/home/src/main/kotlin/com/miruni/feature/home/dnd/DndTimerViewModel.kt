@@ -17,6 +17,15 @@ enum class TimerMode {
     PAUSED    // 일시정지 화면
 }
 
+class DndModalContract {
+
+    sealed class ModalEffect : ViewSideEffect {
+        object OpenRerunTimerErrorModal : ModalEffect()
+        object OpenRerunTimerSettingModal : ModalEffect()
+        object Close : ModalEffect()
+    }
+}
+
 class DndContract {
 
     sealed class Event : ViewEvent {
@@ -40,6 +49,9 @@ class DndContract {
 
     sealed class Effect : ViewSideEffect {
         object TimeFinished : Effect()
+        object NavigateToPause : Effect()
+        object NavigateToEarlyEnd : Effect()
+        object NavigateToHome : Effect()
     }
 }
 
@@ -60,10 +72,14 @@ class DndTimerViewModel :
         }
     }
 
-    // 사용자가 시간을 세팅
+    /**
+     * 사용자가 시간을 설정했을 때 호출
+     * - remainingMinute 계산
+     * - 상태를 SET → RUNNING 으로 전이시키기 위해 start() 호출
+     */
     private fun setTime(hour: Int, minute: Int) {
         val total = hour * 60 + minute
-        val totalMinute = (hour * 60 + minute).coerceAtLeast(0)
+
         Log.d("DndTimerViewModel", "setTime: $total")
 
         setState {
@@ -77,10 +93,17 @@ class DndTimerViewModel :
 
         Log.d("DndTimerViewModel", "start 함수 호출")
 
+        // 상태 전이
         start()
     }
 
-    // 타이머 실행
+    /**
+     * 타이머 실행 "의도(Intent)" 처리
+     *
+     * - 실행 가능한 상태인지 검사
+     * - State 를 RUNNING 으로 변경
+     * - 실제 시간 감소는 startTimer() 에 위임
+     */
     private fun start() {
         val current = viewState.value
 
@@ -101,9 +124,15 @@ class DndTimerViewModel :
             )
         }
 
+        // 실제 타이머 로직 시작 (Side Effect)
         startTimer()
     }
 
+    /**
+     * 실제 시간 감소를 담당하는 함수
+     * - 코루틴 기반 Side Effect
+     * - State 변경은 setState 를 통해서만 수행
+     */
     private fun startTimer() {
         timerJob?.cancel()
 
@@ -127,12 +156,17 @@ class DndTimerViewModel :
                 Log.d("DndTimerViewModel", "1분 감소 : $before -> $after")
             }
 
-            // 시간이 끝나면 실행 상태 해제
+            // 시간이 끝났을 때 Effect 발생
             setEffect { DndContract.Effect.TimeFinished }
         }
     }
 
-    // 일시정지
+    /**
+     * 타이머 일시정지
+     * - 코루틴 중단
+     * - 상태를 PAUSED 로 전이
+     * - Pause 화면으로 이동 Effect 발생
+     */
     private fun pause() {
         timerJob?.cancel() // 코루틴 중단
 
@@ -143,10 +177,27 @@ class DndTimerViewModel :
                 mode = TimerMode.PAUSED
             )
         }
+
+        setEffect { DndContract.Effect.NavigateToPause }
     }
 
+    /**
+     * 일시정지 상태에서 재개
+     * - 상태를 RUNNING 으로 변경
+     * - 타이머 코루틴 재시작
+     */
     private fun resume() {
+        Log.d("DndTimerViewModel", "resume() 함수 호출")
         if (viewState.value.remainingMinute <= 0) return
-        start()
+
+        // 실행 상태 재개
+        setState {
+            copy(
+                isRunning = true,
+                mode = TimerMode.RUNNING
+            )
+        }
+
+        startTimer()
     }
 }

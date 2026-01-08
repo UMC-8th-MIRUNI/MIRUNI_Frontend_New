@@ -1,5 +1,7 @@
 package com.miruni.feature.home.dnd
 
+import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.AppTypography
@@ -39,16 +42,23 @@ import com.miruni.feature.home.dnd.component.CancelOrConfirmButton
 fun DndEarlyEndScreen(
     hour: Int,
     minute: Int,
-    navController: NavController
+    navController: NavController,
+    viewModel: DndTimerViewModel = viewModel()
 ) {
     var currentHour by remember { mutableStateOf(hour) }
     var currentMinute by remember { mutableStateOf(minute) }
+
+    BackHandler {
+        viewModel.setEvent(DndContract.Event.Resume)
+        navController.popBackStack()
+    }
 
     Scaffold(
         bottomBar = {
             Column {
                 CancelOrConfirmButton(
                     onCancelClick = {
+                        viewModel.setEvent(DndContract.Event.Resume)
                         navController.popBackStack()
                     },
                     onConfirmClick = {

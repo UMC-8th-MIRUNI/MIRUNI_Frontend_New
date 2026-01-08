@@ -30,3 +30,8 @@ sealed class MiruniRoute(val route: String) {
     data object SignUp : MiruniRoute("signup")
     data object PwReset : MiruniRoute("pwReset")
 }
+
+sealed class ModalRoute(val route: String) {
+    data object Error : ModalRoute("home/rerun/TimerErrorModal")
+    data object Setting : ModalRoute("home/rerun/TimerSettingModal/{hour}/{minute}")
+}

@@ -59,7 +59,7 @@ fun DndTimerScreen(
     viewModel: DndTimerViewModel = viewModel()
 ) {
 
-    // StateFlow → Compose State로 변환
+    // viewmodel 이 노출한 단일 UI state
     val state by viewModel.viewState
 
     Log.d(
@@ -68,6 +68,7 @@ fun DndTimerScreen(
                 "(${state.hours}:${"%02d".format(state.minutes)})"
     )
 
+    // UI 전용 상태 (TimePickerState 내부 상태)
     val timePickerState = rememberTimePickerState(
         is24Hour = true,
         initialHour = state.hours,
@@ -78,7 +79,7 @@ fun DndTimerScreen(
         "DndTimerSet", "Composable Recomposition."
     )
 
-    // sideEffect 수신 (완료 시 DndCompleteScreen 으로 이동)
+    // 일회성 sideEffect 수신 (Navigation)
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
@@ -94,6 +95,30 @@ fun DndTimerScreen(
                             inclusive = true
                         }
                     }
+                }
+
+                DndContract.Effect.NavigateToPause -> {
+                    navController.navigate(
+                        MiruniRoute.HomeDndPause.createRoute(
+                            hour = state.hours,
+                            minute = state.minutes
+                        )
+                    )
+                }
+
+                DndContract.Effect.NavigateToEarlyEnd -> {
+                    navController.navigate(
+                        MiruniRoute.HomeDndEarlyEnd.createRoute(
+                            hour = state.hours,
+                            minute = state.minutes
+                        )
+                    )
+                }
+
+                DndContract.Effect.NavigateToHome -> {
+                    navController.navigate(
+                        MiruniRoute.Home.route
+                    )
                 }
             }
         }
@@ -210,9 +235,8 @@ fun DndTimerSetContent(
                     RunningTimerView(
                         state = state,
                         onStopClick = onStopClick,
-                        onEarlyEndClick = onEarlyEndClick)
-
-
+                        onEarlyEndClick = onEarlyEndClick
+                    )
                 }
 
                 TimerMode.PAUSED -> {}

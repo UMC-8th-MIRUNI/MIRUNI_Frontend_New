@@ -22,12 +22,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.MiruniTheme
+import com.miruni.core.navigation.MiruniRoute
 import com.miruni.feature.home.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RerunTimerErrorModal(
+    navController: NavHostController
 ) {
     Dialog(
         onDismissRequest = {},
@@ -59,7 +63,9 @@ fun RerunTimerErrorModal(
                         .padding(top = 20.dp)
                 )
                 Button(
-                    onClick = {},
+                    onClick = {
+                        navController.navigate(MiruniRoute.Home.route)
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 40.dp, start = 16.dp, end = 16.dp),
@@ -76,6 +82,8 @@ fun RerunTimerErrorModal(
 @Composable
 fun RerunTimerErrorModalPreview() {
     MiruniTheme {
-        RerunTimerErrorModal()
+        RerunTimerErrorModal(
+            navController = rememberNavController()
+        )
     }
 }

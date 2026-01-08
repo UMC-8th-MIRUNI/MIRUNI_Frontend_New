@@ -46,7 +46,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import com.miruni.core.designsystem.MainColor
 import com.miruni.core.designsystem.MiruniTheme
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -56,8 +55,9 @@ private const val REPEAT_COUNT = 100
 
 @Composable
 fun RerunTimerSettingModal(
-    onDismiss: () -> Unit,
-    onConfirm: (hour: Int, minute: Int) -> Unit
+    onGoSetting: () -> Unit,
+    onClose: () -> Unit,
+//    onConfirm: (hour: Int, minute: Int) -> Unit,
 ) {
     val dividerColor: Color = MainColor.miruni_green
 
@@ -70,119 +70,135 @@ fun RerunTimerSettingModal(
     val itemHeightPixels = remember { mutableStateOf(0) }
     val itemHeightDp = pixelsToDp(itemHeightPixels.value)
 
-    Dialog(
-        onDismissRequest = onDismiss,
+//    LaunchedEffect(Unit) {
+//        viewModel.effect.collect { effect ->
+//            when (effect) {
+//                DndModalContract.ModalEffect.OpenRerunTimerErrorModal ->
+//                    navController.navigate(ModalRoute.Error.route)
+//
+//                DndModalContract.ModalEffect.OpenRerunTimerSettingModal ->
+//                    navController.navigate(ModalRoute.Setting.route)
+//
+//                DndModalContract.ModalEffect.Close ->
+//                    navController.popBackStack()
+//
+//                else -> { }
+//            }
+//
+//        }
+//    }
+
+    Surface(
+        modifier = Modifier.size(330.dp),
+        shape = RoundedCornerShape(16.dp),
     ) {
-        Surface(
-            modifier = Modifier.size(330.dp),
-            shape = RoundedCornerShape(16.dp),
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxSize()
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxSize()
+            val hour = remember {
+                (0..23).map { it.toString().padStart(2, '0') }
+            }
+            val minute = remember {
+                (0..59).map { it.toString().padStart(2, '0') }
+            }
+            Text(
+                text = buildAnnotatedString {
+                    append("지금 멈추시겠다면, 오늘 안에")
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append("\n다시 실행할 시간")
+                    }
+                    append("을 설정해주세요!")
+                },
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center, // 텍스트 자체를 가운데 정렬
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
             ) {
-                val hour = remember {
-                    (0..23).map { it.toString().padStart(2, '0') }
-                }
-                val minute = remember {
-                    (0..59).map { it.toString().padStart(2, '0') }
-                }
-                Text(
-                    text = buildAnnotatedString {
-                        append("지금 멈추시겠다면, 오늘 안에")
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                            append("\n다시 실행할 시간")
-                        }
-                        append("을 설정해주세요!")
-                    },
-                    fontSize = 20.sp,
-                    textAlign = TextAlign.Center, // 텍스트 자체를 가운데 정렬
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Picker(
-                            state = hourPickerState,
-                            items = hour,
-                            modifier = Modifier
-                                .width(80.dp)
-                                .padding(end = 12.dp),
-                            textModifier = Modifier.padding(vertical = 8.dp),
-                            textStyle = TextStyle(fontSize = 32.sp)
-                        )
-                        Text(
-                            ":",
-                            style = TextStyle(fontSize = 32.sp),
-                            modifier = Modifier.padding(horizontal = 12.dp)
-                        )
-                        Picker(
-                            state = minutePickerState,
-                            items = minute,
-                            modifier = Modifier
-                                .width(80.dp)
-                                .padding(start = 12.dp),
-                            textStyle = TextStyle(fontSize = 32.sp),
-                            textModifier = Modifier.padding(vertical = 8.dp)
-                        )
-                    }
-                    HorizontalDivider(
-                        color = dividerColor,
-                        thickness = 1.dp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp)
-                            .offset(y = (itemHeightDp / 2) + 28.dp)
-                    )
-
-                    HorizontalDivider(
-                        color = dividerColor,
-                        thickness = 1.dp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp)
-                            .offset(y = (itemHeightDp / 2) - 28.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.height(12.dp))
-
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Button(
-                        onClick = onDismiss,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFCBCBCB)
-                        ),
-                        shape = RoundedCornerShape(10.dp),
+                    Picker(
+                        state = hourPickerState,
+                        items = hour,
                         modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 36.dp)
-                            .height(36.dp)
-                    ) {
-                        Text(text = "취소", fontSize = 16.sp)
-                    }
-                    Button(
-                        onClick = {
-                            // TODO: 확인 버튼 클릭 시 홈페이지로 이동. 설정한 시간에 일정이 있는 경우 재실행 시간 설정 경고 모달 띄우기
-                        },
-                        shape = RoundedCornerShape(10.dp),
+                            .width(80.dp)
+                            .padding(end = 12.dp),
+                        textModifier = Modifier.padding(vertical = 8.dp),
+                        textStyle = TextStyle(fontSize = 32.sp)
+                    )
+                    Text(
+                        ":",
+                        style = TextStyle(fontSize = 32.sp),
+                        modifier = Modifier.padding(horizontal = 12.dp)
+                    )
+                    Picker(
+                        state = minutePickerState,
+                        items = minute,
                         modifier = Modifier
-                            .weight(1f)
-                            .padding(end = 36.dp)
-                            .height(36.dp)
-                    ) {
-                        Text(text = "확인", fontSize = 16.sp)
-                    }
+                            .width(80.dp)
+                            .padding(start = 12.dp),
+                        textStyle = TextStyle(fontSize = 32.sp),
+                        textModifier = Modifier.padding(vertical = 8.dp)
+                    )
+                }
+                HorizontalDivider(
+                    color = dividerColor,
+                    thickness = 1.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp)
+                        .offset(y = (itemHeightDp / 2) + 28.dp)
+                )
+
+                HorizontalDivider(
+                    color = dividerColor,
+                    thickness = 1.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp)
+                        .offset(y = (itemHeightDp / 2) - 28.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Button(
+                    onClick = {
+                        onClose()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFCBCBCB)
+                    ),
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 36.dp)
+                        .height(36.dp)
+                ) {
+                    Text(text = "취소", fontSize = 16.sp)
+                }
+                Button(
+                    onClick = {
+                        onGoSetting()
+                    },
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 36.dp)
+                        .height(36.dp)
+                ) {
+                    Text(text = "확인", fontSize = 16.sp)
                 }
             }
         }
@@ -273,8 +289,9 @@ class PickerState {
 fun RerunTimerSettingModalPreview() {
     MiruniTheme {
         RerunTimerSettingModal(
-            onDismiss = {},
-            onConfirm = { _, _ -> }
+            onGoSetting = {},
+            onClose = {},
+//            onConfirm = { _, _ -> },
         )
     }
 }
