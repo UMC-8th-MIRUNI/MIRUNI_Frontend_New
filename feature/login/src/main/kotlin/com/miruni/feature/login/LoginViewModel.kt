@@ -1,8 +1,19 @@
 package com.miruni.feature.login
 
-import com.miruni.feature.login.presentation.model.BaseViewModel
+import androidx.lifecycle.viewModelScope
+import com.miruni.core.common.BaseViewModel
+import com.miruni.core.result.DataResult
+import com.miruni.feature.login.domain.usecase.GetLoginUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class LoginViewModel :
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val getLoginUseCase: GetLoginUseCase
+) :
     BaseViewModel<LoginContract.Event, LoginContract.State, LoginContract.Effect>() {
 
     override fun setInitialState(): LoginContract.State = LoginContract.State()
@@ -52,8 +63,34 @@ class LoginViewModel :
             }
 
             LoginContract.Event.OnLoginClicked -> {
-                if (viewState.value.canLogin) {
-                    setEffect { LoginContract.Effect.Navigation.ToNotification }
+                viewModelScope.launch {
+                    val result = withContext(Dispatchers.IO) {
+                        getLoginUseCase(
+                            id = viewState.value.id.value,
+                            password = viewState.value.password.value,
+                            autoLogin = viewState.value.autoLogin
+                        )
+                    }
+                    when (result) {
+                        is DataResult.Success -> {
+                            setEffect { LoginContract.Effect.Navigation.ToHome }
+                        }
+
+                        is DataResult.Error -> {
+                            setState {
+                                copy(
+                                    id = id.copy(
+                                        isError = true,
+                                        errorMessage = result.error.errorMessage
+                                    ),
+                                    password = password.copy(
+                                        isError = true,
+                                        errorMessage = result.error.errorMessage
+                                    ),
+                                )
+                            }
+                        }
+                    }
                 }
             }
 
@@ -64,6 +101,7 @@ class LoginViewModel :
             LoginContract.Event.OnKakaoLoginClicked -> {
                 setEffect { LoginContract.Effect.KakaoLogin }
             }
+
             is LoginContract.Event.OnKakaoLoginSuccess -> {
                 // TODO: 서버에 accessToken 보내서 JWT 교환
                 setEffect { LoginContract.Effect.Navigation.ToNotification }
