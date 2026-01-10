@@ -1,6 +1,7 @@
 package com.miruni.di
 
 import com.miruni.feature.aiplanner.data.api.AiPlannerApi
+import com.miruni.feature.login.data.api.AuthApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,4 +21,11 @@ object ApiModule {
     fun provideAiPlannerApi(
         retrofit: Retrofit
     ): AiPlannerApi = retrofit.create(AiPlannerApi::class.java)
+
+    // auth API
+    @Provides
+    @Singleton
+    fun provideAuthApi(
+        retrofit: Retrofit
+    ): AuthApi = retrofit.create(AuthApi::class.java)
 }

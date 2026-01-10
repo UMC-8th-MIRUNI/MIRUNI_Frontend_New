@@ -2,9 +2,11 @@ package com.miruni.feature.login
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -23,7 +25,7 @@ fun LoginNavigator(
     onResetPasswordClick: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
-    val uiState = viewModel.viewState.value
+    val uiState = viewModel.viewState.collectAsStateWithLifecycle().value
     val onEvent: (LoginContract.Event) -> Unit = viewModel::setEvent
     val navController = rememberNavController()
     val context = LocalContext.current
