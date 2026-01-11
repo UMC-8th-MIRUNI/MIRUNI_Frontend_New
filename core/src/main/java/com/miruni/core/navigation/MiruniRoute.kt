@@ -24,6 +24,8 @@ sealed class MiruniRoute(val route: String) {
         }
     }
 
+    data object RunScheduleTimerSetting : MiruniRoute("runScheduleTimerSetting")
+
     data object Calendar : MiruniRoute("calendar")
     data object MyPage : MiruniRoute("myPage")
     data object Login : MiruniRoute("login")
@@ -32,7 +34,7 @@ sealed class MiruniRoute(val route: String) {
     data object AlarmLogs : MiruniRoute("alarmLogs")
     data object AiPlanner : MiruniRoute("aiPlanner")
     data object AiPlannerOnboarding : MiruniRoute("aiPlannerOnboarding")
-    data object Dnd : MiruniRoute("dnd")
+//    data object Dnd : MiruniRoute("dnd")
     data object Execution : MiruniRoute("execution")
 }
 
