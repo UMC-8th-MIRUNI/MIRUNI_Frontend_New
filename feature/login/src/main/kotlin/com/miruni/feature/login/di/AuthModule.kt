@@ -8,6 +8,8 @@ import com.miruni.feature.login.data.repository.AuthRepositoryImpl
 import com.miruni.feature.login.domain.datasource.AuthLocalDataSource
 import com.miruni.feature.login.domain.datasource.AuthRemoteDataSource
 import com.miruni.feature.login.domain.repository.AuthRepository
+import com.miruni.feature.login.domain.usecase.GetGoogleLoginUseCase
+import com.miruni.feature.login.domain.usecase.GetKakaoLoginUseCase
 import com.miruni.feature.login.domain.usecase.GetLoginUseCase
 import dagger.Module
 import dagger.Provides
@@ -44,4 +46,17 @@ object AuthModule {
     fun provideGetLoginUseCase(
         authRepository: AuthRepository
     ): GetLoginUseCase = GetLoginUseCase(authRepository)
+
+    @Provides
+    @Reusable
+    fun provideGetKakaoLoginUseCase(
+        authRepository: AuthRepository
+    ): GetKakaoLoginUseCase = GetKakaoLoginUseCase(authRepository)
+
+    @Provides
+    @Reusable
+    fun provideGetGoogleLoginUseCase(
+        authRepository: AuthRepository
+    ): GetGoogleLoginUseCase = GetGoogleLoginUseCase(authRepository)
+
 }

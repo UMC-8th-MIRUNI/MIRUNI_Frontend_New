@@ -1,16 +1,22 @@
 package com.miruni.feature.login.presentation.component.screen
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -20,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,6 +35,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.Gray
+import com.miruni.core.designsystem.MiruniSize
+import com.miruni.core.designsystem.MiruniSpacing
 import com.miruni.core.designsystem.White
 import com.miruni.feature.login.R
 import com.miruni.feature.login.presentation.component.MiruniButton
@@ -37,13 +46,19 @@ fun NotificationScreen(
     isDialogOpen: Boolean,
     onOpenDialog: () -> Unit,
     onCloseDialog: () -> Unit,
+    onPrevClicked: () -> Unit,
     onNextClicked: () -> Unit,
 ) {
+    Log.d("NotificationScreen", "height : ${WindowInsets.safeDrawing}")
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
     ) {
+        Spacer(modifier = Modifier.height(MiruniSize.topbarHeight))
         NotificationHeader(
-            onPrevClicked = {}
+            onPrevClicked = {
+                onPrevClicked()
+            }
         )
         Column(
             modifier = Modifier
@@ -164,11 +179,13 @@ private fun NotificationPermissionDialog(
                 MiruniButton(
                     modifier = Modifier.weight(1f),
                     text = "아니요",
+                    height = 60.dp,
                     onClick = onDismiss
                 )
                 MiruniButton(
                     modifier = Modifier.weight(1f),
                     text = "예",
+                    height = 60.dp,
                     onClick = onYes
                 )
             }
@@ -181,6 +198,7 @@ private fun NotificationPermissionDialog(
 @Composable
 fun NotificationScreenPreview() {
     NotificationScreen(
+        onPrevClicked = {},
         onNextClicked = {},
         isDialogOpen = true,
         onOpenDialog = {},

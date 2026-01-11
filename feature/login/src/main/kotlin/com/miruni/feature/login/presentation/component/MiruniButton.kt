@@ -23,7 +23,7 @@ fun MiruniButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    height: Dp = 49.dp,
+    height: Dp = 50.dp,
     textStyle: TextStyle = AppTypography.button_semibold_16,
     containerColor: Color = MainColor.miruni_green,
     contentColor: Color = White,

@@ -13,7 +13,13 @@ android {
         minSdk = 24
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
+        buildConfigField(
+            "String",
+            "GOOGLE_CLIENT_ID",
+            "\"563726762938-tl0pkg2kls3gmrej835g9mmh84vttdrr.apps.googleusercontent.com\""
+        )
     }
+
 
     buildTypes {
         release {
@@ -26,6 +32,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -54,6 +61,12 @@ dependencies {
 
     // kakao dependencies
     implementation(libs.kakao.sdk.v2.user)
+
+    // google login dependencies
+    implementation(libs.google.credentials)
+    implementation(libs.google.credentials.auth)
+    implementation(libs.google.identity)
+
     // test dependencies
     implementation(libs.mockito.android)
     testImplementation(libs.junit)

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -38,8 +37,8 @@ import com.miruni.feature.signup.R
 import com.miruni.feature.signup.component.textfield.BirthDateVisualTransformation
 import com.miruni.feature.signup.component.textfield.PhoneNumberVisualTransformation
 import com.miruni.feature.signup.component.textfield.UnderlineTextField
-import com.miruni.feature.signup.utils.MiruniSize
-import com.miruni.feature.signup.utils.MiruniSpacing
+import com.miruni.core.designsystem.MiruniSize
+import com.miruni.core.designsystem.MiruniSpacing
 
 @Composable
 fun SignUpProfileStep(
@@ -127,7 +126,7 @@ fun SignUpProfileStep(
             },
             trailing = {
                 Button(
-                    modifier = Modifier.size(MiruniSize.buttonWidth, MiruniSize.buttonHeight),
+                    modifier = Modifier.size(MiruniSize.buttonSmallWidth, MiruniSize.buttonSmallHeight),
                     contentPadding = PaddingValues(vertical = 8.dp, horizontal = 0.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MainColor.miruni_green,
@@ -150,7 +149,7 @@ fun SignUpProfileStep(
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             trailing = {
                 Button(
-                    modifier = Modifier.size(MiruniSize.buttonWidth, MiruniSize.buttonHeight),
+                    modifier = Modifier.size(MiruniSize.buttonSmallWidth, MiruniSize.buttonSmallHeight),
                     contentPadding = PaddingValues(vertical = 8.dp, horizontal = 0.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MainColor.miruni_green,

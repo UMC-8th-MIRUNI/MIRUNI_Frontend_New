@@ -1,8 +1,16 @@
 package com.miruni.feature.login
 
+import android.app.Activity
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -10,13 +18,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.miruni.core.designsystem.MiruniSpacing
+import com.miruni.feature.login.presentation.component.navigation.LoginRoute
 import com.miruni.feature.login.presentation.component.screen.LoginScreen
 import com.miruni.feature.login.presentation.component.screen.NotificationScreen
 import com.miruni.feature.login.presentation.component.screen.StartScreen
-import com.miruni.feature.login.presentation.component.navigation.LoginRoute
+import com.miruni.feature.login.utils.helper.googleLogin
 import com.miruni.feature.login.utils.helper.kakaoLogin
 import kotlinx.coroutines.flow.collectLatest
-
 
 @Composable
 fun LoginNavigator(
@@ -29,7 +38,7 @@ fun LoginNavigator(
     val onEvent: (LoginContract.Event) -> Unit = viewModel::setEvent
     val navController = rememberNavController()
     val context = LocalContext.current
-    val currentRoute = navController.currentBackStackEntry?.destination?.route
+    val snackHostState = remember { SnackbarHostState() }
 
 
     LaunchedEffect(Unit) {
@@ -41,6 +50,15 @@ fun LoginNavigator(
                 is LoginContract.Effect.Navigation.ToNotification -> navController.navigate(LoginRoute.Notification.route)
                 is LoginContract.Effect.Navigation.ToStart -> navController.navigate(LoginRoute.Start.route)
                 is LoginContract.Effect.Message.Toast -> {
+
+                }
+                is LoginContract.Effect.Message.Snackbar -> {
+                    snackHostState.showSnackbar(
+                        message = effect.message,
+                        actionLabel = effect.actionLabel,
+                        withDismissAction = true
+                    )
+                    effect.onAction?.invoke()
                 }
                 is LoginContract.Effect.KakaoLogin -> {
                     val result = kakaoLogin(context)
@@ -51,40 +69,63 @@ fun LoginNavigator(
                         onEvent(LoginContract.Event.OnKakaoLoginFail(it.message.toString()))
                     }
                 }
+                is LoginContract.Effect.GoogleLogin -> {
+                    val result = googleLogin(activity = context as Activity, BuildConfig.GOOGLE_CLIENT_ID)
+                    result.onSuccess {
+                        onEvent(LoginContract.Event.OnGoogleLoginSuccess(it))
+                    }
+                    result.onFailure {
+                        onEvent(LoginContract.Event.OnGoogleLoginFail(it.message.toString()))
+                    }
+                }
             }
         }
     }
-    NavHost(
-        navController = navController,
-        startDestination = LoginRoute.Login.route,
-    ){
-        composable(LoginRoute.Login.route){
-            LoginScreen(
-                uiState = uiState,
-                onIdChange = { onEvent(LoginContract.Event.OnIdChanged(it)) },
-                onPwChange = { onEvent(LoginContract.Event.OnPwChanged(it)) },
-                onTogglePasswordVisible = { onEvent(LoginContract.Event.OnTogglePasswordVisible) },
-                onAutoLoginChange = { onEvent(LoginContract.Event.OnAutoLoginChanged(it)) },
-                onClearError = { onEvent(LoginContract.Event.OnClearError) },
-                onLoginClick = { onEvent(LoginContract.Event.OnLoginClicked) },
-                onSignUpClick = { onEvent(LoginContract.Event.OnSignUpClicked) },
-                onResetPasswordClick = { onEvent(LoginContract.Event.OnResetPasswordClicked) },
-                onGoogleLoginClick = { onEvent(LoginContract.Event.OnGoogleLoginClicked) },
-                onKakaoLoginClick = { onEvent(LoginContract.Event.OnKakaoLoginClicked) },
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackHostState,
+                modifier = Modifier
+                    .navigationBarsPadding()
+                    .imePadding()
+                    .padding(bottom = MiruniSpacing.xxl)
             )
-        }
-        composable(LoginRoute.Notification.route){
-            NotificationScreen(
-                isDialogOpen = uiState.isDialogOpen,
-                onOpenDialog = { onEvent(LoginContract.Event.OnOpenDialog) },
-                onCloseDialog = { onEvent(LoginContract.Event.OnCloseDialog) },
-                onNextClicked = { onEvent(LoginContract.Event.OnNotificationClicked) },
-            )
-        }
-        composable(LoginRoute.Start.route){
-            StartScreen(
-                onStartedClicked = { onEvent(LoginContract.Event.OnStartedClicked) }
-            )
+        },
+    ) { innerPadding ->
+        NavHost(
+            navController = navController,
+            startDestination = LoginRoute.Login.route,
+            modifier = Modifier.padding(innerPadding)
+        ){
+            composable(LoginRoute.Login.route){
+                LoginScreen(
+                    uiState = uiState,
+                    onIdChange = { onEvent(LoginContract.Event.OnIdChanged(it)) },
+                    onPwChange = { onEvent(LoginContract.Event.OnPwChanged(it)) },
+                    onTogglePasswordVisible = { onEvent(LoginContract.Event.OnTogglePasswordVisible) },
+                    onAutoLoginChange = { onEvent(LoginContract.Event.OnAutoLoginChanged(it)) },
+                    onClearError = { onEvent(LoginContract.Event.OnClearError) },
+                    onLoginClick = { onEvent(LoginContract.Event.OnLoginClicked) },
+                    onSignUpClick = { onEvent(LoginContract.Event.OnSignUpClicked) },
+                    onResetPasswordClick = { onEvent(LoginContract.Event.OnResetPasswordClicked) },
+                    onGoogleLoginClick = { onEvent(LoginContract.Event.OnGoogleLoginClicked) },
+                    onKakaoLoginClick = { onEvent(LoginContract.Event.OnKakaoLoginClicked) },
+                )
+            }
+            composable(LoginRoute.Notification.route){
+                NotificationScreen(
+                    isDialogOpen = uiState.isDialogOpen,
+                    onOpenDialog = { onEvent(LoginContract.Event.OnOpenDialog) },
+                    onCloseDialog = { onEvent(LoginContract.Event.OnCloseDialog) },
+                    onPrevClicked = { navController.popBackStack() },
+                    onNextClicked = { onEvent(LoginContract.Event.OnNotificationClicked) },
+                )
+            }
+            composable(LoginRoute.Start.route){
+                StartScreen(
+                    onStartedClicked = { onEvent(LoginContract.Event.OnStartedClicked) }
+                )
+            }
         }
     }
 }
