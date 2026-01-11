@@ -19,7 +19,7 @@ import com.miruni.feature.signup.component.TermContentDialog
 import com.miruni.feature.signup.component.step.SignUpProfileStep
 import com.miruni.feature.signup.component.step.SignUpTermStep
 import com.miruni.feature.signup.navigation.SignupRoute
-import com.miruni.feature.signup.utils.MiruniSpacing
+import com.miruni.core.designsystem.MiruniSpacing
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable

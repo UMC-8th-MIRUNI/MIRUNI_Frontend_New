@@ -15,12 +15,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.MainColor
 import com.miruni.core.designsystem.White
-import com.miruni.feature.signup.utils.MiruniSize
-import com.miruni.feature.signup.utils.MiruniSpacing
+import com.miruni.core.designsystem.MiruniSize
+import com.miruni.core.designsystem.MiruniSpacing
 
 @Composable
 fun SignUpBottomBar(

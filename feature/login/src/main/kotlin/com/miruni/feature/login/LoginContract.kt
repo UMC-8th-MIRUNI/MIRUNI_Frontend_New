@@ -19,6 +19,9 @@ class LoginContract {
         data object OnResetPasswordClicked : Event()
 
         data object OnGoogleLoginClicked : Event()
+        data class OnGoogleLoginSuccess(val accessToken: String) : Event()
+        data class OnGoogleLoginFail(val message: String) : Event()
+
         data object OnKakaoLoginClicked : Event()
         data class OnKakaoLoginSuccess(val accessToken: String) : Event()
         data class OnKakaoLoginFail(val message: String) : Event()
@@ -55,7 +58,13 @@ class LoginContract {
 
         sealed class Message : Effect() {
             data class Toast(val message: String) : Message()
+            data class Snackbar(
+                val message: String,
+                val actionLabel: String? = null,
+                val onAction: (() -> Unit)? = null
+            ) : Message()
         }
         data object KakaoLogin : Effect()
+        data object GoogleLogin : Effect()
     }
 }
