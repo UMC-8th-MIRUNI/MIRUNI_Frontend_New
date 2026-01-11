@@ -1,4 +1,4 @@
-package com.miruni.feature.signup.utils
+package com.miruni.core.designsystem
 
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
