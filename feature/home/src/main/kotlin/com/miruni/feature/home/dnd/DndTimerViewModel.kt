@@ -32,6 +32,7 @@ class DndContract {
         data class SetTime(val hour: Int, val minute: Int) : Event()
         object Start : Event()
         object Pause : Event()
+        object End : Event()
         object Resume : Event()
     }
 
@@ -68,6 +69,7 @@ class DndTimerViewModel :
             is DndContract.Event.SetTime -> setTime(event.hour, event.minute)
             DndContract.Event.Start -> start()
             DndContract.Event.Pause -> pause()
+            DndContract.Event.End -> end()
             DndContract.Event.Resume -> resume()
         }
     }
@@ -179,6 +181,26 @@ class DndTimerViewModel :
         }
 
         setEffect { DndContract.Effect.NavigateToPause }
+    }
+
+    /**
+     * 타이머 일시정지
+     * - 코루틴 중단
+     * - 상태를 PAUSED 로 전이
+     * - EarlyEnd 화면으로 이동 Effect 발생
+     */
+    private fun end() {
+        timerJob?.cancel() // 코루틴 중단
+
+        // 실행 상태 해제
+        setState {
+            copy(
+                isRunning = false,
+                mode = TimerMode.PAUSED
+            )
+        }
+
+        setEffect { DndContract.Effect.NavigateToEarlyEnd }
     }
 
     /**

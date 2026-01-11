@@ -17,6 +17,8 @@ import com.miruni.core.designsystem.AppTypography
 @Composable
 fun DndTopBar(
     onClose: () -> Unit,
+    showCloseButton: Boolean,
+//    showTopBar: Boolean,
     title: String = "방해금지 모드",
 ) {
     CenterAlignedTopAppBar(
@@ -33,12 +35,13 @@ fun DndTopBar(
             )
         },
         actions = {
-            IconButton(onClick = onClose) {
-                // 홈페이지로 이동
-                Icon(
-                    contentDescription = "닫기",
-                    imageVector = Icons.Filled.Close,
-                )
+            if (showCloseButton) {
+                IconButton(onClick = onClose) {
+                    Icon(
+                        imageVector = Icons.Filled.Close,
+                        contentDescription = "닫기"
+                    )
+                }
             }
         }
     )
