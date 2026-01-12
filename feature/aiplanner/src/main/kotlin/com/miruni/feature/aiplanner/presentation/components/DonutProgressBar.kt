@@ -1,4 +1,4 @@
-package com.miruni.feature.aiplanner.presentation
+package com.miruni.feature.aiplanner.presentation.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable

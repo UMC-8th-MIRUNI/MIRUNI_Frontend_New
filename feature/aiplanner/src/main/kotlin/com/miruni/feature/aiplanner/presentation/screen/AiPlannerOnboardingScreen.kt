@@ -1,4 +1,4 @@
-package com.miruni.feature.aiplanner.presentation
+package com.miruni.feature.aiplanner.presentation.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -35,6 +35,8 @@ import com.miruni.core.designsystem.MainColor
 import com.miruni.core.navigation.MiruniRoute
 import com.miruni.feature.aiplanner.R
 import com.miruni.feature.aiplanner.common.convertBold
+import com.miruni.feature.aiplanner.presentation.AiPlannerContract
+import com.miruni.feature.aiplanner.presentation.AiPlannerViewModel
 
 /**
  * AI 플래너 온보딩 네비게이트

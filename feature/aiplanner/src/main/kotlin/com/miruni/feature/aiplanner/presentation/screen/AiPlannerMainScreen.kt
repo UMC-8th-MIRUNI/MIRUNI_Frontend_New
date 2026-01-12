@@ -1,8 +1,9 @@
-package com.miruni.feature.aiplanner.presentation
+package com.miruni.feature.aiplanner.presentation.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -32,11 +33,16 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.Gray
 import com.miruni.core.designsystem.MainColor
+import com.miruni.core.navigation.MiruniRoute
 import com.miruni.feature.aiplanner.R
 import com.miruni.feature.aiplanner.common.convertBold
+import com.miruni.feature.aiplanner.presentation.AiPlannerContract
+import com.miruni.feature.aiplanner.presentation.AiPlannerViewModel
+import com.miruni.feature.aiplanner.presentation.components.ScheduleItem
 
 @Composable
 fun AiPlannerMainScreen(
@@ -52,7 +58,10 @@ fun AiPlannerMainScreen(
             state = state,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = innerPadding.calculateTopPadding())
+                .padding(top = innerPadding.calculateTopPadding()),
+            onClickAiPlanning = {
+                navController.navigate(MiruniRoute.AiPlannerPlanning.route)
+            }
         )
     }
 }
@@ -63,13 +72,19 @@ fun AiPlannerMainScreen(
 @Composable
 fun AiPlannerMainContent(
     state: AiPlannerContract.State,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClickAiPlanning: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 19.dp)
     ) {
-        item { ToAiPlanning(state = state) }
+        item {
+            ToAiPlanning(
+                state = state,
+                onClickAiPlanning = onClickAiPlanning
+            )
+        }
 
         item { Spacer(modifier = Modifier.height(41.dp)) }
 
@@ -79,14 +94,17 @@ fun AiPlannerMainContent(
 
 @Composable
 fun ToAiPlanning(
-    state: AiPlannerContract.State
+    state: AiPlannerContract.State,
+    onClickAiPlanning: () -> Unit
 ) {
     Text(
         text = "AI 플래너",
         style = AppTypography.header_bold_16
     )
     Spacer(modifier = Modifier.height(25.dp))
-    AiPlannerButton()
+    AiPlannerButton(
+        onClick = onClickAiPlanning
+    )
     Spacer(modifier = Modifier.height(11.dp))
     Row(
         modifier = Modifier
@@ -108,10 +126,13 @@ fun ToAiPlanning(
 }
 
 @Composable
-fun AiPlannerButton() {
+fun AiPlannerButton(
+    onClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onClick() }
             .border(
                 width = 1.dp,
                 color = MainColor.miruni_green,
@@ -233,12 +254,6 @@ fun ProgressingTagButton() {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewAiPlannerScreen() {
-    AiPlannerMainContent(
-        state = AiPlannerContract.State(
-            remain = 2,
-            aiPlans = emptyList()
-        )
-    )
-//    AiPlannerMainScreen(navController = rememberNavController())
+    AiPlannerMainScreen(navController = rememberNavController())
 //    AiPlannerOnboardingScreen(navController = rememberNavController())
 }

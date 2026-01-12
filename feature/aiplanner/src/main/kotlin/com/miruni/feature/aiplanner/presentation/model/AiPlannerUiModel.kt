@@ -1,4 +1,4 @@
-package com.miruni.feature.aiplanner.domain
+package com.miruni.feature.aiplanner.presentation.model
 
 data class AiPlannerUiModel(
     val id: Long, // 상위 일정 ID

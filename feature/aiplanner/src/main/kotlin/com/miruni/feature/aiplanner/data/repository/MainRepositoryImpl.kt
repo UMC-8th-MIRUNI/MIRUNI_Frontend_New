@@ -1,15 +1,14 @@
 package com.miruni.feature.aiplanner.data.repository
 
-import com.miruni.feature.aiplanner.data.api.AiPlannerApi
-import com.miruni.feature.aiplanner.domain.AiPlannerRepository
-import com.miruni.feature.aiplanner.domain.AiPlannerUiModel
+import com.miruni.feature.aiplanner.domain.repository.MainRepository
+import com.miruni.feature.aiplanner.presentation.model.AiPlannerUiModel
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AiPlannerRepositoryImpl @Inject constructor(
+class MainRepositoryImpl @Inject constructor(
 //    private val api: AiPlannerApi
-) : AiPlannerRepository {
+) : MainRepository {
     override suspend fun getAiPlans(): List<AiPlannerUiModel> {
 //        val response = api.getAiPlans()
 //        return response.result.map {

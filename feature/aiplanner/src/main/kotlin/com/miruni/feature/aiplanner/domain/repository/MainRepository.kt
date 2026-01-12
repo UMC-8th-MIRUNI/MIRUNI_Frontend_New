@@ -1,6 +1,8 @@
-package com.miruni.feature.aiplanner.domain
+package com.miruni.feature.aiplanner.domain.repository
 
-interface AiPlannerRepository {
+import com.miruni.feature.aiplanner.presentation.model.AiPlannerUiModel
+
+interface MainRepository {
     /** AI 플랜 가져오기 */
     suspend fun getAiPlans(): List<AiPlannerUiModel>
 
