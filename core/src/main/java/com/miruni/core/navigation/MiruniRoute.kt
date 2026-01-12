@@ -11,7 +11,7 @@ sealed class MiruniRoute(val route: String) {
     data object AlarmLogs : MiruniRoute("alarmLogs")
     data object AiPlanner : MiruniRoute("aiPlanner")
     data object AiPlannerOnboarding : MiruniRoute("aiPlanner/onboarding")
-    data object AiPlannerAiPlanning : MiruniRoute("aiPlanner/aiPlanning")
+    data object AiPlannerPlanning : MiruniRoute("aiPlanner/planning")
     data object Dnd : MiruniRoute("dnd")
     data object Execution : MiruniRoute("execution")
 }
