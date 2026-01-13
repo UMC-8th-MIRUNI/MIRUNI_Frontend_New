@@ -58,7 +58,7 @@ fun AiPlannerDatePicker(
         if (showPopup && anchorBounds != null) {
             CalendarPopup(
                 anchorBounds = anchorBounds!!, // 선택 날짜 출력 카드 위치
-                width = with(LocalDensity.current) { anchorWidth.toDp() }, //
+                anchorWidth = with(LocalDensity.current) { anchorWidth.toDp() },
                 onDismiss = { showPopup = false }, // 외부 클릭 시 닫기
                 onRangeSelected = { sd, ed, st, et ->
                     onRangeSelected(sd, ed, st, et)
