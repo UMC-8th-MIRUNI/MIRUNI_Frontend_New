@@ -28,6 +28,11 @@ sealed class MiruniRoute(val route: String) {
 
     data object Calendar : MiruniRoute("calendar")
     data object MyPage : MiruniRoute("myPage")
+
+    data object MyPageSettingAccount : MiruniRoute("myPageSettingAccount")
+    data object MyPageSettingNotification : MiruniRoute("myPageSettingNotification")
+    data object MyPageInfo : MiruniRoute("myPageInfo")
+
     data object Login : MiruniRoute("login")
     data object SignUp : MiruniRoute("signup")
     data object PwReset : MiruniRoute("pwReset")

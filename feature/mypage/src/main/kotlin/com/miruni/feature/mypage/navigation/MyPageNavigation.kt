@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.miruni.core.navigation.MiruniRoute
 import com.miruni.core.navigation.NavigationDestination
-import com.miruni.feature.mypage.MyPageScreen
+import com.miruni.feature.mypage.MyPageRoute
 import jakarta.inject.Inject
 
 class MyPageNavigation @Inject constructor(
@@ -18,7 +18,7 @@ class MyPageNavigation @Inject constructor(
         navController: NavHostController
     ) {
         builder.composable(route) {
-            MyPageScreen(navController = navController)
+            MyPageRoute(navController = navController)
         }
     }
 }
