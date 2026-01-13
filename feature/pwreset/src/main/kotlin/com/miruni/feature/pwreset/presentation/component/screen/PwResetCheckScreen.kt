@@ -1,4 +1,4 @@
-package com.miruni.feature.pwreset.component.screen
+package com.miruni.feature.pwreset.presentation.component.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -18,27 +18,31 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.Gray
-import com.miruni.feature.pwreset.component.button.MiruniButton
-import com.miruni.feature.pwreset.component.textfield.CodeInput
+import com.miruni.feature.pwreset.presentation.component.button.MiruniButton
+import com.miruni.feature.pwreset.presentation.component.textfield.CodeInput
 
 @Composable
 fun PwResetCheckScreen(
     email: String,
+    otpCode: String,
+    canNext: Boolean,
+    onOtpCodeChanged: (String) -> Unit,
     onNextClicked: () -> Unit,
 ) {
-    var code by remember { mutableStateOf("") }
 
     PwResetTheme(
         headerText = "이메일을 확인해주세요",
-        subHeaderText = email
+        subHeaderText = "$email 으로 코드를 전송되었습니다."
     ){
+        Spacer(modifier = Modifier.height(55.dp))
         CodeInput(
-            value = code,
-            onValueChange = { code = it },
+            value = otpCode,
+            onValueChange = onOtpCodeChanged,
         )
         Spacer(modifier = Modifier.height(22.dp))
         MiruniButton(
             text = "인증하기",
+            enabled = canNext,
             onClick = onNextClicked
         )
         Spacer(modifier = Modifier.height(55.dp))
@@ -59,6 +63,9 @@ fun PwResetCheckScreen(
 fun PwResetCheckScreenPreview() {
     PwResetCheckScreen(
         email = "",
-        onNextClicked = {}
+        canNext = true,
+        onNextClicked = {},
+        otpCode = "",
+        onOtpCodeChanged = {}
     )
 }

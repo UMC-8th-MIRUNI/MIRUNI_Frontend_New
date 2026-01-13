@@ -1,5 +1,6 @@
-package com.miruni.feature.pwreset.component.screen
+package com.miruni.feature.pwreset.presentation.component.screen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -9,10 +10,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.unit.dp
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.Gray
+import com.miruni.core.designsystem.MainColor
+import com.miruni.core.designsystem.Red
 import com.miruni.core.designsystem.White
 
 @Composable
@@ -23,7 +27,7 @@ fun PwResetTheme(
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = White
+        color = MaterialTheme.colorScheme.background
     ) {
         Column(
             modifier = Modifier

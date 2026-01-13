@@ -1,4 +1,4 @@
-package com.miruni.feature.pwreset.component.screen
+package com.miruni.feature.pwreset.presentation.component.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.Gray
 import com.miruni.feature.pwreset.R
-import com.miruni.feature.pwreset.component.button.MiruniButton
+import com.miruni.feature.pwreset.presentation.component.button.MiruniButton
 
 @Composable
 fun PwResetSuccessScreen(
@@ -54,6 +54,7 @@ fun PwResetSuccessScreen(
                 .weight(1f),
         ) {
             MiruniButton(
+                text = "로그인으로 돌아가기",
                 onClick = onNextClicked,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)

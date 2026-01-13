@@ -1,5 +1,8 @@
-package com.miruni.feature.pwreset.navigation
+package com.miruni.feature.pwreset.presentation.navigation
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 sealed class PwResetRoute(val route : String) {
     data object Email : PwResetRoute("email")
     data object Notice : PwResetRoute("notice")
