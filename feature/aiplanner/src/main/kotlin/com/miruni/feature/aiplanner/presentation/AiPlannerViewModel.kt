@@ -24,8 +24,8 @@ class AiPlannerViewModel @Inject constructor(
             Triple("what", "'어떤 일'을 하실건가요?", "텍스트를 입력하세요"),
             Triple("until", "'언제까지' 하실건가요?", "날짜 선택"),
             Triple("when", "'언제' 하실건가요?", "옵션 선택"),
-            Triple("howMuch", "'얼만큼' 하실건가요?", "숫자 입력"),
-            Triple("priority", "'우선순위'를 알려주세요", "우선순위"),
+            Triple("howMuch", "'얼만큼' 하실건가요?", "내용을 입력하세요"),
+            Triple("priority", "'우선순위'를 알려주세요", "상/중/하"),
             Triple("extra", "'추가 요청사항'을 알려주세요", "내용을 입력하세요")
         )
 
@@ -44,10 +44,9 @@ class AiPlannerViewModel @Inject constructor(
 
     override fun handleEvents(event: AiPlannerContract.Event) {
         when (event) {
-            AiPlannerContract.Event.CompleteOnboarding ->
-                completeOnboarding()
-            is AiPlannerContract.Event.InputText ->
-                save(event.id, PlanInput.Text(event.text))
+            AiPlannerContract.Event.CompleteOnboarding -> completeOnboarding()
+            AiPlannerContract.Event.Submit -> submitPlan()
+            is AiPlannerContract.Event.InputText -> save(event.id, PlanInput.Text(event.text))
             is AiPlannerContract.Event.SelectDate -> {
                 save(
                     event.id,
@@ -59,8 +58,7 @@ class AiPlannerViewModel @Inject constructor(
                     )
                 )
             }
-            is AiPlannerContract.Event.SelectOption ->
-                save(event.id, PlanInput.Option(event.option))
+            is AiPlannerContract.Event.SelectOption -> save(event.id, PlanInput.Option(event.option))
         }
     }
 
@@ -135,6 +133,32 @@ class AiPlannerViewModel @Inject constructor(
             } else {
                 this
             }
+        }
+    }
+
+    /**
+     * 사용자 입력 전송
+     */
+    private fun submitPlan() {
+        viewModelScope.launch {
+            setState { copy(isLoading = true) }
+
+            // 현재 State의 forms 데이터를 모아서 API 전송
+            val currentState = viewState.value
+            val inputs = currentState.forms.associate { it.id to it.value }
+
+            // Validation 체크
+            if (inputs.values.any { it == null }) {
+                // 필요 시 에러 이펙트
+                setState { copy(isLoading = false) }
+                return@launch
+            }
+
+            // Repository 호출 (API 연결)
+            // val result = planningRepository.submitPlan(inputs)
+
+            // 결과 처리 후 네비게이션 Effect 발생
+            // setEffect { AiPlannerContract.Effect.NavigateToLoading }
         }
     }
 }

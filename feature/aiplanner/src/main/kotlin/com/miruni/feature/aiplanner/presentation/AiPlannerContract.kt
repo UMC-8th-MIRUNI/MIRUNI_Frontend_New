@@ -23,6 +23,7 @@ object AiPlannerContract {
             val endTime: LocalTime,
         ) : Event()
         data class SelectOption(val id: String, val option: String) : Event()
+        object Submit : Event() // 다음 버튼 클릭
     }
 
     data class State(
