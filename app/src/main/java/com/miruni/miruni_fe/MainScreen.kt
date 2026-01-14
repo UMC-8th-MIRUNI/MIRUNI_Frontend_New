@@ -15,17 +15,22 @@ fun MainScreen(
     destinations: Set<NavigationDestination>
 ) {
     val navController = rememberNavController()
-
     val currentRoute = navController
         .currentBackStackEntryAsState().value?.destination?.route
-    // 바텀 네비게이션 바 숨기는 화면
-    val hideBottomBarRoutes = setOf(
-        MiruniRoute.AiPlannerOnboarding.route
+
+    // bottom bar를 표시할 대상 route 리스트
+    val bottomBarRoutes = listOf(
+        MiruniRoute.Home.route,
+        MiruniRoute.AiPlanner.route,
+        MiruniRoute.Calendar.route,
+        MiruniRoute.MyPage.route
     )
+
+    val bottomBarVisible = currentRoute in bottomBarRoutes
 
     Scaffold(
         bottomBar = {
-            if (currentRoute !in hideBottomBarRoutes) {
+            if (bottomBarVisible) {
                 BottomNavigationBar(navController = navController)
             }
         }
