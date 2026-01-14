@@ -1,8 +1,8 @@
 package com.miruni.feature.aiplanner.presentation
 
-import com.miruni.feature.aiplanner.common.ViewEvent
-import com.miruni.feature.aiplanner.common.ViewSideEffect
-import com.miruni.feature.aiplanner.common.ViewState
+import com.miruni.core.common.ViewEvent
+import com.miruni.core.common.ViewSideEffect
+import com.miruni.core.common.ViewState
 import com.miruni.feature.aiplanner.presentation.model.AiPlannerUiModel
 import com.miruni.feature.aiplanner.presentation.model.PlanningFormItemUiModel
 import java.time.LocalDate
