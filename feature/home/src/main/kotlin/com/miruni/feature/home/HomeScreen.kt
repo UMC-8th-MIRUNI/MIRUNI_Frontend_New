@@ -42,7 +42,7 @@ import com.miruni.core.designsystem.MainColor
 import com.miruni.core.designsystem.MiruniTheme
 import com.miruni.core.navigation.MiruniRoute
 import com.miruni.feature.home.component.TodayScheduleItem
-import com.miruni.feature.home.common.convertBold
+import com.miruni.core.common.convertBold
 import com.miruni.feature.home.component.LinearProgressBar
 
 /** 더미 데이터 */
@@ -429,10 +429,12 @@ fun ButtonSection(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true, showSystemUi = false)
 @Composable
 private fun HomeScreenPreview() {
     MiruniTheme {
-        HomeScreen(navController = rememberNavController())
+        HomeScreen(
+            navController = rememberNavController()
+        )
     }
 }

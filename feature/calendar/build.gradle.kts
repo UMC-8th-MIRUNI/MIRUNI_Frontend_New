@@ -6,8 +6,8 @@ plugins {
 }
 
 android {
-    namespace = "com.miruni.feature.aiplanner"
-    compileSdk = 35
+    namespace = "com.miruni.feature.calendar"
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 24
@@ -38,8 +38,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":domain:model"))
-    implementation(project(":domain:usecase"))
     implementation(project(":core"))
 
     implementation(libs.androidx.core.ktx)
@@ -58,4 +56,6 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation(libs.kizitonwose.calendar)
 }

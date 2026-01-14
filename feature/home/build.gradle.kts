@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.miruni.feature.home"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 24
@@ -39,8 +39,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":domain:model"))
-    implementation(project(":domain:usecase"))
     implementation(project(":core"))
 
     implementation(libs.androidx.core.ktx)

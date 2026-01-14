@@ -9,6 +9,7 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+
     }
 }
 dependencyResolutionManagement {
@@ -17,19 +18,12 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven(url = "https://jitpack.io")
+        maven { url = java.net.URI("https://devrepo.kakao.com/nexus/content/groups/public/") }
     }
 }
 
 rootProject.name = "MIRUNI_FE"
 include(":app")
-
-include(":domain:model")
-include(":domain:repository")
-include(":domain:usecase")
-
-include(":data:service")
-include(":data:dto")
-include(":data:repository")
 
 include(":feature:aiplanner")
 include(":feature:home")

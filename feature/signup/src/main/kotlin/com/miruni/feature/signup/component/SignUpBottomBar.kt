@@ -14,10 +14,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.MainColor
 import com.miruni.core.designsystem.White
+import com.miruni.core.designsystem.MiruniSize
+import com.miruni.core.designsystem.MiruniSpacing
 
 @Composable
 fun SignUpBottomBar(
@@ -27,8 +29,9 @@ fun SignUpBottomBar(
 ){
     Surface(
         color = Color.Transparent,
-        modifier = Modifier.
-            navigationBarsPadding()
+        modifier = Modifier
+            .navigationBarsPadding()
+            .padding(horizontal = MiruniSpacing.screenHorizontal)
     ){
         Column {
             Button(
@@ -36,9 +39,8 @@ fun SignUpBottomBar(
                 enabled = canNext,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(49.dp)
-                    .padding(horizontal = 20.dp),
-                shape = RoundedCornerShape(10.dp),
+                    .height(MiruniSize.height),
+                shape = RoundedCornerShape(MiruniSpacing.md),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MainColor.miruni_green,
                     contentColor = White
@@ -46,7 +48,16 @@ fun SignUpBottomBar(
             ) {
                 Text(btnText, style = AppTypography.button_semibold_16)
             }
-            Spacer(modifier = Modifier.height(60.dp))
+            Spacer(modifier = Modifier.height(MiruniSpacing.xl))
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SignUpBottomBarPreview(){
+    SignUpBottomBar(
+        canNext = true,
+        onNextStep = {}
+    )
 }

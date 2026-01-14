@@ -3,7 +3,7 @@ package com.miruni.feature.home
 import androidx.lifecycle.viewModelScope
 import com.miruni.core.domain.onboarding.OnboardingKey
 import com.miruni.core.domain.onboarding.OnboardingRepository
-import com.miruni.feature.home.common.BaseViewModel
+import com.miruni.core.common.BaseViewModel
 import com.miruni.feature.home.domain.TodaySchedule
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first

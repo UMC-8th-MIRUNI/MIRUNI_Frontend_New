@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.miruni.core.navigation.MiruniRoute
 import com.miruni.core.navigation.NavigationDestination
-import com.miruni.feature.signup.SignupScreen
+import com.miruni.feature.signup.SignupNavigator
 import jakarta.inject.Inject
 
 class SignUpNavigation @Inject constructor(
@@ -18,8 +18,9 @@ class SignUpNavigation @Inject constructor(
         navController: NavHostController
     ) {
         builder.composable(route) {
-            SignupScreen(
-                navController = navController, onSignUpSuccess = {}
+            SignupNavigator(
+                onSignUpSuccess = { navController.navigate(MiruniRoute.Login.route) },
+                onBack = { navController.popBackStack() }
             )
         }
     }
