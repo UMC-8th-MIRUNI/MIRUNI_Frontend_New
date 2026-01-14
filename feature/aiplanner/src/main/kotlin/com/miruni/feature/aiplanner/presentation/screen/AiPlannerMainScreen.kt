@@ -39,7 +39,7 @@ import com.miruni.core.designsystem.Gray
 import com.miruni.core.designsystem.MainColor
 import com.miruni.core.navigation.MiruniRoute
 import com.miruni.feature.aiplanner.R
-import com.miruni.feature.aiplanner.common.convertBold
+import com.miruni.core.common.convertBold
 import com.miruni.feature.aiplanner.presentation.AiPlannerContract
 import com.miruni.feature.aiplanner.presentation.AiPlannerViewModel
 import com.miruni.feature.aiplanner.presentation.components.ScheduleItem
