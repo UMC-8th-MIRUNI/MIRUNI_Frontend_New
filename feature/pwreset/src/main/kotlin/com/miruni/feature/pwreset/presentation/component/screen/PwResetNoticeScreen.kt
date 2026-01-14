@@ -1,11 +1,10 @@
-package com.miruni.feature.pwreset.component.screen
+package com.miruni.feature.pwreset.presentation.component.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -19,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.Gray
 import com.miruni.feature.pwreset.R
-import com.miruni.feature.pwreset.component.button.MiruniButton
+import com.miruni.feature.pwreset.presentation.component.button.MiruniButton
 
 @Composable
 fun PwResetNoticeScreen(

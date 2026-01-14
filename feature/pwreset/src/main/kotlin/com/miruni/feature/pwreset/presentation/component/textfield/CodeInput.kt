@@ -1,4 +1,4 @@
-package com.miruni.feature.pwreset.component.textfield
+package com.miruni.feature.pwreset.presentation.component.textfield
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -79,14 +79,15 @@ fun CodeInput(
                 Row(horizontalArrangement = Arrangement.spacedBy(boxSpacing)) {
                     repeat(length) { index ->
                         val digit = value.getOrNull(index)?.toString().orEmpty()
-                        val isActiveCell = value.length == index
-
+                        val isFilledCell = index < value.length
+                        val isActiveCell = index == value.length && value.length < length
+                        val isHighlighted = isFilledCell || isActiveCell
                         Box(
                             modifier = Modifier
                                 .size(width = boxWidth, height = boxHeight)
                                 .border(
                                     width = 1.dp,
-                                    color = if (isActiveCell) MainColor.miruni_green else Gray.gray_500,
+                                    color = if (isHighlighted) MainColor.miruni_green else Gray.gray_500,
                                     shape = RoundedCornerShape(boxCornerRadius)
                                 ),
                             contentAlignment = Alignment.Center

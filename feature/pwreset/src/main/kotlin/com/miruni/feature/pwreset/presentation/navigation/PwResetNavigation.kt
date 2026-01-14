@@ -1,4 +1,4 @@
-package com.miruni.feature.pwreset.navigation
+package com.miruni.feature.pwreset.presentation.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -19,8 +19,13 @@ class PwResetNavigation @Inject constructor(
     ) {
         builder.composable(route) {
             PwResetNavigator(
-                onExit = {},
-                onLoginRestart = { navController.navigate(MiruniRoute.Login.route)}
+                onLoginRestart = {
+                    navController.navigate(MiruniRoute.Login.route){
+                        popUpTo(MiruniRoute.Login.route){
+                            inclusive = true
+                        }
+                    }
+                }
             )
         }
     }
