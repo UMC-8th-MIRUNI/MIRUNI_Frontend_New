@@ -20,6 +20,7 @@ fun MainScreen(destinations: Set<NavigationDestination>) {
     // bottom bar를 표시할 대상 route 리스트
     val bottomBarRoutes = listOf(
         MiruniRoute.Home.route,
+        MiruniRoute.AiPlanner.route,
         MiruniRoute.Calendar.route,
         MiruniRoute.MyPage.route
     )
