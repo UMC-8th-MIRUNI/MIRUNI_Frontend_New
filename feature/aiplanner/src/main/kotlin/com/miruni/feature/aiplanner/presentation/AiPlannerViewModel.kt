@@ -1,7 +1,7 @@
 package com.miruni.feature.aiplanner.presentation
 
 import androidx.lifecycle.viewModelScope
-import com.miruni.feature.aiplanner.common.BaseViewModel
+import com.miruni.core.common.BaseViewModel
 import com.miruni.feature.aiplanner.domain.repository.MainRepository
 import com.miruni.core.domain.onboarding.OnboardingRepository
 import com.miruni.core.domain.onboarding.OnboardingKey
