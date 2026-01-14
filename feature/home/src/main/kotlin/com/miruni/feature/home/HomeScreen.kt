@@ -62,7 +62,7 @@ fun HomeScreen(
         viewModel.effect.collect { effect ->
             when (effect) {
                 HomeContract.Effect.Navigation.ToAiPlannerOnboarding -> navController.navigate(MiruniRoute.AiPlannerOnboarding.route) // AI 플래너 온보딩
-                HomeContract.Effect.Navigation.ToAiPlanner -> navController.navigate(MiruniRoute.AiPlanner.route) // AI 플래너
+                HomeContract.Effect.Navigation.ToAiPlanner -> navController.navigate(MiruniRoute.AiPlannerMain.route) // AI 플래너
                 HomeContract.Effect.Navigation.ToAlarms -> navController.navigate(MiruniRoute.AlarmLogs.route) // 알람 기록
                 HomeContract.Effect.Navigation.ToDnd -> navController.navigate(MiruniRoute.Dnd.route) // 방해금지 모드
                 is HomeContract.Effect.Navigation.ToExecution -> navController.navigate(MiruniRoute.Execution.route) // 일정 실행
