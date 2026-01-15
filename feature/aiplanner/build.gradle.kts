@@ -4,8 +4,6 @@ plugins {
     alias(libs.plugins.convention.feature)
     alias(libs.plugins.convention.retrofit)
     alias(libs.plugins.compose.compiler)
-
-    alias(libs.plugins.convention.retrofit)
 }
 
 android {
