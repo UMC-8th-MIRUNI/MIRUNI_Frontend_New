@@ -7,4 +7,10 @@ import androidx.navigation.NavController
 fun AiPlannerScheduleScreen(
     navController: NavController
 ) {
+    AiPlannerScheduleContent()
+}
+
+@Composable
+fun AiPlannerScheduleContent() {
+
 }

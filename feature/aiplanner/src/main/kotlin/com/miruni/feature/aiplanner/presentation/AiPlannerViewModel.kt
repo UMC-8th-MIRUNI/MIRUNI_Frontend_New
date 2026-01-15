@@ -9,6 +9,7 @@ import com.miruni.feature.aiplanner.domain.model.PlanInput
 import com.miruni.feature.aiplanner.domain.repository.PlanningRepository
 import com.miruni.feature.aiplanner.presentation.model.PlanningFormItemUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -44,8 +45,11 @@ class AiPlannerViewModel @Inject constructor(
 
     override fun handleEvents(event: AiPlannerContract.Event) {
         when (event) {
-            AiPlannerContract.Event.CompleteOnboarding -> completeOnboarding()
-            AiPlannerContract.Event.Submit -> submitPlan()
+            AiPlannerContract.Event.ClickBack -> onBack() // 뒤로 가기
+            AiPlannerContract.Event.CompleteOnboarding -> completeOnboarding() // 온보딩 완료
+            AiPlannerContract.Event.ClickSubmit -> submitPlan() // 사용자 입력 제출
+            AiPlannerContract.Event.ShowPlanningLoading -> showPlanningLoading() // 플래닝 로딩 화면 출력
+            AiPlannerContract.Event.ClickConfirm -> onConfirm() // 플래닝 로딩 확인 클릭
             is AiPlannerContract.Event.InputText -> save(event.id, PlanInput.Text(event.text))
             is AiPlannerContract.Event.SelectDate -> {
                 save(
@@ -83,7 +87,7 @@ class AiPlannerViewModel @Inject constructor(
      */
     private fun loadAiPlanner() =
         viewModelScope.launch {
-            setState { copy(isLoading = true) }
+            setState { copy(isMainLoading = true) }
 
             val aiPlans = mainRepository.getAiPlans()
             val remain = mainRepository.getRemain()
@@ -91,7 +95,7 @@ class AiPlannerViewModel @Inject constructor(
                 copy(
                     aiPlans = aiPlans,
                     remain = remain,
-                    isLoading = false
+                    isMainLoading = false
                 )
             }
         }
@@ -137,11 +141,11 @@ class AiPlannerViewModel @Inject constructor(
     }
 
     /**
-     * 사용자 입력 전송
+     * AI 플래너 플래닝: 사용자 입력 전송
      */
     private fun submitPlan() {
         viewModelScope.launch {
-            setState { copy(isLoading = true) }
+            setState { copy(isPlanningLoading = true) }
 
             // 현재 State의 forms 데이터를 모아서 API 전송
             val currentState = viewState.value
@@ -150,7 +154,7 @@ class AiPlannerViewModel @Inject constructor(
             // Validation 체크
             if (inputs.values.any { it == null }) {
                 // 필요 시 에러 이펙트
-                setState { copy(isLoading = false) }
+                setState { copy(isPlanningLoading = false) }
                 return@launch
             }
 
@@ -158,7 +162,37 @@ class AiPlannerViewModel @Inject constructor(
             // val result = planningRepository.submitPlan(inputs)
 
             // 결과 처리 후 네비게이션 Effect 발생
-            // setEffect { AiPlannerContract.Effect.NavigateToLoading }
+             setEffect { AiPlannerContract.Effect.Navigation.ToLoading }
         }
+    }
+
+    /**
+     * AI 플래너 로딩: 로딩 화면 출력
+     */
+    private fun showPlanningLoading() {
+        viewModelScope.launch {
+            delay(2500)
+
+            setState {
+                copy(
+                    isPlanningLoading = false,
+                    isFinishedPlanningLoading = true
+                )
+            }
+        }
+    }
+
+    /**
+     * AI 플래너 로딩: 완료 버튼 클릭 (플래닝 -> 스케줄 표)
+     */
+    private fun onConfirm() {
+        setEffect { AiPlannerContract.Effect.Navigation.ToSchedule }
+    }
+
+    /**
+     * 뒤로 가기 클릭 이벤트
+     */
+    private fun onBack() {
+        setEffect { AiPlannerContract.Effect.PopBack }
     }
 }
