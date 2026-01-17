@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.AppTypography
@@ -43,6 +44,7 @@ import com.miruni.core.common.convertBold
 import com.miruni.feature.aiplanner.presentation.AiPlannerContract
 import com.miruni.feature.aiplanner.presentation.AiPlannerViewModel
 import com.miruni.feature.aiplanner.presentation.components.ScheduleItem
+import com.miruni.feature.aiplanner.presentation.model.ScheduleSource
 
 @Composable
 fun AiPlannerMainScreen(
@@ -61,6 +63,15 @@ fun AiPlannerMainScreen(
                 .padding(top = innerPadding.calculateTopPadding()),
             onClickAiPlanning = {
                 navController.navigate(MiruniRoute.AiPlannerPlanning.route)
+            },
+            onClickItem = { planId ->
+                viewModel.setEvent(
+                    AiPlannerContract.Event.EnterSchedule(
+                        from = ScheduleSource.FROM_MAIN,
+                        planId = planId
+                    )
+                )
+                navController.navigate(MiruniRoute.AiPlannerSchedule.route)
             }
         )
     }
@@ -73,7 +84,8 @@ fun AiPlannerMainScreen(
 fun AiPlannerMainContent(
     state: AiPlannerContract.State,
     modifier: Modifier = Modifier,
-    onClickAiPlanning: () -> Unit
+    onClickAiPlanning: () -> Unit,
+    onClickItem: (Long) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -88,7 +100,10 @@ fun AiPlannerMainContent(
 
         item { Spacer(modifier = Modifier.height(41.dp)) }
 
-        this.AiSchedules(state = state)
+        this.AiSchedules(
+            state = state,
+            onClickItem = onClickItem
+        )
     }
 }
 
@@ -167,7 +182,8 @@ fun AiPlannerButton(
 }
 
 fun LazyListScope.AiSchedules(
-    state: AiPlannerContract.State
+    state: AiPlannerContract.State,
+    onClickItem: (Long) -> Unit
 ) {
     item {
         Row(
@@ -191,11 +207,13 @@ fun LazyListScope.AiSchedules(
 
     items(state.aiPlans.size) { index ->
         val plan = state.aiPlans[index]
+
         ScheduleItem(
             title = plan.title,
             doneCount = plan.doneCount,
             totalCount = plan.totalCount,
-            progressRate = plan.progressRate
+            progressRate = plan.progressRate,
+            onClick = { onClickItem(plan.id) }
         )
 
         Spacer(modifier = Modifier.height(10.dp))

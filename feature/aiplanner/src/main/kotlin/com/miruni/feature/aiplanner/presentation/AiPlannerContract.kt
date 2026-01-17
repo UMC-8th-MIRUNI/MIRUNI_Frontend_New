@@ -7,6 +7,7 @@ import com.miruni.feature.aiplanner.presentation.model.AiPlanUiModel
 import com.miruni.feature.aiplanner.presentation.model.AiPlannerUiModel
 import com.miruni.feature.aiplanner.presentation.model.PlanUiModel
 import com.miruni.feature.aiplanner.presentation.model.PlanningFormItemUiModel
+import com.miruni.feature.aiplanner.presentation.model.ScheduleSource
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -36,6 +37,10 @@ object AiPlannerContract {
         object ClickConfirm : Event() // 로딩 화면 완료 버튼 클릭
 
         /** AI 플래너 스케줄 표 */
+        data class EnterSchedule( // 스케줄 화면 진입
+            val from: ScheduleSource, // 어디서 왔는지
+            val planId: Long? = null
+        ) : Event()
         object ClickMenu : Event()
         object ClickEdit : Event()
         object ClickDelete : Event()

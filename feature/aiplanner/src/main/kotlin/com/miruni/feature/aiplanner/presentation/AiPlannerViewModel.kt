@@ -10,6 +10,7 @@ import com.miruni.feature.aiplanner.domain.repository.PlanningRepository
 import com.miruni.feature.aiplanner.presentation.model.AiPlanUiModel
 import com.miruni.feature.aiplanner.presentation.model.PlanUiModel
 import com.miruni.feature.aiplanner.presentation.model.PlanningFormItemUiModel
+import com.miruni.feature.aiplanner.presentation.model.ScheduleSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -77,13 +78,14 @@ class AiPlannerViewModel @Inject constructor(
             AiPlannerContract.Event.ClickEdit -> onEdit()
             AiPlannerContract.Event.ClickMenu -> showMenu()
             is AiPlannerContract.Event.ClickCompleteEdit -> updatePlan(event)
+            is AiPlannerContract.Event.EnterSchedule -> enterSchedule(event.from, event.planId)
         }
     }
 
     init {
         loadAiPlanner()
         observeValues()
-        loadDummyAiPlan()
+//        loadDummyAiPlan()
     }
 
     /**
@@ -155,6 +157,7 @@ class AiPlannerViewModel @Inject constructor(
             revealNext(id)
         }
     }
+
     private fun revealNext(id: String) {
         setState {
             val idx = forms.indexOfFirst { it.id == id }
@@ -170,7 +173,6 @@ class AiPlannerViewModel @Inject constructor(
             }
         }
     }
-
     /**
      * AI 플래너 플래닝: 사용자 입력 전송
      */
@@ -390,6 +392,25 @@ class AiPlannerViewModel @Inject constructor(
             )
 
             setState { copy(plan = plan) }
+        }
+    }
+
+    /** AI 플래너 스케줄표 */
+    private fun enterSchedule(
+        from: ScheduleSource,
+        planId: Long?
+    ) {
+        viewModelScope.launch {
+            when (from) {
+                ScheduleSource.FROM_MAIN -> { // 메인에서 오면
+                    requireNotNull(planId)
+                    val plan = mainRepository.getSchedule(planId)
+                    setState { copy(plan = plan) }
+                }
+                ScheduleSource.FROM_LOADING -> { // 로딩 화면에서 오면
+                    loadDummyAiPlan()
+                }
+            }
         }
     }
 

@@ -39,6 +39,7 @@ import com.miruni.core.navigation.MiruniRoute
 import com.miruni.feature.aiplanner.R
 import com.miruni.feature.aiplanner.presentation.AiPlannerContract
 import com.miruni.feature.aiplanner.presentation.AiPlannerViewModel
+import com.miruni.feature.aiplanner.presentation.model.ScheduleSource
 
 @Composable
 fun AiPlannerLoadingScreen(
@@ -54,6 +55,12 @@ fun AiPlannerLoadingScreen(
         viewModel.effect.collect { effect ->
             when(effect) {
                 AiPlannerContract.Effect.Navigation.ToSchedule -> {
+                    viewModel.setEvent(
+                        AiPlannerContract.Event.EnterSchedule(
+                            from = ScheduleSource.FROM_LOADING
+                        )
+                    )
+
                     navController.navigate(MiruniRoute.AiPlannerSchedule.route)
                 }
                 AiPlannerContract.Effect.PopBack -> {
