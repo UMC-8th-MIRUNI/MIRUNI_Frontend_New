@@ -2,7 +2,9 @@ package com.miruni.feature.aiplanner.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.miruni.core.navigation.MiruniRoute
 import com.miruni.core.navigation.NavigationDestination
 import com.miruni.feature.aiplanner.presentation.screen.AiPlannerLoadingScreen
@@ -36,7 +38,19 @@ class AiPlannerNavigation @Inject constructor() : NavigationDestination {
             AiPlannerLoadingScreen(navController = navController)
         }
         // AI 플래너 스케줄 표
-        builder.composable(MiruniRoute.AiPlannerSchedule.route) {
+        builder.composable(
+            route = "${MiruniRoute.AiPlannerSchedule.route}?from={from}&planId={planId}",
+            arguments = listOf(
+                navArgument("from") {
+                    type = NavType.StringType
+                    defaultValue = "MAIN"
+                },
+                navArgument("planId") {
+                    type = NavType.LongType
+                    defaultValue = -1L
+                }
+            )
+        ) { backStackEntry ->
             AiPlannerScheduleScreen(navController = navController)
         }
     }

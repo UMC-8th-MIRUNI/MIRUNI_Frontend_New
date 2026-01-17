@@ -65,13 +65,7 @@ fun AiPlannerMainScreen(
                 navController.navigate(MiruniRoute.AiPlannerPlanning.route)
             },
             onClickItem = { planId ->
-                viewModel.setEvent(
-                    AiPlannerContract.Event.EnterSchedule(
-                        from = ScheduleSource.FROM_MAIN,
-                        planId = planId
-                    )
-                )
-                navController.navigate(MiruniRoute.AiPlannerSchedule.route)
+                navController.navigate("${MiruniRoute.AiPlannerSchedule.route}?from=MAIN&planId=$planId")
             }
         )
     }

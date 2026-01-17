@@ -66,6 +66,7 @@ import com.miruni.feature.aiplanner.presentation.components.filterDateInput
 import com.miruni.feature.aiplanner.presentation.components.filterTimeInput
 import com.miruni.feature.aiplanner.presentation.model.AiPlanUiModel
 import com.miruni.feature.aiplanner.presentation.model.PlanUiModel
+import com.miruni.feature.aiplanner.presentation.model.ScheduleSource
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -85,6 +86,26 @@ fun AiPlannerScheduleScreen(
                 else -> Unit
             }
         }
+    }
+
+    // 네비게이션 인자 읽기
+    val backEntry = navController.currentBackStackEntry
+    LaunchedEffect(
+        backEntry?.arguments?.getString("from"),
+        backEntry?.arguments?.getLong("planId")
+    ) {
+        val fromArg = backEntry?.arguments?.getString("from") ?: "MAIN"
+        val planIdArg = backEntry?.arguments?.getLong("planId") ?: -1L
+
+        val source = when (fromArg.uppercase()) {
+            "LOADING" -> ScheduleSource.FROM_LOADING
+            "MAIN" -> ScheduleSource.FROM_MAIN
+            else -> ScheduleSource.FROM_MAIN
+        }
+
+        val planIdOrNull = if (planIdArg != -1L) planIdArg else null
+
+        viewModel.setEvent(AiPlannerContract.Event.EnterSchedule(from = source, planId = planIdOrNull))
     }
 
     state.plan?.let { plan ->
