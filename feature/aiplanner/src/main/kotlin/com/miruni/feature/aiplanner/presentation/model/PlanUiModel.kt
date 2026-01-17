@@ -17,5 +17,5 @@ data class AiPlanUiModel(
     val startTime: String, // hh:mm:ss -> hh:mm 변환 필요
     val endTime: String, // hh:mm:ss -> hh:mm 변환 필요
     val content: String, // 세부 일정
-    val expectedDuration: Long // 예상 소요 시간
+    val expectedDuration: Int // 예상 소요 시간
 )
