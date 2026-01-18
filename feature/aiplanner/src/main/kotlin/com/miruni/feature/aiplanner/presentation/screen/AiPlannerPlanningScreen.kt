@@ -43,6 +43,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.MainColor
+import com.miruni.core.navigation.MiruniRoute
 import com.miruni.feature.aiplanner.R
 import com.miruni.feature.aiplanner.presentation.AiPlannerContract
 import com.miruni.feature.aiplanner.presentation.AiPlannerViewModel
@@ -68,7 +69,22 @@ fun AiPlannerPlanningScreen(
     LaunchedEffect(state.forms.count { it.visible }) {
         if (state.forms.any { it.visible }) {
             delay(300)
-            listState.animateScrollToItem(state.forms.indexOfLast { it.visible } + 1) // +1 for Header
+            listState.animateScrollToItem(state.forms.indexOfLast { it.visible } + 1)
+        }
+    }
+
+    // 화면 네비게이트
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when(effect) {
+                AiPlannerContract.Effect.Navigation.ToLoading -> {
+                    navController.navigate(MiruniRoute.AiPlannerLoading.route)
+                }
+                AiPlannerContract.Effect.PopBack -> {
+                    navController.popBackStack()
+                }
+                else -> Unit
+            }
         }
     }
 
@@ -96,7 +112,7 @@ fun AiPlannerPlanningScreen(
                         contentDescription = "닫기",
                         modifier = Modifier
                             .size(26.dp)
-                            .clickable { navController.popBackStack() }
+                            .clickable { viewModel.setEvent(AiPlannerContract.Event.ClickBack) }
                     )
                 }
             }
@@ -137,7 +153,7 @@ fun AiPlannerPlanningScreen(
             Row(
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
-                    .clickable { viewModel.setEvent(AiPlannerContract.Event.Submit) },
+                    .clickable { viewModel.setEvent(AiPlannerContract.Event.ClickSubmit) },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(

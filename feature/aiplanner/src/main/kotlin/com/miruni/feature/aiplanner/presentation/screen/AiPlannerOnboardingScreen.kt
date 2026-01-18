@@ -50,7 +50,7 @@ fun AiPlannerOnboardingScreen(
         onComplete = {
             viewModel.handleEvents(AiPlannerContract.Event.CompleteOnboarding)
 
-            navController.navigate(MiruniRoute.AiPlanner.route) {
+            navController.navigate(MiruniRoute.AiPlannerMain.route) {
                 popUpTo(MiruniRoute.AiPlannerOnboarding.route) {
                     inclusive = true
                 }
