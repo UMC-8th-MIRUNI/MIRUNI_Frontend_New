@@ -90,33 +90,36 @@ fun AiPlannerScheduleScreen(
 
     // 네비게이션 인자 읽기
     val backEntry = navController.currentBackStackEntry
-    LaunchedEffect(
-        backEntry?.arguments?.getString("from"),
-        backEntry?.arguments?.getLong("planId")
-    ) {
-        val fromArg = backEntry?.arguments?.getString("from") ?: "MAIN"
-        val planIdArg = backEntry?.arguments?.getLong("planId") ?: -1L
+    val fromArg = remember { backEntry?.arguments?.getString("from") ?: "MAIN" }
+    val planIdArg = remember { backEntry?.arguments?.getLong("planId") ?: -1L }
 
-        val source = when (fromArg.uppercase()) {
+    // Source를 상태로 관리하여 하위 컴포저블에 전달
+    val scheduleSource = remember(fromArg) {
+        when (fromArg.uppercase()) {
             "LOADING" -> ScheduleSource.FROM_LOADING
             "MAIN" -> ScheduleSource.FROM_MAIN
             else -> ScheduleSource.FROM_MAIN
         }
+    }
 
+    LaunchedEffect(fromArg, planIdArg) {
         val planIdOrNull = if (planIdArg != -1L) planIdArg else null
-
-        viewModel.setEvent(AiPlannerContract.Event.EnterSchedule(from = source, planId = planIdOrNull))
+        viewModel.setEvent(AiPlannerContract.Event.EnterSchedule(from = scheduleSource, planId = planIdOrNull))
     }
 
     state.plan?.let { plan ->
         AiPlannerScheduleContent(
             plan = plan,
+            source = scheduleSource,
             isEditMode = state.isEditMode,
             showMenu = state.showMenu,
             onBack = { viewModel.setEvent(AiPlannerContract.Event.OnMain) },
             onMenu = { viewModel.setEvent(AiPlannerContract.Event.ClickMenu) },
             onEdit = { viewModel.setEvent(AiPlannerContract.Event.ClickEdit) },
-            onDelete = { viewModel.setEvent(AiPlannerContract.Event.ClickDelete) },
+            onDeleteAll = { viewModel.setEvent(AiPlannerContract.Event.ClickDelete) },
+            onDeleteItem = { deletePlanIds ->
+
+            },
             onCompleteEdit = { updatedPlan, updatedAiPlans ->
                 viewModel.setEvent(
                     AiPlannerContract.Event.ClickCompleteEdit(
@@ -136,12 +139,14 @@ fun AiPlannerScheduleScreen(
 @Composable
 fun AiPlannerScheduleContent(
     plan: PlanUiModel,
+    source: ScheduleSource,
     isEditMode: Boolean,
     showMenu: Boolean,
     onBack: () -> Unit,
     onMenu: () -> Unit,
     onEdit: () -> Unit,
-    onDelete: () -> Unit,
+    onDeleteAll: () -> Unit,
+    onDeleteItem: (List<Long>) -> Unit,
     onCompleteEdit: (PlanUiModel, List<AiPlanUiModel>) -> Unit
 ) {
     // 수정을 위한 상태
@@ -262,7 +267,7 @@ fun AiPlannerScheduleContent(
                                         .align(Alignment.TopEnd)
                                         .padding(top = 60.dp, end = 20.dp)
                                 ) {
-                                    MenuPopup(onEdit, onDelete)
+                                    MenuPopup(onEdit, onDeleteAll)
                                 }
                             }
                         }
@@ -656,6 +661,7 @@ fun ScheduleRow(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun DateRow(
     text: String,
@@ -689,6 +695,7 @@ private fun DateRow(
     )
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun TimeRow(
     start: String,
@@ -849,14 +856,14 @@ fun PreviewAiPlannerSchedule() {
 //                ),
             )
         ),
+        source = ScheduleSource.FROM_MAIN,
         isEditMode = false,
         showMenu = false,
         onBack = {},
         onMenu = {},
         onEdit = {},
-        onDelete = {},
-        onCompleteEdit = { planUiModel, aiPlanUiModels ->  
-            
-        }
+        onDeleteAll = {},
+        onDeleteItem = {},
+        onCompleteEdit = { planUiModel, aiPlanUiModels -> }
     )
 }
