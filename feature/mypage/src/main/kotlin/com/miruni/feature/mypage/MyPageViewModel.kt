@@ -41,6 +41,7 @@ class MyPageViewModel @Inject constructor() :
                         isCompleteEnabled = true
                     )
                 }
+
                 // TODO 서버 저장 or 로컬 저장
             }
 
@@ -92,8 +93,8 @@ class MyPageViewModel @Inject constructor() :
             }
         }
     }
-
 }
+
 fun dummyProfileImage(): List<ProfileImage> =
     listOf(
         ProfileImage(R.drawable.betty),

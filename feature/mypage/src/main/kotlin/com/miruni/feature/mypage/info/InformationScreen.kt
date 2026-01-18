@@ -4,18 +4,14 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -33,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.Gray
 import com.miruni.core.designsystem.MiruniTheme
-import com.miruni.core.designsystem.MiruniTypography
+import com.miruni.feature.mypage.component.MyPageTopBar
 
 @Composable
 fun InformationScreen(
@@ -42,26 +38,7 @@ fun InformationScreen(
     Scaffold(
         containerColor = Color(0xFFF6F5F6),
         topBar = {
-            Row(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(20.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowLeft,
-                    contentDescription = "back"
-                )
-
-                Spacer(modifier = modifier.weight(1f))
-
-                Text(
-                    text = "문의 및 정보",
-                    style = MiruniTypography.titleMedium
-                )
-
-                Spacer(modifier = modifier.weight(1f))
-            }
+            MyPageTopBar(text = "문의 및 정보")
         }
     ) { innerPadding ->
         Card(

@@ -1,5 +1,6 @@
 package com.miruni.feature.mypage.account
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +13,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -27,16 +31,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.MainColor
 import com.miruni.core.designsystem.MiruniTheme
 import com.miruni.core.designsystem.MiruniTypography
+import com.miruni.feature.mypage.component.MyPageBottomBar
 
 @Composable
 fun SettingAccountScreen(
-    modifier: Modifier = Modifier
+    navController: NavHostController,
+    viewModel: SettingAccountViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier,
 ) {
-    var text by remember { mutableStateOf("") }
+    var menuExpanded by remember { mutableStateOf(false) }
+    val state by viewModel.viewState.collectAsStateWithLifecycle()
 
     Scaffold(
         containerColor = Color(0xFFF6F5F6),
@@ -47,10 +59,16 @@ fun SettingAccountScreen(
                     .padding(20.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowLeft,
-                    contentDescription = "back"
-                )
+                IconButton(
+                    onClick = {
+                        navController.popBackStack()
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowLeft,
+                        contentDescription = "back"
+                    )
+                }
 
                 Spacer(modifier = modifier.weight(1f))
 
@@ -61,9 +79,45 @@ fun SettingAccountScreen(
 
                 Spacer(modifier = modifier.weight(1f))
 
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = "option"
+                IconButton(
+                    onClick = {
+                        menuExpanded = true
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "option"
+                    )
+                }
+                DropdownMenu(
+                    expanded = menuExpanded,
+                    onDismissRequest = { menuExpanded = false }
+                ) {
+                    DropdownMenuItem(
+                        text = {
+                            Text("수정하기")
+                        },
+                        onClick = {
+                            Log.d("SettingAccountScreen", "Menu Edit clicked")
+                            menuExpanded = false
+                            viewModel.setEvent(
+                                SettingAccountContract.Event.OnEditClick
+                            )
+                        }
+                    )
+                }
+            }
+        },
+        bottomBar = {
+            if (state.isEditMode && !state.isSaving) {
+                MyPageBottomBar(
+                    canConfirm = true,
+                    btnText = "완료",
+                    onConfirmClick = {
+                        viewModel.setEvent(
+                            SettingAccountContract.Event.OnCompleteClick
+                        )
+                    }
                 )
             }
         }
@@ -83,10 +137,12 @@ fun SettingAccountScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
-                value = "김가영",
+                value = state.name,
                 modifier = modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                onValueChange = { text = it },
+                onValueChange = {
+                },
+                enabled = state.isEditMode,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MainColor.miruni_green,
                     unfocusedBorderColor = Color(0xFFF1ECEC)
@@ -103,10 +159,12 @@ fun SettingAccountScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
-                value = "2003.12.20",
+                value = state.birth,
                 modifier = modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                onValueChange = { text = it },
+                onValueChange = {
+                },
+                enabled = state.isEditMode,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MainColor.miruni_green,
                     unfocusedBorderColor = Color(0xFFF1ECEC)
@@ -123,10 +181,12 @@ fun SettingAccountScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
-                value = "010-8991-3803",
+                value = state.phoneNumber,
                 modifier = modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                onValueChange = { text = it },
+                onValueChange = {
+                },
+                enabled = state.isEditMode,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MainColor.miruni_green,
                     unfocusedBorderColor = Color(0xFFF1ECEC)
@@ -143,10 +203,11 @@ fun SettingAccountScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
-                value = "aa@gmail.com",
+                value = state.email,
                 modifier = modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                onValueChange = { text = it },
+                onValueChange = { },
+                readOnly = true,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MainColor.miruni_green,
                     unfocusedBorderColor = Color(0xFFF1ECEC)
@@ -166,7 +227,8 @@ fun SettingAccountScreen(
                 value = "설문조사 내역 수정하기",
                 modifier = modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                onValueChange = { text = it },
+                onValueChange = { },
+                readOnly = true,
                 trailingIcon = {
                     Icon(
                         imageVector = Icons.Default.KeyboardArrowRight,
@@ -187,7 +249,8 @@ fun SettingAccountScreen(
             OutlinedTextField(
                 value = "로그아웃",
                 modifier = modifier.fillMaxWidth(),
-                onValueChange = { text = it },
+                onValueChange = { },
+                readOnly = true,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MainColor.miruni_green,
                     unfocusedBorderColor = Color(0xFFF1ECEC)
@@ -200,7 +263,8 @@ fun SettingAccountScreen(
                 value = "탈퇴하기",
                 modifier = modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                onValueChange = { text = it },
+                onValueChange = { },
+                readOnly = true,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MainColor.miruni_green,
                     unfocusedBorderColor = Color(0xFFF1ECEC)
@@ -215,6 +279,8 @@ fun SettingAccountScreen(
 @Composable
 private fun SettingAccountScreenPreview() {
     MiruniTheme {
-        SettingAccountScreen()
+        SettingAccountScreen(
+            navController = rememberNavController()
+        )
     }
 }

@@ -32,14 +32,12 @@ class MyPageContract {
     }
 
     data class State(
-        val isEditMode: Boolean = false,
+        val isEditMode: Boolean = false, // 수정
+        val nickName: String = "닉네임", // 닉네임
+        val profileImages: List<ProfileImage> = dummyProfileImage(), // 프로필
+        val selectedProfileImageIndex: Int = 0, // 프로필 인덱스
 
-        val nickName: String = "닉네임",
-
-        val profileImages: List<ProfileImage> = dummyProfileImage(),
-        val selectedProfileImageIndex: Int = 0,
-
-        val isCompleteEnabled: Boolean = false
+        val isCompleteEnabled: Boolean = false, // 완료 버튼 여부
     ) : ViewState
 
 
@@ -49,6 +47,7 @@ class MyPageContract {
         object NavigateToSettingNotification : Effect()
         object NavigateToInfo : Effect()
         }
+
 
 //        object ShowKeyboard : Effect()
 //        object HideKeyboard : Effect()

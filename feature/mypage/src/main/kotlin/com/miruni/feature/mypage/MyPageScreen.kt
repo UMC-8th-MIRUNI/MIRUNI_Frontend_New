@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -66,17 +67,17 @@ fun MyPageRoute(
             when (effect) {
                 MyPageContract.Effect.Navigation.NavigateToSettingAccount ->
                     navController.navigate(
-                        MiruniRoute.MyPageSettingAccount
+                        MiruniRoute.MyPageSettingAccount.route
                     )
 
                 MyPageContract.Effect.Navigation.NavigateToSettingNotification ->
                     navController.navigate(
-                        MiruniRoute.MyPageSettingNotification
+                        MiruniRoute.MyPageSettingNotification.route
                     )
 
                 MyPageContract.Effect.Navigation.NavigateToInfo ->
                     navController.navigate(
-                        MiruniRoute.MyPageInfo
+                        MiruniRoute.MyPageInfo.route
                     )
             }
         }
@@ -170,7 +171,7 @@ private fun TopSection(
                 onClick = {
                     Log.d("MyPageScreen", "Edit Clicked")
                     onEvent(MyPageContract.Event.OnTopBarNotificationClick)
-                    },
+                },
                 enabled = !state.isEditMode,
             ) {
                 Icon(
@@ -321,8 +322,12 @@ private fun BottomSection(
                         border = BorderStroke(2.dp, Gray.gray_300),
                         shape = RoundedCornerShape(10.dp)
                     )
-                    .padding(24.dp),
-//                    .clickable(onClick = onSettingAccountClick),
+                    .padding(24.dp)
+                    .clickable(
+                        onClick = {
+                            onEvent(MyPageContract.Event.OnSettingAccountClick)
+                        }
+                    ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
@@ -346,8 +351,12 @@ private fun BottomSection(
                         border = BorderStroke(2.dp, Gray.gray_300),
                         shape = RoundedCornerShape(10.dp)
                     )
-                    .padding(24.dp),
-//                    .clickable(onClick = onSettingAccountClick),
+                    .padding(24.dp)
+                    .clickable(
+                        onClick = {
+                            onEvent(MyPageContract.Event.OnSettingNotificationClick)
+                        }
+                    ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
@@ -370,8 +379,12 @@ private fun BottomSection(
                         border = BorderStroke(2.dp, Gray.gray_300),
                         shape = RoundedCornerShape(10.dp)
                     )
-                    .padding(24.dp),
-//                    .clickable(onClick = onSettingAccountClick),
+                    .padding(24.dp)
+                    .clickable(
+                        onClick = {
+                            onEvent(MyPageContract.Event.OnInfoClick)
+                        }
+                    ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
