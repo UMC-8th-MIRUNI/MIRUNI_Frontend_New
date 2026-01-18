@@ -18,22 +18,37 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.media3.datasource.RawResourceDataSource
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.AppTypography
@@ -264,26 +279,80 @@ fun DescriptionSection(
         )
 
         // Miruni 이미지
-        Column (
+//        Column (
+//            modifier = Modifier
+//                .align(Alignment.BottomEnd),
+//            horizontalAlignment = Alignment.CenterHorizontally
+//        ) {
+//            Image(
+//                painter = painterResource(id = R.drawable.miruni_basic),
+//                contentDescription = null,
+//                modifier = Modifier
+//                    .size(100.dp)
+//            )
+//            Image(
+//                painter = painterResource(id = R.drawable.miruni_shadow),
+//                contentDescription = null,
+//                modifier = Modifier
+//                    .width(57.dp)
+//                    .height(12.dp)
+//                    .offset(x = 20.dp)
+//            )
+//        }
+        MiruniIcon(
             modifier = Modifier
+                .size(150.dp)
                 .align(Alignment.BottomEnd),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.miruni_basic),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(100.dp)
-            )
-            Image(
-                painter = painterResource(id = R.drawable.miruni_shadow),
-                contentDescription = null,
-                modifier = Modifier
-                    .width(57.dp)
-                    .height(12.dp)
-                    .offset(x = 20.dp)
-            )
+            videoResId = R.raw.miruni_jump
+        )
+    }
+}
+
+/**
+ * 미루니 영상 재생 아이콘
+ */
+@androidx.annotation.OptIn(UnstableApi::class)
+@Composable
+fun MiruniIcon(
+    modifier: Modifier,
+    videoResId: Int
+) {
+    val context = LocalContext.current
+
+    val exoPlayer = remember {
+        ExoPlayer.Builder(context).build().apply {
+            val uri = RawResourceDataSource.buildRawResourceUri(videoResId)
+            setMediaItem(MediaItem.fromUri(uri))
+            prepare()
+            playWhenReady = false
+            volume = 0f
+            repeatMode = Player.REPEAT_MODE_OFF // 한 번만 재생
         }
+    }
+
+    // ExoPlayer 정리
+    DisposableEffect(Unit) {
+        onDispose {
+            exoPlayer.release()
+        }
+    }
+
+    Box(
+        modifier = modifier.clickable {
+            // 항상 처음부터 재생
+            exoPlayer.seekTo(0)
+            exoPlayer.play()
+        }
+    ) {
+        AndroidView(
+            factory = {
+                PlayerView(it).apply {
+                    player = exoPlayer
+                    useController = false
+                }
+            },
+            modifier = Modifier.fillMaxSize()
+        )
     }
 }
 
