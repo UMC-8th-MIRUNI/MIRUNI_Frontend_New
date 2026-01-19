@@ -43,6 +43,8 @@ import com.miruni.feature.aiplanner.R
 import com.miruni.core.common.convertBold
 import com.miruni.feature.aiplanner.presentation.AiPlannerContract
 import com.miruni.feature.aiplanner.presentation.AiPlannerViewModel
+import com.miruni.feature.aiplanner.presentation.components.CompleteTagButton
+import com.miruni.feature.aiplanner.presentation.components.ProgressingTagButton
 import com.miruni.feature.aiplanner.presentation.components.ScheduleItem
 import com.miruni.feature.aiplanner.presentation.model.ScheduleSource
 
@@ -213,55 +215,6 @@ fun LazyListScope.AiSchedules(
         Spacer(modifier = Modifier.height(10.dp))
     }
 }
-
-@Composable
-fun CompleteTagButton() {
-    Box(
-        modifier = Modifier
-            .border(
-                width = 1.dp,
-                color = Gray.gray_400,
-                shape = RoundedCornerShape(9.dp)
-            )
-            .background(
-                color = Gray.gray_300,
-                shape = RoundedCornerShape(9.dp)
-            )
-            .padding(horizontal = 8.dp, vertical = 2.dp)
-    ) {
-        Text(
-            text = "완료",
-            style = AppTypography.button_regular_9,
-            color = Gray.gray_700
-        )
-    }
-}
-
-@Composable
-fun ProgressingTagButton() {
-    Box(
-        modifier = Modifier
-            .border(
-                width = 1.dp,
-//                color = Color(0xFFC9F0CD),
-                color = Gray.gray_400,
-                shape = RoundedCornerShape(9.dp)
-            )
-            .background(
-//                color = Color(0xFFE8F7EC),
-                color = Gray.gray_300,
-                shape = RoundedCornerShape(9.dp)
-            )
-            .padding(horizontal = 8.dp, vertical = 2.dp)
-    ) {
-        Text(
-            text = "진행중",
-            style = AppTypography.button_regular_9,
-            color = Gray.gray_700
-        )
-    }
-}
-
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
