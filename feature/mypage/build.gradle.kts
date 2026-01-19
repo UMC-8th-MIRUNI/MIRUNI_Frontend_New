@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.convention.feature)
+    alias(libs.plugins.convention.retrofit)
     alias(libs.plugins.compose.compiler)
 }
 
@@ -55,6 +56,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.ui.test.junit4)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

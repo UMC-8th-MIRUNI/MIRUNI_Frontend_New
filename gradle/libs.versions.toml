@@ -44,6 +44,7 @@ kakao = "2.23.1"
 kizitonwoseCalendar = "2.6.0"
 foundationLayout = "1.10.0"
 foundation = "1.10.0"
+uiTestJunit4Version = "1.10.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -109,6 +110,7 @@ kakao-sdk-v2-user = { module = "com.kakao.sdk:v2-user", version.ref = "kakao" }
 kizitonwose-calendar = { group = "com.kizitonwose.calendar", name = "compose", version.ref = "kizitonwoseCalendar" }
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
+ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "uiTestJunit4Version" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
