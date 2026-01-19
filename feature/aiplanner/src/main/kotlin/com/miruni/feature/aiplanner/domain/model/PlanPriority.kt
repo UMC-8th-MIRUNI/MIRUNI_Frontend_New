@@ -1,14 +1,22 @@
 package com.miruni.feature.aiplanner.domain.model
 
-enum class PlanPriority {
-    HIGH,
-    MEDIUM,
-    LOW;
+enum class PlanPriority(
+    val server: String, // 서버에서 받는 값
+    val ui: String // UI에서 사용하는 값
+) {
+    HIGH("HIGH", "상"),
+    MEDIUM("MEDIUM", "중"),
+    LOW("LOW", "하");
 
     companion object {
-        /** String -> ENUM */
-        fun from(value: String?): PlanPriority = values().find {
-            it.name.equals(value, ignoreCase = true)
+        /** server -> ui */
+        fun fromServer(value: String?): PlanPriority = entries.find {
+            it.server == value
+        } ?: HIGH
+
+        /** ui -> server */
+        fun fromUi(label: String): PlanPriority = entries.find {
+            it.ui == label
         } ?: HIGH
     }
 }
