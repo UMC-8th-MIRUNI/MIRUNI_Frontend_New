@@ -3,11 +3,13 @@ package com.miruni.feature.aiplanner.data.api
 import com.miruni.core.network.ApiResponse
 import com.miruni.feature.aiplanner.data.dto.request.PostAiPlansRequest
 import com.miruni.feature.aiplanner.data.dto.response.GetAiPlansResponse
-import com.miruni.feature.aiplanner.data.dto.response.GetScheduleResponse
+import com.miruni.feature.aiplanner.data.dto.response.ScheduleResponse
 import com.miruni.feature.aiplanner.data.dto.response.PlanModel
+import com.miruni.feature.aiplanner.data.dto.response.RemainResponse
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 
@@ -27,7 +29,14 @@ interface AiPlannerApi {
     @GET("api/ai-plans/table/{plan_id}")
     suspend fun getSchedule(
         @Path("plan_id") planId: Long
-    ): ApiResponse<GetScheduleResponse>
+    ): ApiResponse<ScheduleResponse>
+
+    /** AI 플래닝 스케줄표 수정 */
+    @PATCH("api/ai-plans/table/{plan_id}")
+    suspend fun patchScheduleTable(
+        @Path("plan_id") planId: Long,
+        @Body request: PlanModel
+    ): ApiResponse<ScheduleResponse>
 
     /** AI 플래닝 스케줄표 삭제 (스케줄표 전체 삭제) */
     @DELETE("api/ai-plans/table/{plan_id}")
@@ -36,16 +45,13 @@ interface AiPlannerApi {
     ): ApiResponse<Boolean>
 
     /** AI 플래닝 스케줄표 선택 삭제 (스케줄표 아이템 삭제) */
-    @DELETE("api/ai-plans/table/items/{plan-id}")
+    @DELETE("api/ai-plans/table/items/{plan_id}")
     suspend fun deleteScheduleItem(
-        @Path("plan-id") planId: Long,
+        @Path("plan_id") planId: Long,
         @Body request: List<Long> // 삭제할 AI 플랜 ID 리스트
     ): ApiResponse<Boolean>
 
+    /** 잔여 횟수 가져오기 */
     @GET("/")
-    suspend fun getRemain(): ApiResponse<AiPlannerRemainResponse>
+    suspend fun getRemain(): ApiResponse<RemainResponse>
 }
-
-data class AiPlannerRemainResponse(
-    val remain: Int // 잔여 횟수
-)
