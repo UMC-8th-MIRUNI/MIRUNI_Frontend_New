@@ -1,5 +1,7 @@
 package com.miruni.feature.aiplanner.data.dto.response
 
+import com.miruni.feature.aiplanner.domain.model.PlanProgress
+
 data class GetAiPlansResponse(
     val id: Long, // 상위 일정 ID
     val title: String, // 상위 일정 제목
@@ -7,4 +9,15 @@ data class GetAiPlansResponse(
     val doneCount: Long, // 세부 일정 중 완료 개수
     val totalCount: Long, // 세부 일정 전체 개수
     val progressRate: Long // 진행률 (%)
-)
+) {
+    fun toDomain(): PlanProgress {
+       return PlanProgress(
+           planId = id,
+           title = title,
+           isDone = isDone,
+           doneCount = doneCount,
+           totalCount = totalCount,
+           progressRate = progressRate
+       )
+    }
+}
