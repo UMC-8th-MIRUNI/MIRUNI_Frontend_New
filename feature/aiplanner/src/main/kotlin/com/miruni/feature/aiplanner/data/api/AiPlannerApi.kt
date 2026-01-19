@@ -4,7 +4,7 @@ import com.miruni.core.network.ApiResponse
 import com.miruni.feature.aiplanner.data.dto.request.PostAiPlansRequest
 import com.miruni.feature.aiplanner.data.dto.response.GetAiPlansResponse
 import com.miruni.feature.aiplanner.data.dto.response.ScheduleResponse
-import com.miruni.feature.aiplanner.data.dto.response.PlanModel
+import com.miruni.feature.aiplanner.data.dto.response.PlanDto
 import com.miruni.feature.aiplanner.data.dto.response.RemainResponse
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -23,7 +23,7 @@ interface AiPlannerApi {
     @POST("api/ai-plans")
     suspend fun postAiPlans(
         @Body request: PostAiPlansRequest
-    ): ApiResponse<List<PlanModel>>
+    ): ApiResponse<List<PlanDto>>
 
     /** AI 플래닝 스케줄표 조회 */
     @GET("api/ai-plans/table/{plan_id}")
@@ -35,7 +35,7 @@ interface AiPlannerApi {
     @PATCH("api/ai-plans/table/{plan_id}")
     suspend fun patchScheduleTable(
         @Path("plan_id") planId: Long,
-        @Body request: PlanModel
+        @Body request: PlanDto
     ): ApiResponse<ScheduleResponse>
 
     /** AI 플래닝 스케줄표 삭제 (스케줄표 전체 삭제) */
