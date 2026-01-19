@@ -6,9 +6,5 @@ data class Plan(
     val deadline: String, // 마감기한
     val taskRange: String, // 일정 범위
     val priority: PlanPriority, // 우선 순위
-    val isDone: Boolean?, // 일정 전체에 대한 완료 여부
-    val doneCount: Long?, // 세부 일정 중 완료 개수
-    val totalCount: Long?, // 세부 일정 전체 개수
-    val progressRate: Long?, // 진행률 (%)
     val aiPlans: List<AiPlan> // 매칭되는 하위 일정
 )

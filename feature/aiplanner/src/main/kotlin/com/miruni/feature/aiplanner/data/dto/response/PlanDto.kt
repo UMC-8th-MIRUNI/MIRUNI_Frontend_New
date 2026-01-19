@@ -18,11 +18,7 @@ data class PlanDto(
             deadline = deadline,
             taskRange = taskRange,
             priority = priority,
-            aiPlans = aiPlans.map { it.toDomain() },
-            isDone = null,
-            doneCount = null,
-            totalCount = null,
-            progressRate = null
+            aiPlans = aiPlans.map { it.toDomain() }
         )
     }
 }
