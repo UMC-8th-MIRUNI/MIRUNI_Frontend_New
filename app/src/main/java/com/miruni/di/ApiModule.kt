@@ -2,6 +2,7 @@ package com.miruni.di
 
 import com.miruni.feature.aiplanner.data.api.AiPlannerApi
 import com.miruni.feature.login.data.api.AuthApi
+import com.miruni.feature.mypage.data.api.AccountApi
 import com.miruni.feature.mypage.data.api.ProfileApi
 import dagger.Module
 import dagger.Provides
@@ -36,4 +37,11 @@ object ApiModule {
     fun provideProfileApi(
         retrofit: Retrofit
     ): ProfileApi = retrofit.create(ProfileApi::class.java)
+
+    // account API
+    @Provides
+    @Singleton
+    fun provideAccountApi(
+        retrofit: Retrofit
+    ): AccountApi = retrofit.create(AccountApi::class.java)
 }

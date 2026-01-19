@@ -1,5 +1,6 @@
 package com.miruni.feature.mypage.notification
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,59 +9,49 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.Gray
 import com.miruni.core.designsystem.MiruniTheme
-import com.miruni.core.designsystem.MiruniTypography
+import com.miruni.feature.mypage.component.MyPageTopBar
+
+private const val TAG = "SettingNotificationScreen"
 
 @Composable
 fun SettingNotificationScreen(
+    navController: NavHostController,
+    viewModel: SettingNotificationViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
-    var checked by remember { mutableStateOf(false) }
+    val state by viewModel.viewState.collectAsStateWithLifecycle()
 
     Scaffold(
         containerColor = Color(0xFFF6F5F6),
         topBar = {
-            Row(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(20.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowLeft,
-                    contentDescription = "back"
-                )
-
-                Spacer(modifier = modifier.weight(1f))
-
-                Text(
-                    text = "알림 설정",
-                    style = MiruniTypography.titleMedium
-                )
-
-                Spacer(modifier = modifier.weight(1f))
-            }
+            MyPageTopBar(
+                text = "알림 설정",
+                onBackClick = {
+                    Log.d(TAG, "Back button clicked")
+                    navController.popBackStack()
+                }
+            )
         }
     ) { innerPadding ->
         Column(
@@ -68,6 +59,7 @@ fun SettingNotificationScreen(
                 .padding(innerPadding)
                 .padding(20.dp)
         ) {
+            // 일정 리마인드 알림 Card
             Card(
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(
@@ -101,6 +93,7 @@ fun SettingNotificationScreen(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
+                    // 5분 전 스위치
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -112,13 +105,18 @@ fun SettingNotificationScreen(
                         Spacer(modifier = modifier.weight(1f))
 
                         Switch(
-                            checked = checked,
-                            onCheckedChange = {
-                                checked = it
-                            }
+                            checked = state.isReminder5MinEnabled,
+                            onCheckedChange = { enabled ->
+                                Log.d(TAG, "5min switch changed: $enabled")
+                                viewModel.setEvent(
+                                    SettingNotificationContract.Event.OnReminder5MinChange(enabled)
+                                )
+                            },
+                            modifier = Modifier.testTag("switch5Min")
                         )
                     }
 
+                    // 10분 전 스위치
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -130,10 +128,14 @@ fun SettingNotificationScreen(
                         Spacer(modifier = modifier.weight(1f))
 
                         Switch(
-                            checked = checked,
-                            onCheckedChange = {
-                                checked = it
-                            }
+                            checked = state.isReminder10MinEnabled,
+                            onCheckedChange = { enabled ->
+                                Log.d(TAG, "10min switch changed: $enabled")
+                                viewModel.setEvent(
+                                    SettingNotificationContract.Event.OnReminder10MinChange(enabled)
+                                )
+                            },
+                            modifier = Modifier.testTag("switch10Min")
                         )
                     }
                 }
@@ -141,6 +143,7 @@ fun SettingNotificationScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // 실행 유도 팝업 알림 Card
             Card(
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(
@@ -175,16 +178,21 @@ fun SettingNotificationScreen(
                     Spacer(modifier = modifier.weight(1f))
 
                     Switch(
-                        checked = checked,
-                        onCheckedChange = {
-                            checked = it
-                        }
+                        checked = state.isExecutionPopupEnabled,
+                        onCheckedChange = { enabled ->
+                            Log.d(TAG, "Execution popup switch changed: $enabled")
+                            viewModel.setEvent(
+                                SettingNotificationContract.Event.OnExecutionPopupChange(enabled)
+                            )
+                        },
+                        modifier = Modifier.testTag("switchExecutionPopup")
                     )
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // 실행 잔소리 알림 Card
             Card(
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(
@@ -219,16 +227,21 @@ fun SettingNotificationScreen(
                     Spacer(modifier = modifier.weight(1f))
 
                     Switch(
-                        checked = true,
-                        onCheckedChange = {
-                            checked = it
-                        }
+                        checked = state.isExecutionNagEnabled,
+                        onCheckedChange = { enabled ->
+                            Log.d(TAG, "Execution nag switch changed: $enabled")
+                            viewModel.setEvent(
+                                SettingNotificationContract.Event.OnExecutionNagChange(enabled)
+                            )
+                        },
+                        modifier = Modifier.testTag("switchExecutionNag")
                     )
                 }
             }
 
             Spacer(modifier = Modifier.height(60.dp))
 
+            // 마케팅 정보 수신 동의 Card
             Card(
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(
@@ -262,10 +275,14 @@ fun SettingNotificationScreen(
                     Spacer(modifier = modifier.weight(1f))
 
                     Switch(
-                        checked = true,
-                        onCheckedChange = {
-                            checked = it
-                        }
+                        checked = state.isMarketingConsentEnabled,
+                        onCheckedChange = { enabled ->
+                            Log.d(TAG, "Marketing consent switch changed: $enabled")
+                            viewModel.setEvent(
+                                SettingNotificationContract.Event.OnMarketingConsentChange(enabled)
+                            )
+                        },
+                        modifier = Modifier.testTag("switchMarketingConsent")
                     )
                 }
             }
@@ -277,6 +294,8 @@ fun SettingNotificationScreen(
 @Composable
 private fun SettingNotificationScreenPreview() {
     MiruniTheme {
-        SettingNotificationScreen()
+        SettingNotificationScreen(
+            navController = rememberNavController()
+        )
     }
 }

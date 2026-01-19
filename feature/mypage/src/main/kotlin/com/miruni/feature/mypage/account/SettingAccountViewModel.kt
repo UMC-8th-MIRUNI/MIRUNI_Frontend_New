@@ -1,86 +1,158 @@
 package com.miruni.feature.mypage.account
 
 import android.util.Log
+import androidx.lifecycle.viewModelScope
 import com.miruni.core.common.BaseViewModel
-import jakarta.inject.Inject
+import com.miruni.core.result.DataResult
+import com.miruni.feature.mypage.domain.usecase.UpdateAccountUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class SettingAccountViewModel @Inject constructor() :
-    BaseViewModel<SettingAccountContract.Event, SettingAccountContract.State, SettingAccountContract.Effect>() {
+@HiltViewModel
+class SettingAccountViewModel @Inject constructor(
+    private val updateAccountUseCase: UpdateAccountUseCase
+) : BaseViewModel<SettingAccountContract.Event, SettingAccountContract.State, SettingAccountContract.Effect>() {
 
-//    private val _state = MutableStateFlow(SettingAccountContract.State())
-//    val state: StateFlow<SettingAccountContract.State> = _state.asStateFlow()
+    init {
+        Log.d(TAG, "ViewModel created: $this")
+    }
 
     override fun setInitialState(): SettingAccountContract.State = SettingAccountContract.State()
 
     override fun handleEvents(event: SettingAccountContract.Event) {
+        Log.d(TAG, "handleEvents() - event: $event")
         when (event) {
+            // 수정 모드 진입
             SettingAccountContract.Event.OnEditClick -> {
-                Log.d("SettingAccountViewModel", "edit mode true")
+                Log.d(TAG, "OnEditClick - Entering edit mode")
+                // TODO: 실제로는 서버에서 현재 사용자 정보를 가져와야 함
+                // 여기서는 임시로 더미 데이터 사용
                 setState {
                     copy(
                         isEditMode = true,
                         name = "김가영",
                         birth = "2003.12.20",
                         phoneNumber = "010-8991-3803",
-                        email = "gy12203803@gmail.com"
+                        email = "gy12203803@gmail.com",
+                        // 원본 값 저장
+                        originalName = "김가영",
+                        originalBirth = "2003.12.20",
+                        originalPhoneNumber = "010-8991-3803",
+                        errorMessage = null
                     )
                 }
-//                _state.update { currentState ->
-//                    currentState.copy(
-//                        isEditMode = true,
-//                        name = "김가영",
-//                        birth = "2003.12.20",
-//                        phoneNumber = "010-8991-3803",
-//                        email = "gy12203803@gmail.com"
-//                    )
-//                }
             }
 
+            // 완료 버튼 클릭 - 계정 정보 업데이트 API 호출
             SettingAccountContract.Event.OnCompleteClick -> {
+                Log.d(TAG, "OnCompleteClick - Updating account")
+                updateAccount()
+            }
+
+            // 이름 변경
+            is SettingAccountContract.Event.OnNameChange -> {
+                Log.d(TAG, "OnNameChange - new name: ${event.value}")
                 setState {
                     copy(
-                        isSaving = true,
+                        name = event.value,
+                        errorMessage = null
                     )
                 }
-//                viewModelScope.launch {
-//                    val result = SettingAccountContract.State(
-//                        name = state.value.name,
-//                        birth = state.value.birth,
-//                        phoneNumber = state.value.phoneNumber,
-//                    )
-//
-//                    when (result) {
-                        // TODO: 서버 저장
-//                        is DataResult.Success -> {
-//                            // 저장 성공 -> 수정 모드 해제
-//                            setState {
-//                                copy(
-//                                    isSaving = false
-//                                )
-//                            }
-//                        }
-
-//                        is DataResult.Error -> {
-//                            // 저장 실패 -> 다시 수정모드 복구
-//                            setState {
-//                                copy(
-//                                    isSaving = false,
-//                                    isEditMode = true
-//                                )
-//                            }
-//                        }
-//                    }
-//                }
             }
 
-            is SettingAccountContract.Event.OnBirthChange ->
-                setState { copy(birth = event.value) }
+            // 생년월일 변경
+            is SettingAccountContract.Event.OnBirthChange -> {
+                Log.d(TAG, "OnBirthChange - new birth: ${event.value}")
+                setState {
+                    copy(
+                        birth = event.value,
+                        errorMessage = null
+                    )
+                }
+            }
 
-            is SettingAccountContract.Event.OnNameChange ->
-                setState { copy(name = event.value) }
-
-            is SettingAccountContract.Event.OnPhoneChange ->
-                setState { copy(phoneNumber = event.value) }
+            // 전화번호 변경
+            is SettingAccountContract.Event.OnPhoneChange -> {
+                Log.d(TAG, "OnPhoneChange - new phoneNumber: ${event.value}")
+                setState {
+                    copy(
+                        phoneNumber = event.value,
+                        errorMessage = null
+                    )
+                }
+            }
         }
+    }
+
+    /**
+     * 계정 정보 업데이트 API 호출
+     */
+    private fun updateAccount() {
+        val currentState = viewState.value
+        val name = currentState.name.ifBlank { null }
+        val birth = currentState.birth.ifBlank { null }
+        val phoneNumber = currentState.phoneNumber.ifBlank { null }
+
+        Log.d(TAG, "updateAccount() - name: $name, birth: $birth, phoneNumber: $phoneNumber")
+
+        // 로딩 시작
+        setState { copy(isLoading = true, errorMessage = null) }
+
+        viewModelScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                updateAccountUseCase(
+                    name = name,
+                    birth = birth,
+                    phoneNumber = phoneNumber
+                )
+            }
+
+            when (result) {
+                is DataResult.Success -> {
+                    val userAccount = result.data
+                    Log.d(TAG, "updateAccount() Success - userAccount: $userAccount")
+
+                    // 서버 응답으로 UI 업데이트
+                    setState {
+                        copy(
+                            isEditMode = false,
+                            isLoading = false,
+                            name = userAccount.name ?: "",
+                            birth = userAccount.birth ?: "",
+                            phoneNumber = userAccount.phoneNumber ?: "",
+                            email = userAccount.email,
+                            originalName = userAccount.name ?: "",
+                            originalBirth = userAccount.birth ?: "",
+                            originalPhoneNumber = userAccount.phoneNumber ?: "",
+                            errorMessage = null
+                        )
+                    }
+
+                    setEffect { SettingAccountContract.Effect.AccountUpdateSuccess }
+                    setEffect { SettingAccountContract.Effect.Message.Toast("계정 정보가 업데이트되었습니다.") }
+                }
+
+                is DataResult.Error -> {
+                    val errorMessage = result.error.errorMessage
+                    Log.e(TAG, "updateAccount() Error - errorMessage: $errorMessage")
+
+                    setState {
+                        copy(
+                            isLoading = false,
+                            errorMessage = errorMessage
+                        )
+                    }
+
+                    setEffect { SettingAccountContract.Effect.Message.Error(errorMessage) }
+                }
+            }
+        }
+    }
+
+    companion object {
+        private const val TAG = "SettingAccountViewModel"
     }
 }

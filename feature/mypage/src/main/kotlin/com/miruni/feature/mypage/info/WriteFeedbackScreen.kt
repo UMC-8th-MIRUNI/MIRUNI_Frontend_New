@@ -1,5 +1,6 @@
 package com.miruni.feature.mypage.info
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,10 +30,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.Gray
 import com.miruni.core.designsystem.MiruniTheme
@@ -40,8 +44,11 @@ import com.miruni.feature.mypage.R
 import com.miruni.feature.mypage.component.MyPageBottomBar
 import com.miruni.feature.mypage.component.MyPageTopBar
 
+private const val TAG = "WriteFeedbackScreen"
+
 @Composable
 fun WriteFeedbackScreen(
+    navController: NavHostController,
     modifier: Modifier = Modifier,
     onCameraClick: () -> Unit = {},
     onConfirmClick: () -> Unit = {}
@@ -53,7 +60,13 @@ fun WriteFeedbackScreen(
     Scaffold(
         containerColor = Color(0xFFF6F5F6),
         topBar = {
-            MyPageTopBar(text = "문의 및 피드백")
+            MyPageTopBar(
+                text = "문의 및 피드백",
+                onBackClick = {
+                    Log.d(TAG, "Back button clicked")
+                    navController.popBackStack()
+                }
+            )
         },
         bottomBar = {
             MyPageBottomBar(
@@ -63,7 +76,7 @@ fun WriteFeedbackScreen(
         }
 
     ) { innerPadding ->
-        Column() {
+        Column {
             Card(
                 modifier = modifier
                     .padding(innerPadding)
@@ -94,7 +107,8 @@ fun WriteFeedbackScreen(
                         colors = OutlinedTextFieldDefaults.colors(
                             unfocusedContainerColor = Gray.gray_300,
                             unfocusedBorderColor = Gray.gray_400
-                        )
+                        ),
+                        modifier = Modifier.testTag("titleTextField")
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -113,7 +127,8 @@ fun WriteFeedbackScreen(
                             text = newText
                         },
                         modifier = modifier
-                            .height(110.dp),
+                            .height(110.dp)
+                            .testTag("contentTextField"),
                         shape = RoundedCornerShape(10.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             unfocusedContainerColor = Gray.gray_300,
@@ -125,7 +140,9 @@ fun WriteFeedbackScreen(
 
                     Card(
                         onClick = onCameraClick,
-                        modifier = modifier.size(56.dp),
+                        modifier = modifier
+                            .size(56.dp)
+                            .testTag("cameraButton"),
                         shape = RoundedCornerShape(10.dp),
                         colors = CardDefaults.cardColors(
                             containerColor = Gray.gray_300
@@ -160,7 +177,8 @@ fun WriteFeedbackScreen(
                             .clickable(
                                 role = Role.Checkbox,
                                 onClick = { checkedState = !checkedState }
-                            ),
+                            )
+                            .testTag("privacyCheckbox"),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Checkbox(
@@ -180,6 +198,8 @@ fun WriteFeedbackScreen(
 @Composable
 private fun FeedbackScreenPreview() {
     MiruniTheme {
-        WriteFeedbackScreen()
+        WriteFeedbackScreen(
+            navController = rememberNavController()
+        )
     }
 }

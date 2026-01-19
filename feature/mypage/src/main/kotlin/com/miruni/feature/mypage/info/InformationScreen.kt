@@ -1,5 +1,6 @@
 package com.miruni.feature.mypage.info
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
@@ -26,19 +28,31 @@ import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.Gray
 import com.miruni.core.designsystem.MiruniTheme
+import com.miruni.core.navigation.MiruniRoute
 import com.miruni.feature.mypage.component.MyPageTopBar
+
+private const val TAG = "InformationScreen"
 
 @Composable
 fun InformationScreen(
+    navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
         containerColor = Color(0xFFF6F5F6),
         topBar = {
-            MyPageTopBar(text = "문의 및 정보")
+            MyPageTopBar(
+                text = "문의 및 정보",
+                onBackClick = {
+                    Log.d(TAG, "Back button clicked")
+                    navController.popBackStack()
+                }
+            )
         }
     ) { innerPadding ->
         Card(
@@ -94,8 +108,12 @@ fun InformationScreen(
                 ) {
                     OutlinedButton(
                         modifier = modifier
-                            .size(90.dp, 30.dp),
-                        onClick = {},
+                            .size(90.dp, 30.dp)
+                            .testTag("writeButton"),
+                        onClick = {
+                            Log.d(TAG, "작성하기 button clicked")
+                            navController.navigate(MiruniRoute.MyPageWriteFeedback.route)
+                        },
                         border = BorderStroke(1.dp, Color(0xFF1B67FF)),
                         shape = RoundedCornerShape(6.dp)
                     ) {
@@ -110,8 +128,11 @@ fun InformationScreen(
 
                     OutlinedButton(
                         modifier = modifier
-                            .size(90.dp, 30.dp),
-                        onClick = {},
+                            .size(90.dp, 30.dp)
+                            .testTag("historyButton"),
+                        onClick = {
+                            Log.d(TAG, "내역보기 button clicked")
+                        },
                         border = BorderStroke(1.dp, Color(0xFF1B67FF)),
                         shape = RoundedCornerShape(6.dp)
                     ) {
@@ -196,6 +217,8 @@ fun InformationScreen(
 @Composable
 private fun InformationScreenPreview() {
     MiruniTheme {
-        InformationScreen()
+        InformationScreen(
+            navController = rememberNavController()
+        )
     }
 }
