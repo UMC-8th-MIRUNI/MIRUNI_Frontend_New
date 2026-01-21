@@ -6,7 +6,7 @@ import com.miruni.core.result.DataError
 import com.miruni.core.result.DataResult
 import com.miruni.feature.aiplanner.data.api.AiPlannerApi
 import com.miruni.feature.aiplanner.data.dto.request.PostAiPlansRequest
-import com.miruni.feature.aiplanner.data.mapper.toDomainError
+import com.miruni.core.common.mapper.toDomainError
 import com.miruni.feature.aiplanner.domain.model.Plan
 import com.miruni.feature.aiplanner.domain.model.PlanInput
 import com.miruni.feature.aiplanner.domain.model.PlanPriority

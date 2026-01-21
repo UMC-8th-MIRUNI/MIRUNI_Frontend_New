@@ -1,4 +1,4 @@
-package com.miruni.feature.aiplanner.data.mapper
+package com.miruni.core.common.mapper
 
 import com.miruni.core.network.NetworkError
 import com.miruni.core.result.DataError

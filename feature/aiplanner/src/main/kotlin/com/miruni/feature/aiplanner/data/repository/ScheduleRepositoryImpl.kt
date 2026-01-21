@@ -7,7 +7,7 @@ import com.miruni.core.result.DataResult
 import com.miruni.feature.aiplanner.data.api.AiPlannerApi
 import com.miruni.feature.aiplanner.data.dto.response.PlanDto
 import com.miruni.feature.aiplanner.data.dto.response.toDto
-import com.miruni.feature.aiplanner.data.mapper.toDomainError
+import com.miruni.core.common.mapper.toDomainError
 import com.miruni.feature.aiplanner.domain.model.Plan
 import com.miruni.feature.aiplanner.domain.repository.ScheduleRepository
 import javax.inject.Inject

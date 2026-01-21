@@ -5,7 +5,7 @@ import com.miruni.core.network.executeApiRequest
 import com.miruni.core.result.DataError
 import com.miruni.core.result.DataResult
 import com.miruni.feature.aiplanner.data.api.AiPlannerApi
-import com.miruni.feature.aiplanner.data.mapper.toDomainError
+import com.miruni.core.common.mapper.toDomainError
 import com.miruni.feature.aiplanner.domain.model.PlannerMain
 import com.miruni.feature.aiplanner.domain.repository.MainRepository
 import javax.inject.Inject
