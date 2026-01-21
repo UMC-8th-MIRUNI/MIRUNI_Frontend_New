@@ -1,5 +1,7 @@
 package com.miruni.feature.aiplanner.domain.repository
 
+import com.miruni.core.result.DataError
+import com.miruni.core.result.DataResult
 import com.miruni.feature.aiplanner.domain.model.Plan
 import com.miruni.feature.aiplanner.domain.model.PlanInput
 import com.miruni.feature.aiplanner.domain.model.PlanPriority
@@ -18,5 +20,5 @@ interface PlanningRepository {
         taskRange: String,
         priority: PlanPriority,
         detailRequest: String
-    ): Plan
+    ): DataResult<List<Plan>, DataError>
 }

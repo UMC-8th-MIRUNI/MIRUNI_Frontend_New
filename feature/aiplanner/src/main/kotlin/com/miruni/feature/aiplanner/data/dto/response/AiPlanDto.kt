@@ -24,3 +24,15 @@ data class AiPlanDto(
         )
     }
 }
+
+fun AiPlan.toDto(): AiPlanDto {
+    return AiPlanDto(
+        aiPlanId = this.aiPlanId,
+        scheduledDate = this.scheduledDate,
+        startTime = this.startTime,
+        endTime = this.endTime,
+        subTitle = this.subTitle,
+        expectedDuration = this.expectedDuration,
+        status = this.status
+    )
+}

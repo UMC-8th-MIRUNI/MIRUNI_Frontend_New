@@ -6,5 +6,6 @@ data class Plan(
     val deadline: String, // 마감기한
     val taskRange: String, // 일정 범위
     val priority: PlanPriority, // 우선 순위
+    val progressRate: Long? = null, // 진행률 (%)
     val aiPlans: List<AiPlan> // 매칭되는 하위 일정
 )

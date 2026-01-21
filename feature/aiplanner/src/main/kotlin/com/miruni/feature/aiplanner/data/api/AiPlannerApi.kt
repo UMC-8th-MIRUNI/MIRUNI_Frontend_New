@@ -27,7 +27,7 @@ interface AiPlannerApi {
 
     /** AI 플래닝 스케줄표 조회 */
     @GET("api/ai-plans/table/{plan_id}")
-    suspend fun getSchedule(
+    suspend fun getScheduleTable(
         @Path("plan_id") planId: Long
     ): ApiResponse<ScheduleResponse>
 
