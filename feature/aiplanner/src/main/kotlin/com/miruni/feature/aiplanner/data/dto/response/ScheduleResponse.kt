@@ -1,6 +1,7 @@
 package com.miruni.feature.aiplanner.data.dto.response
 
 import com.miruni.feature.aiplanner.domain.model.Plan
+import com.miruni.feature.aiplanner.domain.model.PlanPriority
 
 data class ScheduleResponse(
     val plan: PlanDto,
@@ -12,7 +13,7 @@ data class ScheduleResponse(
             title = plan.title,
             deadline = plan.deadline,
             taskRange = plan.taskRange,
-            priority = plan.priority,
+            priority = PlanPriority.fromServer(plan.priority),
             progressRate = progressPercentage.toLong(),
             aiPlans = plan.aiPlans.map { it.toDomain() }
         )

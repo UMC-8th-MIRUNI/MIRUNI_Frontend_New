@@ -17,7 +17,7 @@ interface AiPlannerApi {
 
     /** AI 상위 일정 조회 */
     @GET("api/ai-plans")
-    suspend fun getAiPlans(): ApiResponse<List<GetAiPlansResponse>>
+    suspend fun getAiPlans(): ApiResponse<GetAiPlansResponse>
 
     /** AI 플래닝 */
     @POST("api/ai-plans")

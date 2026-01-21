@@ -8,7 +8,7 @@ data class PlanDto(
     val title: String, // 상위 일정 제목
     val deadline: String, // 마감 기한
     val taskRange: String, // 일정 범위
-    val priority: PlanPriority, // 우선 순위
+    val priority: String, // 우선 순위
     val aiPlans: List<AiPlanDto> // 매칭되는 하위 일정
 ) {
     fun toDomain(): Plan {
@@ -17,7 +17,7 @@ data class PlanDto(
             title = title,
             deadline = deadline,
             taskRange = taskRange,
-            priority = priority,
+            priority = PlanPriority.fromServer(priority),
             aiPlans = aiPlans.map { it.toDomain() }
         )
     }

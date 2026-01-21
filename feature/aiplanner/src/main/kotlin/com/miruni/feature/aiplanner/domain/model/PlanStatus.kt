@@ -9,14 +9,14 @@ enum class PlanStatus(
     DONE("DONE", "완료");
 
     companion object {
-        /** server -> ui */
-        fun fromServer(value: String?): PlanStatus = entries.find {
-            it.server == value
+        /** server -> PlanStatus */
+        fun fromServer(server: String?): PlanStatus = entries.find {
+            it.server == server
         } ?: TODO
 
-        /** ui -> server */
-        fun fromUi(label: String): PlanStatus = entries.find {
-            it.ui == label
+        /** ui -> PlanStatus */
+        fun fromUi(ui: String): PlanStatus = entries.find {
+            it.ui == ui
         } ?: TODO
     }
 }

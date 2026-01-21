@@ -20,7 +20,7 @@ data class PlanUiModel(
             title = title,
             deadline = deadline,
             taskRange = taskRange,
-            priority = priority.let { PlanPriority.fromUi(it) },
+            priority = PlanPriority.fromUi(priority),
             aiPlans = aiPlans.map { it.toDomain() }
         )
     }

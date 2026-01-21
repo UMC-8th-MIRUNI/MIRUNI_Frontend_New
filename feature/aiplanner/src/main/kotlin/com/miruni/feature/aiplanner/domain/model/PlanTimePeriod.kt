@@ -13,12 +13,12 @@ enum class PlanTimePeriod(
     DAWN("DAWN", "새벽 (0~6시)");
 
     companion object {
-        /** server -> ui */
+        /** server -> PlanTimePeriod */
         fun fromServer(value: String?): PlanTimePeriod = entries.find {
             it.server == value
         } ?: RANDOM
 
-        /** ui -> server */
+        /** ui -> PlanTimePeriod */
         fun fromUi(label: String): PlanTimePeriod = entries.find {
             it.ui == label
         } ?: RANDOM

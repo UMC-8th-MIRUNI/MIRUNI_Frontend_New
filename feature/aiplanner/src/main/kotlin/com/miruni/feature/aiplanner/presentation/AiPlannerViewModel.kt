@@ -2,6 +2,7 @@ package com.miruni.feature.aiplanner.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.miruni.core.common.BaseViewModel
+import com.miruni.core.common.DateTimeHelper
 import com.miruni.feature.aiplanner.domain.repository.MainRepository
 import com.miruni.core.domain.onboarding.OnboardingRepository
 import com.miruni.core.domain.onboarding.OnboardingKey
@@ -130,35 +131,23 @@ class AiPlannerViewModel @Inject constructor(
             setState { copy(isMainLoading = true) }
 
             // API 호출
-            val plansDeferred = async { mainRepository.getAiPlans() }
-            val remainDeferred = async { mainRepository.getRemain() }
-
-            val plansResult = plansDeferred.await()
-            val remainResult = remainDeferred.await()
-
+            val result = mainRepository.getAiPlans()
             setState { copy(isMainLoading = false) }
 
             // 결과 처리
-            if (plansResult is DataResult.Success && remainResult is DataResult.Success) {
-                setState {
-                    copy(
-                        aiPlans = plansResult.data,
-                        remain = remainResult.data
-                    )
+            when (result) {
+                is DataResult.Success -> {
+                    setState {
+                        copy(
+                            remain = result.data.remainingAiCnt,
+                            aiPlans = result.data.plans
+                        )
+                    }
                 }
-            } else {
-                val error = (plansResult as? DataResult.Error)?.error
-                    ?: (remainResult as? DataResult.Error)?.error
 
-                showErrorMessage(error)
-            }
-
-            setState {
-                copy(
-                    aiPlans = aiPlans,
-                    remain = remain,
-                    isMainLoading = false
-                )
+                is DataResult.Error -> {
+                    showErrorMessage(result.error)
+                }
             }
         }
 
@@ -212,16 +201,38 @@ class AiPlannerViewModel @Inject constructor(
             // 입력값 수집
             val forms = viewState.value.forms.associateBy { it.id }
 
-            val title = (forms["what"]?.value as? PlanInput.Text)?.text.orEmpty()
-            val deadline = (forms["until"]?.value as? PlanInput.Date)?.let { "${it.endDate}" }
+            val title = (forms["what"]?.value as? PlanInput.Text)
+                ?.text
+                .orEmpty()
+
+            val dateInput = (forms["until"]?.value as? PlanInput.Date) ?: return@launch
+            val startDateTime = DateTimeHelper.toServerDateTime(dateInput.startDate, dateInput.startTime)
+            val endDateTime = DateTimeHelper.toServerDateTime(dateInput.endDate, dateInput.endTime)
+
+            val timePeriod = (forms["when"]?.value as? PlanInput.Option)
+                ?.option
+                ?.let { PlanTimePeriod.fromUi(it) }
+                ?: PlanTimePeriod.RANDOM
+            val taskRange = (forms["howMuch"]?.value as? PlanInput.Text)
+                ?.text
+                .orEmpty()
+            val priority = (forms["priority"]?.value as? PlanInput.Option)
+                ?.option
+                ?.let { PlanPriority.fromUi(it) }
+                ?: PlanPriority.LOW
+            val detailRequest = (forms["extra"]?.value as? PlanInput.Text)
+                ?.text
+                .orEmpty()
 
             // API 호출
             val result = planningRepository.postAiPlan(
                 title = title,
-                timePeriod = PlanTimePeriod.fromUi(timePeriod),
+                startDateTime = startDateTime,
+                endDateTime = endDateTime,
+                timePeriod = timePeriod,
                 taskRange = taskRange,
-                priority = PlanPriority.fromUi(priority),
-                detailRequest = extra
+                priority = priority,
+                detailRequest = detailRequest
             )
             setState { copy(isPlanningLoading = false) }
 

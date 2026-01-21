@@ -9,12 +9,12 @@ enum class PlanPriority(
     LOW("LOW", "하");
 
     companion object {
-        /** server -> ui */
+        /** server -> PlanPriority */
         fun fromServer(value: String?): PlanPriority = entries.find {
             it.server == value
         } ?: HIGH
 
-        /** ui -> server */
+        /** ui -> PlanPriority */
         fun fromUi(label: String): PlanPriority = entries.find {
             it.ui == label
         } ?: HIGH

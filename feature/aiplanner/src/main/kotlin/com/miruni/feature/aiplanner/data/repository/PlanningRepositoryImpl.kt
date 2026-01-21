@@ -33,21 +33,22 @@ class PlanningRepositoryImpl @Inject constructor(
 
     override suspend fun postAiPlan(
         title: String,
-        deadline: String,
+        startDateTime: String,
+        endDateTime: String,
         timePeriod: PlanTimePeriod,
         taskRange: String,
         priority: PlanPriority,
         detailRequest: String
-    ): DataResult<List<Plan>, DataError> {
-        // 통신 실행
+    ): DataResult<List<Plan>, DataError> {// 통신 실행
         val networkResult = executeApiRequest {
             api.postAiPlans(
                 PostAiPlansRequest(
                     title = title,
-                    deadline = deadline,
-                    timePeriod = timePeriod,
-                    taskRange = taskRange,
-                    priority = priority,
+                    startDateTime = startDateTime,
+                    endDateTime = endDateTime,
+                    timePeriod = timePeriod.server,
+                    scope = taskRange,
+                    priority = priority.server,
                     detailRequest = detailRequest
                 )
             )
@@ -63,8 +64,8 @@ class PlanningRepositoryImpl @Inject constructor(
                 if (response.errorCode.isNullOrBlank() && serverResult != null) {
                     // 성공 시
                     val domainList = serverResult.map { it.toDomain() }
-                    DataResult.Success(domainList)
 
+                    DataResult.Success(domainList)
                 } else {
                     // 통신 성공했으나 서버 에러
                     DataResult.Error(

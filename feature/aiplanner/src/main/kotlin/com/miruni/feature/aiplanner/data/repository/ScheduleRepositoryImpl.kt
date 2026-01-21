@@ -57,7 +57,7 @@ class ScheduleRepositoryImpl @Inject constructor(
                     title = plan.title,
                     deadline = plan.deadline,
                     taskRange = plan.taskRange,
-                    priority = plan.priority,
+                    priority = plan.priority.server,
                     aiPlans = plan.aiPlans.map { it.toDto() }
                 )
             )

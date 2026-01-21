@@ -35,8 +35,8 @@ fun MainScreen(destinations: Set<NavigationDestination>) {
     ) { padding ->
         NavHost(
             navController = navController,
-//            startDestination = MiruniRoute.Login.route,
-            startDestination = MiruniRoute.Home.route,
+            startDestination = MiruniRoute.Login.route,
+//            startDestination = MiruniRoute.Home.route,
             modifier = Modifier.padding(padding)
         ) {
             destinations.forEach { destination ->

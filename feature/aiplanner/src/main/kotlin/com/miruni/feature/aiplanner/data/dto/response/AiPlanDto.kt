@@ -10,7 +10,7 @@ data class AiPlanDto(
     val endTime: String, // 종료 예정 시간
     val subTitle: String, // 세부 일정 제목
     val expectedDuration: Int, // 예상 소요 시간
-    val status: PlanStatus? = null // 일정 상태
+    val status: String? = null // 일정 상태
 ) {
     fun toDomain(): AiPlan {
         return AiPlan(
@@ -20,7 +20,7 @@ data class AiPlanDto(
             endTime = endTime,
             subTitle = subTitle,
             expectedDuration = expectedDuration,
-            status = status
+            status = PlanStatus.fromServer(status)
         )
     }
 }
@@ -33,6 +33,6 @@ fun AiPlan.toDto(): AiPlanDto {
         endTime = this.endTime,
         subTitle = this.subTitle,
         expectedDuration = this.expectedDuration,
-        status = this.status
+        status = this.status?.ui
     )
 }

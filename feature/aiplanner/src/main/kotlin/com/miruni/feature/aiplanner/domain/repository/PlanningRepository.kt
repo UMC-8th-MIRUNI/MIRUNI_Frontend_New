@@ -15,7 +15,8 @@ interface PlanningRepository {
     /** AI 플래닝 */
     suspend fun postAiPlan(
         title: String,
-        deadline: String,
+        startDateTime: String,
+        endDateTime: String,
         timePeriod: PlanTimePeriod,
         taskRange: String,
         priority: PlanPriority,

@@ -3,7 +3,7 @@ package com.miruni.feature.aiplanner.presentation
 import com.miruni.core.common.ViewEvent
 import com.miruni.core.common.ViewSideEffect
 import com.miruni.core.common.ViewState
-import com.miruni.feature.aiplanner.domain.model.PlanProgress
+import com.miruni.feature.aiplanner.domain.model.PlanPreview
 import com.miruni.feature.aiplanner.presentation.model.AiPlanUiModel
 import com.miruni.feature.aiplanner.presentation.model.PlanUiModel
 import com.miruni.feature.aiplanner.presentation.model.PlanningFormItemUiModel
@@ -63,7 +63,7 @@ object AiPlannerContract {
     data class State(
         /** AI 플래너 메인 */
         val isMainLoading: Boolean = false, // AI 플래너 서버 데이터 로딩중 여부
-        val aiPlans: List<PlanProgress> = emptyList(), // AI 플랜 진행률 정보
+        val aiPlans: List<PlanPreview> = emptyList(), // AI 플랜 미리보기
         val remain: Int = 0, // AI 플래닝 사용 잔여 횟수
 
         /** AI 플래너 플래닝 */
