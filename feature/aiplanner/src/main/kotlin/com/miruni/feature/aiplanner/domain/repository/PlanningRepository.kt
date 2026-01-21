@@ -9,6 +9,8 @@ import com.miruni.feature.aiplanner.domain.model.PlanTimePeriod
 import kotlinx.coroutines.flow.Flow
 
 interface PlanningRepository {
+    /** 초기화 */
+    fun clear()
     fun observeValues(): Flow<Map<String, PlanInput?>>
     suspend fun setValue(id: String, value: PlanInput)
 

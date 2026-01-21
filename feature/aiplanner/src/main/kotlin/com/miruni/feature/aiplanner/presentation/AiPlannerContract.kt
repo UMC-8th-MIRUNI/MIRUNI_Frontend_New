@@ -21,6 +21,7 @@ object AiPlannerContract {
         object CompleteOnboarding : Event() // 온보딩 종료
 
         /** AI 플래너 플래닝 */
+        object ClearForm : Event() // 폼 초기화
         data class InputText(val id: String, val text: String) : Event()
         data class SelectDate(
             val id: String,

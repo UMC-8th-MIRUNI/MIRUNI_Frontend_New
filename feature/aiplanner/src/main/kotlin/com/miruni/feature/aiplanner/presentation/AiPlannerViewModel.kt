@@ -62,6 +62,7 @@ class AiPlannerViewModel @Inject constructor(
             AiPlannerContract.Event.CompleteOnboarding -> completeOnboarding() // 온보딩 완료
 
             /** AI 플래너 사용자 입력 */
+            AiPlannerContract.Event.ClearForm -> clearForm()
             AiPlannerContract.Event.ClickSubmit -> submitPlan() // 사용자 입력 제출
             is AiPlannerContract.Event.InputText -> save(event.id, PlanInput.Text(event.text))
             is AiPlannerContract.Event.SelectDate -> {
@@ -150,6 +151,18 @@ class AiPlannerViewModel @Inject constructor(
                 }
             }
         }
+
+    /**
+     * AI 플래너 플래닝: 폼 초기화
+     */
+    private fun clearForm() {
+        viewModelScope.launch {
+            planningRepository.clear() // Repository 데이터 삭제
+
+            val clearForms = setInitialState().forms // state의 forms 초기화
+            setState { copy(forms = clearForms) }
+        }
+    }
 
     /**
      * AI 플래너 플래닝: 사용자가 입력한 폼 관찰

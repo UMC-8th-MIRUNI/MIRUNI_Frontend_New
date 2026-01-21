@@ -75,6 +75,8 @@ fun AiPlannerPlanningScreen(
 
     // 화면 네비게이트
     LaunchedEffect(Unit) {
+        viewModel.setEvent(AiPlannerContract.Event.ClearForm)
+
         viewModel.effect.collect { effect ->
             when(effect) {
                 AiPlannerContract.Effect.Navigation.ToLoading -> {

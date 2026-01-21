@@ -24,6 +24,10 @@ class PlanningRepositoryImpl @Inject constructor(
     private val storage = mutableMapOf<String, PlanInput?>()
     private val state = MutableStateFlow(storage.toMap())
 
+    override fun clear() {
+        storage.clear()
+        state.value = emptyMap()
+    }
     override fun observeValues(): StateFlow<Map<String, PlanInput?>> = state
 
     override suspend fun setValue(id: String, value: PlanInput) {
