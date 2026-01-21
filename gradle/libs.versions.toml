@@ -44,6 +44,9 @@ kakao = "2.23.1"
 googleCredentials = "1.5.0"
 googleIdentity = "1.1.1"
 kizitonwoseCalendar = "2.6.0"
+foundationLayout = "1.10.0"
+foundation = "1.10.0"
+uiTestJunit4Version = "1.10.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -64,6 +67,7 @@ androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-view
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-ui-text = { group = "androidx.compose.ui", name = "ui-text" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
@@ -110,6 +114,9 @@ google-identity = { module = "com.google.android.libraries.identity.googleid:goo
 #compose-runtime-rxjava2 = { group = "androidx.compose.runtime", name = "runtime-rxjava2", version.ref = "compose" }
 
 kizitonwose-calendar = { group = "com.kizitonwose.calendar", name = "compose", version.ref = "kizitonwoseCalendar" }
+androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
+ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "uiTestJunit4Version" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

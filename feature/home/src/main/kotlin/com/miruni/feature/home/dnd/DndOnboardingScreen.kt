@@ -1,6 +1,5 @@
 package com.miruni.feature.home.dnd
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -87,10 +86,6 @@ fun DndOnboardingScreen(
             )
             StartButton(
                 onClick = {
-                    Log.d(
-                        "DndOnboardingScreen",
-                        "Navigate to = ${HomeDndTimerSetting.route}"
-                    )
                     navController.navigate(HomeDndTimerSetting.route)
                 },
             )
@@ -99,7 +94,7 @@ fun DndOnboardingScreen(
 }
 
 @Composable
-fun StartButton(
+private fun StartButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -126,7 +121,7 @@ fun StartButton(
 }
 
 @Composable
-fun ShadowCustomCard(
+private fun ShadowCustomCard(
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(9.dp),
     containerColor: Color = Color(0x66FBFBFB),
@@ -186,7 +181,7 @@ fun ShadowCustomCard(
 
 @Preview(showBackground = true)
 @Composable
-fun OnboardingScreenPreview() {
+private fun OnboardingScreenPreview() {
     MiruniTheme {
         DndOnboardingScreen(
             navController = rememberNavController()
