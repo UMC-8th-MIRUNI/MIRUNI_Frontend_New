@@ -1,5 +1,6 @@
 package com.miruni.feature.login
 
+import androidx.credentials.exceptions.NoCredentialException
 import androidx.lifecycle.viewModelScope
 import com.miruni.core.common.BaseViewModel
 import com.miruni.core.result.DataResult
@@ -97,9 +98,16 @@ class LoginViewModel @Inject constructor(
             }
 
             LoginContract.Event.OnGoogleLoginClicked -> {
+                setEffect { LoginContract.Effect.GoogleLogin }
+            }
+
+            is LoginContract.Event.OnGoogleLoginSuccess -> {
                 setEffect { LoginContract.Effect.Navigation.ToNotification }
             }
 
+            is LoginContract.Event.OnGoogleLoginFail -> {
+                setEffect { LoginContract.Effect.Message.Snackbar(event.message) }
+            }
             LoginContract.Event.OnKakaoLoginClicked -> {
                 setEffect { LoginContract.Effect.KakaoLogin }
             }
@@ -110,7 +118,7 @@ class LoginViewModel @Inject constructor(
             }
 
             is LoginContract.Event.OnKakaoLoginFail -> {
-                setEffect { LoginContract.Effect.Message.Toast(event.message) }
+                setEffect { LoginContract.Effect.Message.Snackbar(event.message) }
             }
 
             LoginContract.Event.OnNotificationClicked -> {

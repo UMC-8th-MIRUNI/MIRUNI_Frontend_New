@@ -2,9 +2,8 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.convention.feature)
-    alias(libs.plugins.compose.compiler)
-
     alias(libs.plugins.convention.retrofit)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -55,6 +54,9 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.activity.compose)
 
+    // coroutine
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.glide)
     implementation(libs.kotlinx.datetime)
 

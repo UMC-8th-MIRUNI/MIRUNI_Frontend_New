@@ -3,59 +3,80 @@ package com.miruni.feature.pwreset
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.miruni.core.designsystem.MiruniSize
 import com.miruni.core.designsystem.MiruniTheme
-import com.miruni.feature.pwreset.component.screen.PwResetCheckScreen
-import com.miruni.feature.pwreset.component.screen.PwResetEmailScreen
-import com.miruni.feature.pwreset.component.screen.PwResetNoticeScreen
-import com.miruni.feature.pwreset.component.screen.PwResetSetPasswordScreen
-import com.miruni.feature.pwreset.component.screen.PwResetSuccessScreen
-import com.miruni.feature.pwreset.navigation.PwResetRoute
+import com.miruni.feature.pwreset.presentation.component.screen.PwResetCheckScreen
+import com.miruni.feature.pwreset.presentation.component.screen.PwResetEmailScreen
+import com.miruni.feature.pwreset.presentation.component.screen.PwResetNoticeScreen
+import com.miruni.feature.pwreset.presentation.component.screen.PwResetSetPasswordScreen
+import com.miruni.feature.pwreset.presentation.component.screen.PwResetSuccessScreen
+import com.miruni.feature.pwreset.presentation.navigation.PwResetRoute
 
 @Composable
 fun PwResetNavigator(
-    onExit: () -> Unit,
     onLoginRestart: () -> Unit,
+    viewModel: PwResetViewModel = hiltViewModel()
 ){
-    val pwResetNavController = rememberNavController()
-    val backStackEntry = pwResetNavController.currentBackStackEntryAsState()
+    val navController = rememberNavController()
+    val backStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry.value?.destination?.route
+    val uiState = viewModel.viewState.collectAsStateWithLifecycle().value
 
-    Column {
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is PwResetContract.Effect.Navigation.ToHome -> {
+                    onLoginRestart()
+                }
+                is PwResetContract.Effect.Navigation.ToRoute -> {
+                    navController.navigate(effect.route.route){
+                        launchSingleTop = true
+                    }
+                }
+            }
+        }
+    }
+    Column(
+        modifier = Modifier.padding(top = MiruniSize.topbarHeight)
+    ){
         PwResetHeader(
             modifier = Modifier.fillMaxWidth(),
             isLast = currentRoute == PwResetRoute.Success.route,
             onPrevClicked = {
-                when(currentRoute){
-                    PwResetRoute.Email.route -> onExit()
-                    PwResetRoute.Notice.route -> pwResetNavController.navigate(PwResetRoute.Email.route)
-                    PwResetRoute.Check.route -> pwResetNavController.navigate(PwResetRoute.Notice.route)
-                    PwResetRoute.SetPassword.route -> pwResetNavController.navigate(PwResetRoute.Check.route)
+                when (currentRoute) {
+                    PwResetRoute.Email.route -> onLoginRestart()
+                    else -> navController.popBackStack()
                 }
             },
         )
         NavHost(
-            navController = pwResetNavController,
+            navController = navController,
             startDestination = PwResetRoute.Email.route,
         ){
             composable(PwResetRoute.Email.route) {
                 PwResetEmailScreen(
+                    email = uiState.email.value,
+                    canNext = uiState.canNext,
+                    onEmailChanged = {
+                        viewModel.setEvent(PwResetContract.Event.OnEmailChanged(it))
+                    },
                     onNextClicked = {
-                        pwResetNavController.navigate(PwResetRoute.Notice.route)
+                        viewModel.setEvent(PwResetContract.Event.OnNextClicked)
                     },
                     onLoginRestart = onLoginRestart
                 )
@@ -63,29 +84,53 @@ fun PwResetNavigator(
             composable(PwResetRoute.Notice.route) {
                 PwResetNoticeScreen(
                     onNextClicked = {
-                        pwResetNavController.navigate(PwResetRoute.Check.route)
+                        viewModel.setEvent(PwResetContract.Event.OnNextClicked)
                     }
                 )
             }
             composable(PwResetRoute.Check.route) {
                 PwResetCheckScreen(
-                    email = "",
+                    otpCode = uiState.otpCode.value,
+                    email = uiState.email.value,
+                    canNext = uiState.canNext,
+                    onOtpCodeChanged = {
+                        viewModel.setEvent(PwResetContract.Event.OnOtpCodeChanged(it))
+                    },
                     onNextClicked = {
-                        pwResetNavController.navigate(PwResetRoute.SetPassword.route)
+                        viewModel.setEvent(PwResetContract.Event.OnNextClicked)
                     }
                 )
             }
             composable(PwResetRoute.SetPassword.route) {
                 PwResetSetPasswordScreen(
+                    password = uiState.password.value,
+                    passwordCheck = uiState.passwordCheck.value,
+                    passwordVisible = uiState.passwordVisible,
+                    passwordCheckVisible = uiState.passwordCheckVisible,
+                    canNext = uiState.canNext,
+                    onPasswordChanged = {
+                        viewModel.setEvent(PwResetContract.Event.OnPasswordChanged(it))
+                    },
+                    onPasswordCheckChanged = {
+                        viewModel.setEvent(PwResetContract.Event.OnPasswordCheckChanged(it))
+                    },
+                    onTogglePasswordVisible = {
+                        viewModel.setEvent(PwResetContract.Event.OnTogglePasswordVisible)
+                    },
+                    onTogglePasswordCheckVisible = {
+                        viewModel.setEvent(PwResetContract.Event.OnTogglePasswordCheckVisible)
+                    },
                     onLoginRestart = onLoginRestart,
                     onNextClicked = {
-                        pwResetNavController.navigate(PwResetRoute.Success.route)
+                        viewModel.setEvent(PwResetContract.Event.OnNextClicked)
                     }
                 )
             }
             composable(PwResetRoute.Success.route) {
                 PwResetSuccessScreen(
-                    onNextClicked = onLoginRestart
+                    onNextClicked = {
+                        viewModel.setEvent(PwResetContract.Event.OnNextClicked)
+                    }
                 )
             }
         }
@@ -93,7 +138,7 @@ fun PwResetNavigator(
 }
 
 @Composable
-fun PwResetHeader(
+private fun PwResetHeader(
     modifier : Modifier = Modifier,
     isLast : Boolean,
     onPrevClicked: () -> Unit,
@@ -104,7 +149,7 @@ fun PwResetHeader(
     ) {
         if(!isLast){
             IconButton(
-                onPrevClicked
+                onClick = onPrevClicked
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_chevron_right),
@@ -122,7 +167,6 @@ fun PwResetHeader(
 private fun PwResetScreenPreview() {
     MiruniTheme {
         PwResetNavigator(
-            onExit = {},
             onLoginRestart = {}
         )
     }
