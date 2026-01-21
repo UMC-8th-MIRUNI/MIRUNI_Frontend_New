@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.AppTypography
@@ -46,7 +45,6 @@ import com.miruni.feature.aiplanner.presentation.AiPlannerViewModel
 import com.miruni.feature.aiplanner.presentation.components.CompleteTagButton
 import com.miruni.feature.aiplanner.presentation.components.ProgressingTagButton
 import com.miruni.feature.aiplanner.presentation.components.ScheduleItem
-import com.miruni.feature.aiplanner.presentation.model.ScheduleSource
 
 @Composable
 fun AiPlannerMainScreen(
@@ -209,7 +207,7 @@ fun LazyListScope.AiSchedules(
             doneCount = plan.doneCount,
             totalCount = plan.totalCount,
             progressRate = plan.progressRate,
-            onClick = { onClickItem(plan.id) }
+            onClick = { onClickItem(plan.planId) }
         )
 
         Spacer(modifier = Modifier.height(10.dp))

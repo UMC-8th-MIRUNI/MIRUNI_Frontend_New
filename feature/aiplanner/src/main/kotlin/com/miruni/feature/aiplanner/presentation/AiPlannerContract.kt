@@ -3,8 +3,8 @@ package com.miruni.feature.aiplanner.presentation
 import com.miruni.core.common.ViewEvent
 import com.miruni.core.common.ViewSideEffect
 import com.miruni.core.common.ViewState
+import com.miruni.feature.aiplanner.domain.model.PlanProgress
 import com.miruni.feature.aiplanner.presentation.model.AiPlanUiModel
-import com.miruni.feature.aiplanner.presentation.model.AiPlannerUiModel
 import com.miruni.feature.aiplanner.presentation.model.PlanUiModel
 import com.miruni.feature.aiplanner.presentation.model.PlanningFormItemUiModel
 import com.miruni.feature.aiplanner.presentation.model.ScheduleSource
@@ -43,7 +43,11 @@ object AiPlannerContract {
         ) : Event()
         object ClickMenu : Event()
         object ClickEdit : Event()
-        object ClickDelete : Event()
+        object ClickDeleteAll : Event() // 스케줄표 전체 삭제
+        data class ClickDeleteItem( // AI 플랜 개별 삭제
+            val planId: Long,
+            val aiPlanIds: List<Long>
+        ) : Event()
         data class ClickCompleteEdit(
             val planId: Long,
             val title: String,
@@ -59,7 +63,7 @@ object AiPlannerContract {
     data class State(
         /** AI 플래너 메인 */
         val isMainLoading: Boolean = false, // AI 플래너 서버 데이터 로딩중 여부
-        val aiPlans: List<AiPlannerUiModel> = emptyList(), // AI 플랜
+        val aiPlans: List<PlanProgress> = emptyList(), // AI 플랜 진행률 정보
         val remain: Int = 0, // AI 플래닝 사용 잔여 횟수
 
         /** AI 플래너 플래닝 */
@@ -82,6 +86,7 @@ object AiPlannerContract {
             object ToLoading : Effect() // 플래닝 로딩 화면 이동
             object ToMain : Effect() // 메인 화면 이동
         }
+        data class showToast(val message: String) : Effect()
         object PopBack : Effect() // 돌아가기
     }
 }

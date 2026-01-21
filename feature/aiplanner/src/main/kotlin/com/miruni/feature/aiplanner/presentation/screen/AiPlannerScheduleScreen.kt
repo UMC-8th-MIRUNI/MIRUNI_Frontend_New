@@ -120,7 +120,7 @@ fun AiPlannerScheduleScreen(
             onBack = { viewModel.setEvent(AiPlannerContract.Event.OnMain) },
             onMenu = { viewModel.setEvent(AiPlannerContract.Event.ClickMenu) },
             onEdit = { viewModel.setEvent(AiPlannerContract.Event.ClickEdit) },
-            onDeleteAll = { viewModel.setEvent(AiPlannerContract.Event.ClickDelete) },
+            onDeleteAll = { viewModel.setEvent(AiPlannerContract.Event.ClickDeleteAll) },
             onDeleteItem = { deletePlanIds ->
 
             },
