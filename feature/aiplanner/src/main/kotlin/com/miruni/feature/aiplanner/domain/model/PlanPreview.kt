@@ -1,6 +1,6 @@
 package com.miruni.feature.aiplanner.domain.model
 
-data class PlanProgress(
+data class PlanPreview(
     val planId: Long, // 상위 일정 ID
     val title: String, // 상위 일정 제목
     val doneCount: Long, // 세부 일정 중 완료 개수

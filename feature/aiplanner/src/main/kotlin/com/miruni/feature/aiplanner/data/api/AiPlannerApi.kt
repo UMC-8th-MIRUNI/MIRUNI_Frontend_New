@@ -5,7 +5,7 @@ import com.miruni.feature.aiplanner.data.dto.request.PostAiPlansRequest
 import com.miruni.feature.aiplanner.data.dto.response.GetAiPlansResponse
 import com.miruni.feature.aiplanner.data.dto.response.ScheduleResponse
 import com.miruni.feature.aiplanner.data.dto.response.PlanDto
-import com.miruni.feature.aiplanner.data.dto.response.RemainResponse
+import com.miruni.feature.aiplanner.data.dto.response.PostAiPlansResponse
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -23,7 +23,7 @@ interface AiPlannerApi {
     @POST("api/ai-plans")
     suspend fun postAiPlans(
         @Body request: PostAiPlansRequest
-    ): ApiResponse<List<PlanDto>>
+    ): ApiResponse<List<PostAiPlansResponse>>
 
     /** AI 플래닝 스케줄표 조회 */
     @GET("api/ai-plans/table/{plan_id}")
@@ -50,8 +50,4 @@ interface AiPlannerApi {
         @Path("plan_id") planId: Long,
         @Body request: List<Long> // 삭제할 AI 플랜 ID 리스트
     ): ApiResponse<Boolean>
-
-    /** 잔여 횟수 가져오기 */
-    @GET("/")
-    suspend fun getRemain(): ApiResponse<RemainResponse>
 }
