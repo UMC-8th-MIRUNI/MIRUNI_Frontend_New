@@ -13,12 +13,10 @@ import com.miruni.feature.aiplanner.domain.model.PlanPriority
 import com.miruni.feature.aiplanner.domain.model.PlanTimePeriod
 import com.miruni.feature.aiplanner.domain.repository.PlanningRepository
 import com.miruni.feature.aiplanner.domain.repository.ScheduleRepository
-import com.miruni.feature.aiplanner.presentation.model.AiPlanUiModel
 import com.miruni.feature.aiplanner.presentation.model.PlanningFormItemUiModel
 import com.miruni.feature.aiplanner.presentation.model.ScheduleSource
 import com.miruni.feature.aiplanner.presentation.model.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -355,7 +353,7 @@ class AiPlannerViewModel @Inject constructor(
             when (result) {
                 is DataResult.Success -> {
                     setState { copy(plan = result.data.toUiModel()) }
-                    setEffect { AiPlannerContract.Effect.showToast("일정이 수정되었습니다.") }
+                    setEffect { AiPlannerContract.Effect.ShowToast("일정이 수정되었습니다.") }
                 }
 
                 is DataResult.Error -> {
@@ -378,7 +376,7 @@ class AiPlannerViewModel @Inject constructor(
 
             when (result) {
                 is DataResult.Success -> {
-                    setEffect { AiPlannerContract.Effect.showToast("일정이 삭제되었습니다.") }
+                    setEffect { AiPlannerContract.Effect.ShowToast("일정이 삭제되었습니다.") }
                     setEffect { AiPlannerContract.Effect.Navigation.ToMain }
                 }
                 is DataResult.Error -> {
@@ -427,6 +425,6 @@ class AiPlannerViewModel @Inject constructor(
             else -> "네트워크 연결을 확인해주세요."
         }
 
-        setEffect { AiPlannerContract.Effect.showToast(message) }
+        setEffect { AiPlannerContract.Effect.ShowToast(message) }
     }
 }
