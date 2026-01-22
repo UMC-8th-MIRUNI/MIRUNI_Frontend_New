@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -13,8 +14,8 @@ import com.miruni.core.navigation.NavigationDestination
 @Composable
 fun MainScreen(destinations: Set<NavigationDestination>) {
     val navController = rememberNavController()
-    val currentRoute = navController
-        .currentBackStackEntryAsState().value?.destination?.route
+    val backStackEntry = navController.currentBackStackEntryAsState()
+    val currentDestination = backStackEntry.value?.destination
 
     // bottom bar를 표시할 대상 route 리스트
     val bottomBarRoutes = listOf(
@@ -24,7 +25,7 @@ fun MainScreen(destinations: Set<NavigationDestination>) {
         MiruniRoute.MyPage.route
     )
 
-    val bottomBarVisible = currentRoute in bottomBarRoutes
+    val bottomBarVisible = currentDestination?.hierarchy?.any { it.route in bottomBarRoutes } == true
 
     Scaffold(
         bottomBar = {
