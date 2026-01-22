@@ -1,10 +1,12 @@
 package com.miruni.feature.login
 
+import android.util.Log
 import androidx.credentials.exceptions.NoCredentialException
 import androidx.lifecycle.viewModelScope
 import com.miruni.core.common.BaseViewModel
 import com.miruni.core.result.DataResult
 import com.miruni.feature.login.domain.usecase.GetLoginUseCase
+import com.miruni.feature.login.domain.usecase.GetTokenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -13,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val getLoginUseCase: GetLoginUseCase
+    private val getLoginUseCase: GetLoginUseCase,
 ) :
     BaseViewModel<LoginContract.Event, LoginContract.State, LoginContract.Effect>() {
 
@@ -64,38 +66,37 @@ class LoginViewModel @Inject constructor(
             }
 
             LoginContract.Event.OnLoginClicked -> {
-                setEffect { LoginContract.Effect.Navigation.ToHome } // 임시 로그인
-//                viewModelScope.launch {
-//
-//                    val result = withContext(Dispatchers.IO) {
-//                        getLoginUseCase(
-//                            id = viewState.value.id.value,
-//                            password = viewState.value.password.value,
-//                            autoLogin = viewState.value.autoLogin
-//                        )
-//                    }
-//                    when (result) {
-//                        is DataResult.Success -> {
+                viewModelScope.launch {
+                    val result = withContext(Dispatchers.IO) {
+                        getLoginUseCase(
+                            id = viewState.value.id.value,
+                            password = viewState.value.password.value,
+                            autoLogin = viewState.value.autoLogin
+                        )
+                    }
+                    when (result) {
+                        is DataResult.Success -> {
 //                            setEffect { LoginContract.Effect.Navigation.ToHome }
-//                        }
-//
-//                        is DataResult.Error -> {
-//                            setState {
-//                                copy(
-//                                    id = id.copy(
-//                                        isError = true,
-//                                        errorMessage = result.error.errorMessage
-//                                    ),
-//                                    password = password.copy(
-//                                        isError = true,
-//                                        errorMessage = result.error.errorMessage
-//                                    ),
-//                                )
-//                            }
-//                        }
-//                    }
-//                }
+                        }
+
+                        is DataResult.Error -> {
+                            setState {
+                                copy(
+                                    id = id.copy(
+                                        isError = true,
+                                        errorMessage = result.error.errorMessage
+                                    ),
+                                    password = password.copy(
+                                        isError = true,
+                                        errorMessage = result.error.errorMessage
+                                    ),
+                                )
+                            }
+                        }
+                    }
+                }
             }
+
 
             LoginContract.Event.OnGoogleLoginClicked -> {
                 setEffect { LoginContract.Effect.GoogleLogin }

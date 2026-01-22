@@ -9,4 +9,5 @@ interface AuthRepository {
     suspend fun kakaoLogin(accessToken: String) : DataResult<AuthToken, DataError>
     suspend fun googleLogin(idToken: String) : DataResult<AuthToken, DataError>
     suspend fun refresh(refreshToken: String) : AuthToken
+    suspend fun getToken() : DataResult<String, DataError>
 }

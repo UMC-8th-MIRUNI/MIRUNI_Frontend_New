@@ -118,4 +118,15 @@ class AuthRepositoryImpl(
         TODO("Not yet implemented")
 
     }
+
+    override suspend fun getToken(): DataResult<String, DataError> {
+        return when (val token = authLocalDataSource.getAccessToken()) {
+            null -> {
+                DataResult.Error(DataError.DataNotFound)
+            }
+            else -> {
+                DataResult.Success(token)
+            }
+        }
+    }
 }
