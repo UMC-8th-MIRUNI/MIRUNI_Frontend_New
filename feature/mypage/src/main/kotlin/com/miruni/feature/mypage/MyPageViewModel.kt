@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.miruni.core.common.BaseViewModel
 import com.miruni.core.result.DataResult
 import com.miruni.feature.mypage.domain.findProfileImageIndex
+import com.miruni.feature.mypage.domain.usecase.GetMyPageInfoUseCase
 import com.miruni.feature.mypage.domain.usecase.UpdateProfileUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -14,11 +15,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyPageViewModel @Inject constructor(
+    private val getMyPageInfoUseCase: GetMyPageInfoUseCase,
     private val updateProfileUseCase: UpdateProfileUseCase
 ) : BaseViewModel<MyPageContract.Event, MyPageContract.State, MyPageContract.Effect>() {
 
     init {
         Log.d(TAG, "ViewModel created: $this")
+        fetchMyPageInfo()
     }
 
     override fun setInitialState(): MyPageContract.State = MyPageContract.State()
@@ -169,6 +172,55 @@ class MyPageViewModel @Inject constructor(
                     }
 
                     setEffect { MyPageContract.Effect.Message.Error(errorMessage) }
+                }
+            }
+        }
+    }
+
+    /**
+     * 마이페이지 사용자 정보 조회 API 호출
+     */
+    private fun fetchMyPageInfo() {
+        Log.d(TAG, "fetchMyPageInfo() called")
+
+        setState { copy(isLoading = true, errorMessage = null) }
+
+        viewModelScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                getMyPageInfoUseCase()
+            }
+
+            when (result) {
+                is DataResult.Success -> {
+                    val userProfile = result.data
+                    Log.d(TAG, "fetchMyPageInfo() Success - userProfile: $userProfile")
+
+                    val profileImageIndex = findProfileImageIndex(userProfile.profileImage)
+                    Log.d(TAG, "fetchMyPageInfo() - profileImageIndex: $profileImageIndex")
+
+                    setState {
+                        copy(
+                            isLoading = false,
+                            nickName = userProfile.nickname,
+                            email = userProfile.email,
+                            selectedProfileImageIndex = profileImageIndex,
+                            originalNickName = userProfile.nickname,
+                            originalProfileImageIndex = profileImageIndex,
+                            errorMessage = null
+                        )
+                    }
+                }
+
+                is DataResult.Error -> {
+                    val errorMessage = result.error.errorMessage
+                    Log.e(TAG, "fetchMyPageInfo() Error - errorMessage: $errorMessage")
+
+                    setState {
+                        copy(
+                            isLoading = false,
+                            errorMessage = errorMessage
+                        )
+                    }
                 }
             }
         }

@@ -163,7 +163,7 @@ fun SettingAccountScreen(
                         viewModel.setEvent(
                             SettingAccountContract.Event.OnCompleteClick
                         )
-                    }
+                    },
                 )
             }
         }

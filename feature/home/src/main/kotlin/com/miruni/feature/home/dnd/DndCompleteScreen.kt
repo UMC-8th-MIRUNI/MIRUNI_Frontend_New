@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.MiruniTheme
+import com.miruni.feature.home.R
 import com.miruni.feature.home.dnd.component.button.SingleWhiteButton
 
 @Composable
@@ -41,14 +42,14 @@ fun DndCompleteScreen(
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(id = com.miruni.feature.home.R.drawable.spring),
+            painter = painterResource(id = R.drawable.spring),
             contentDescription = null,
             modifier = Modifier
                 .size(width = 600.dp, height = 400.dp)
                 .offset(x = 100.dp, y = (-300).dp)
         )
         Image(
-            painter = painterResource(id = com.miruni.feature.home.R.drawable.spring),
+            painter = painterResource(id = R.drawable.spring),
             contentDescription = null,
             modifier = Modifier
                 .size(width = 600.dp, height = 400.dp)
@@ -64,7 +65,7 @@ fun DndCompleteScreen(
             Spacer(modifier = Modifier.height(120.dp))
 
             Image(
-                painter = painterResource(id = com.miruni.feature.home.R.drawable.miruni_success),
+                painter = painterResource(id = R.drawable.miruni_success),
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
