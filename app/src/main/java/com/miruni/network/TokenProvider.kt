@@ -1,6 +1,10 @@
 package com.miruni.network
 
 import com.miruni.core.domain.auth.TokenDataStore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -8,9 +12,16 @@ import javax.inject.Inject
  * - 비즈니스 로직 감추기 위함
  */
 class TokenProvider @Inject constructor(
-    private val tokenDataStore: TokenDataStore
+    private val tokenDataStore: TokenDataStore,
 ) {
-    private var cachedToken: String? = null
+    private val appCoroutine : CoroutineScope = CoroutineScope(SupervisorJob()+Dispatchers.IO)
+    @Volatile private var cachedToken: String? = null
+
+    init {
+        appCoroutine.launch {
+            init()
+        }
+    }
 
     suspend fun init() {
         cachedToken = tokenDataStore.getAccessToken()
