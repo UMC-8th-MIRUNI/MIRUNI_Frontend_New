@@ -113,25 +113,21 @@ fun HomeContent(
     onClickDnd: () -> Unit,
     onClickSchedule: (Int) -> Unit
 ) {
-    LazyColumn (
+    Column (
         modifier = modifier.fillMaxSize(),
     ) {
-        item {
-            TopSection(
-                state = state,
-                modifier = Modifier.wrapContentHeight(),
-                onClickAiPlanner = onClickAiPlanner,
-                onClickDnd = onClickDnd
-            )
-        }
+        TopSection(
+            state = state,
+            modifier = Modifier.wrapContentHeight(),
+            onClickAiPlanner = onClickAiPlanner,
+            onClickDnd = onClickDnd
+        )
 
-        item {
-            BottomSection(
-                state = state,
-                modifier = Modifier.fillMaxWidth(),
-                onClickSchedule = onClickSchedule
-            )
-        }
+        BottomSection(
+            state = state,
+            modifier = Modifier.fillMaxWidth(),
+            onClickSchedule = onClickSchedule
+        )
     }
 }
 
@@ -185,17 +181,24 @@ fun BottomSection(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        state.schedules?.forEach { schedule ->
-            TodayScheduleItem(
-                item = schedule,
-                isSelected = state.selectedScheduleId == schedule.id,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 17.dp),
-                onClick = { onClickSchedule(schedule.id) }
-            )
-
-            Spacer(modifier = Modifier.height(10.dp))
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 17.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            items(state.schedules?.size ?: 0) { index ->
+                val schedule = state.schedules!![index]
+                TodayScheduleItem(
+                    item = schedule,
+                    isSelected = state.selectedScheduleId == schedule.id,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 17.dp),
+                    onClick = { onClickSchedule(schedule.id) }
+                )
+            }
+            item { Spacer(modifier = Modifier.height(20.dp)) }
         }
     }
 }
