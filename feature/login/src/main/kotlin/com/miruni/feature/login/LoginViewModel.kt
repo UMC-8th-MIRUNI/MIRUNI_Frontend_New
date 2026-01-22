@@ -76,16 +76,12 @@ class LoginViewModel @Inject constructor(
                     }
                     when (result) {
                         is DataResult.Success -> {
-//                            setEffect { LoginContract.Effect.Navigation.ToHome }
+                            setEffect { LoginContract.Effect.Navigation.ToHome }
                         }
 
                         is DataResult.Error -> {
                             setState {
                                 copy(
-                                    id = id.copy(
-                                        isError = true,
-                                        errorMessage = result.error.errorMessage
-                                    ),
                                     password = password.copy(
                                         isError = true,
                                         errorMessage = result.error.errorMessage
@@ -114,7 +110,6 @@ class LoginViewModel @Inject constructor(
             }
 
             is LoginContract.Event.OnKakaoLoginSuccess -> {
-                // TODO: 서버에 accessToken 보내서 JWT 교환
                 setEffect { LoginContract.Effect.Navigation.ToNotification }
             }
 
