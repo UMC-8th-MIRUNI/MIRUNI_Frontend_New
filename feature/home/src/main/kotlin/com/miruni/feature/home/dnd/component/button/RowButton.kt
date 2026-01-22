@@ -1,4 +1,4 @@
-package com.miruni.feature.home.dnd.component
+package com.miruni.feature.home.dnd.component.button
 
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -14,16 +14,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.miruni.core.designsystem.Gray
-import com.miruni.core.designsystem.MainColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CancelOrConfirmButton(
-    modifier: Modifier = Modifier,
-    onCancelClick: () -> Unit,
-    onConfirmClick: () -> Unit
+fun RowButton(
+    text1: String,
+    text2: String,
+    onClickButton1: () -> Unit,
+    onClickButton2: () -> Unit,
+    button1Color: Color,
+    button2Color: Color
 ) {
     Row(
         modifier = Modifier
@@ -38,16 +40,15 @@ fun CancelOrConfirmButton(
                 .padding(start = 20.dp, end = 10.dp),
             shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MainColor.miruni_green
+                containerColor = button1Color
             ),
             onClick = {
                 Log.d("DndTimerSet", "Cancel clicked")
-                onCancelClick()
-                // TODO: 취소 버튼 클릭 처리
+                onClickButton1()
             }
         ) {
             Text(
-                "취소"
+                text = text1
             )
         }
 
@@ -58,16 +59,15 @@ fun CancelOrConfirmButton(
                 .padding(start = 10.dp, end = 20.dp),
             shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Gray.gray_500
+                containerColor = button2Color
             ),
             onClick = {
                 Log.d("DndTimerSet", "Confirm clicked")
-                onConfirmClick()
-                // TODO: 확인 버튼 클릭 처리
+                onClickButton2()
             }
         ) {
             Text(
-                "확인"
+                text = text2
             )
         }
     }

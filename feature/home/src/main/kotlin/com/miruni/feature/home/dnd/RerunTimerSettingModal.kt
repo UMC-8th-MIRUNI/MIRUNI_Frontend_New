@@ -1,4 +1,4 @@
-package com.miruni.feature.home.dnd.component
+package com.miruni.feature.home.dnd
 
 import android.R.attr.repeatCount
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
@@ -17,8 +17,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LocalTextStyle
@@ -46,8 +44,10 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.miruni.core.designsystem.Gray
 import com.miruni.core.designsystem.MainColor
 import com.miruni.core.designsystem.MiruniTheme
+import com.miruni.feature.home.dnd.component.button.RowButton
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
@@ -173,33 +173,14 @@ fun RerunTimerSettingModal(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Button(
-                    onClick = {
-                        onClose()
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFCBCBCB)
-                    ),
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 36.dp)
-                        .height(36.dp)
-                ) {
-                    Text(text = "취소", fontSize = 16.sp)
-                }
-                Button(
-                    onClick = {
-                        onGoSetting()
-                    },
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(end = 36.dp)
-                        .height(36.dp)
-                ) {
-                    Text(text = "확인", fontSize = 16.sp)
-                }
+                RowButton(
+                    text1 = "취소",
+                    text2 = "확인",
+                    onClickButton1 = onClose,
+                    onClickButton2 = { },
+                    button1Color = Gray.gray_500,
+                    button2Color = MainColor.miruni_green
+                )
             }
         }
     }

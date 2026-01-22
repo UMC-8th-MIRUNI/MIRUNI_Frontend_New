@@ -6,14 +6,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,8 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.miruni.core.designsystem.Gray
 import com.miruni.core.designsystem.MiruniTheme
+import com.miruni.feature.home.dnd.component.button.SingleWhiteButton
 
 @Composable
 fun DndCompleteScreen(
@@ -95,30 +91,17 @@ fun DndCompleteScreen(
 
             Spacer(modifier = Modifier.height(60.dp))
 
-            Button(
-                modifier = Modifier
-                    .height(49.dp)
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Gray.gray_300
-                ),
-                onClick = {
-                    navController.navigate("home")
-                }
-            ) {
-                Text(
-                    text = "확인",
-                    color = Color.Black,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
+            SingleWhiteButton(
+                onClick = { navController.navigate("home") },
+                text = "확인"
+            )
         }
     }
 }
+
 @Preview(showBackground = true)
 @Composable
-fun DndCompleteScreenPreview() {
+private fun DndCompleteScreenPreview() {
     MiruniTheme {
         DndCompleteScreen(
             hour = 0,

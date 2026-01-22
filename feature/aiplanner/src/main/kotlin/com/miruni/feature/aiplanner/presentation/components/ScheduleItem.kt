@@ -1,5 +1,6 @@
 package com.miruni.feature.aiplanner.presentation.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,11 +27,13 @@ fun ScheduleItem(
     title: String,
     doneCount: Long,
     totalCount: Long,
-    progressRate: Long
+    progressRate: Long,
+    onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable { onClick() },
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(Gray.gray_300)
     ) {
@@ -73,6 +76,7 @@ fun PreviewScheduleItem() {
         title = "UMC",
         doneCount = 2,
         totalCount = 10,
-        progressRate = 20
+        progressRate = 20,
+        onClick = {}
     )
 }
