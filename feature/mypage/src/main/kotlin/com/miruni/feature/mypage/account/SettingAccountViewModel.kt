@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.miruni.core.common.BaseViewModel
 import com.miruni.core.result.DataResult
+import com.miruni.feature.mypage.domain.usecase.GetMyPageInfoUseCase
 import com.miruni.feature.mypage.domain.usecase.UpdateAccountUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -13,11 +14,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingAccountViewModel @Inject constructor(
+    private val getMyPageInfoUseCase: GetMyPageInfoUseCase,
     private val updateAccountUseCase: UpdateAccountUseCase
 ) : BaseViewModel<SettingAccountContract.Event, SettingAccountContract.State, SettingAccountContract.Effect>() {
 
     init {
         Log.d(TAG, "ViewModel created: $this")
+        fetchMyPageInfo()
     }
 
     override fun setInitialState(): SettingAccountContract.State = SettingAccountContract.State()
@@ -28,19 +31,13 @@ class SettingAccountViewModel @Inject constructor(
             // 수정 모드 진입
             SettingAccountContract.Event.OnEditClick -> {
                 Log.d(TAG, "OnEditClick - Entering edit mode")
-                // TODO: 실제로는 서버에서 현재 사용자 정보를 가져와야 함
-                // 여기서는 임시로 더미 데이터 사용
+                val currentState = viewState.value
                 setState {
                     copy(
                         isEditMode = true,
-                        name = "김가영",
-                        birth = "2003.12.20",
-                        phoneNumber = "010-8991-3803",
-                        email = "gy12203803@gmail.com",
-                        // 원본 값 저장
-                        originalName = "김가영",
-                        originalBirth = "2003.12.20",
-                        originalPhoneNumber = "010-8991-3803",
+                        originalName = currentState.name,
+                        originalBirth = currentState.birth,
+                        originalPhoneNumber = currentState.phoneNumber,
                         errorMessage = null
                     )
                 }
@@ -147,6 +144,54 @@ class SettingAccountViewModel @Inject constructor(
                     }
 
                     setEffect { SettingAccountContract.Effect.Message.Error(errorMessage) }
+                }
+            }
+        }
+    }
+
+    /**
+     * 마이페이지 사용자 정보 조회 API 호출
+     */
+    private fun fetchMyPageInfo() {
+        Log.d(TAG, "fetchMyPageInfo() called")
+
+        setState { copy(isLoading = true, errorMessage = null) }
+
+        viewModelScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                getMyPageInfoUseCase()
+            }
+
+            when (result) {
+                is DataResult.Success -> {
+                    val userProfile = result.data
+                    Log.d(TAG, "fetchMyPageInfo() Success - userProfile: $userProfile")
+
+                    setState {
+                        copy(
+                            isLoading = false,
+                            name = userProfile.name ?: "",
+                            birth = userProfile.birth ?: "",
+                            phoneNumber = userProfile.phoneNumber ?: "",
+                            email = userProfile.email,
+                            originalName = userProfile.name ?: "",
+                            originalBirth = userProfile.birth ?: "",
+                            originalPhoneNumber = userProfile.phoneNumber ?: "",
+                            errorMessage = null
+                        )
+                    }
+                }
+
+                is DataResult.Error -> {
+                    val errorMessage = result.error.errorMessage
+                    Log.e(TAG, "fetchMyPageInfo() Error - errorMessage: $errorMessage")
+
+                    setState {
+                        copy(
+                            isLoading = false,
+                            errorMessage = errorMessage
+                        )
+                    }
                 }
             }
         }

@@ -1,6 +1,14 @@
-package com.miruni.feature.mypage.info
+package com.miruni.feature.mypage.info.feedback
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,11 +38,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.AppTypography
@@ -46,16 +56,81 @@ import com.miruni.feature.mypage.component.MyPageTopBar
 
 private const val TAG = "WriteFeedbackScreen"
 
+private const val MAX_PHOTO_COUNT = 10
+
 @Composable
 fun WriteFeedbackScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    onCameraClick: () -> Unit = {},
     onConfirmClick: () -> Unit = {}
 ) {
+    val context = LocalContext.current
 
     var text by remember { mutableStateOf("") }
     var checkedState by remember { mutableStateOf(false) }
+    var selectedPhotos by remember { mutableStateOf<List<Uri>>(emptyList()) }
+
+    // Photo picker launcher
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(MAX_PHOTO_COUNT)
+    ) { uris ->
+        if (uris.isNotEmpty()) {
+            selectedPhotos = uris.take(MAX_PHOTO_COUNT)
+            Log.d(TAG, "Selected ${selectedPhotos.size} photos")
+        }
+    }
+
+    // Permission launcher
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            Log.d(TAG, "Permission granted, launching photo picker")
+            photoPickerLauncher.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+        } else {
+            Log.d(TAG, "Permission denied")
+            Toast.makeText(
+                context,
+                "앨범에 접근하려면 권한 허용이 필요합니다.",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    // Function to handle camera/album button click
+    val onAlbumClick: () -> Unit = {
+        Log.d(TAG, "Album button clicked")
+
+        // Check if photo picker is available (Android 11+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Android 13+ uses photo picker without permission
+            photoPickerLauncher.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // Android 11-12 uses photo picker without permission
+            photoPickerLauncher.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+        } else {
+            // Android 10 and below requires READ_EXTERNAL_STORAGE permission
+            val permission = Manifest.permission.READ_EXTERNAL_STORAGE
+            when {
+                ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED -> {
+                    Log.d(TAG, "Permission already granted")
+                    photoPickerLauncher.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    )
+                }
+                else -> {
+                    Log.d(TAG, "Requesting permission")
+                    permissionLauncher.launch(permission)
+                }
+            }
+        }
+    }
 
     Scaffold(
         containerColor = Color(0xFFF6F5F6),
@@ -71,7 +146,7 @@ fun WriteFeedbackScreen(
         bottomBar = {
             MyPageBottomBar(
                 canConfirm = true,
-                onConfirmClick = onConfirmClick
+                onConfirmClick = onConfirmClick // TODO : 서버 request, novigate to InformationScreen
             )
         }
 
@@ -139,7 +214,7 @@ fun WriteFeedbackScreen(
                     Spacer(modifier = Modifier.height(24.dp))
 
                     Card(
-                        onClick = onCameraClick,
+                        onClick = onAlbumClick,
                         modifier = modifier
                             .size(56.dp)
                             .testTag("cameraButton"),
@@ -162,7 +237,7 @@ fun WriteFeedbackScreen(
                                 modifier = modifier.size(20.dp),
                             )
                             Text(
-                                text = "0/10",
+                                text = "${selectedPhotos.size}/$MAX_PHOTO_COUNT",
                                 style = AppTypography.description_regular_9
                             )
                         }

@@ -16,6 +16,15 @@ class ProfileRemoteDataSourceImpl(
     private val profileApi: ProfileApi
 ) : ProfileRemoteDataSource {
 
+    override suspend fun getMyPageInfo(): NetworkResult<ApiResponse<ProfileResponse>> {
+        Log.d(TAG, "getMyPageInfo() called")
+        return executeApiRequest {
+            profileApi.getMyPageInfo().also {
+                Log.d(TAG, "getMyPageInfo() response: $it")
+            }
+        }
+    }
+
     override suspend fun updateProfile(
         request: ProfileRequest
     ): NetworkResult<ApiResponse<ProfileResponse>> {
