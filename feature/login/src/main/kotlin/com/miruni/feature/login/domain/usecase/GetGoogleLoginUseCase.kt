@@ -8,7 +8,7 @@ import com.miruni.feature.login.domain.repository.AuthRepository
 class GetGoogleLoginUseCase(
     private val authRepository: AuthRepository
 ) {
-    suspend operator fun invoke(googleIdToken: String) : DataResult<AuthToken, DataError> {
-        return authRepository.googleLogin(googleIdToken)
+    suspend operator fun invoke(googleIdToken: String, autoLogin : Boolean) : DataResult<AuthToken, DataError> {
+        return authRepository.googleLogin(googleIdToken, autoLogin)
     }
 }

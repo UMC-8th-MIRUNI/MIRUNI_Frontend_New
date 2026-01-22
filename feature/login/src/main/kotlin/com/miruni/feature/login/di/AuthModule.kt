@@ -1,6 +1,7 @@
 package com.miruni.feature.login.di
 
 import com.miruni.core.domain.auth.TokenDataStore
+import com.miruni.core.domain.common.AppDataStore
 import com.miruni.feature.login.data.api.AuthApi
 import com.miruni.feature.login.data.datasource.AuthLocalDataSourceImpl
 import com.miruni.feature.login.data.datasource.AuthRemoteDataSourceImpl
@@ -32,8 +33,9 @@ object AuthModule {
     @Provides
     @Singleton
     fun provideAuthLocalDataSource(
-        tokenDataStore: TokenDataStore
-    ): AuthLocalDataSource = AuthLocalDataSourceImpl(tokenDataStore)
+        tokenDataStore: TokenDataStore,
+        appDataStore: AppDataStore,
+    ): AuthLocalDataSource = AuthLocalDataSourceImpl(tokenDataStore,appDataStore)
 
     @Provides
     @Singleton

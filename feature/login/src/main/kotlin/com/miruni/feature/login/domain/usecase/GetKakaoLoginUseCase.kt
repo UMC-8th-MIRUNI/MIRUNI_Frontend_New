@@ -8,7 +8,7 @@ import com.miruni.feature.login.domain.repository.AuthRepository
 class GetKakaoLoginUseCase(
     private val authRepository: AuthRepository
 ) {
-    suspend operator fun invoke(kakaoAccessToken: String) : DataResult<AuthToken, DataError> {
-        return authRepository.kakaoLogin(kakaoAccessToken)
+    suspend operator fun invoke(kakaoAccessToken: String, autoLogin : Boolean) : DataResult<AuthToken, DataError> {
+        return authRepository.kakaoLogin(kakaoAccessToken,autoLogin)
     }
 }

@@ -12,6 +12,8 @@ import com.miruni.feature.login.domain.datasource.AuthLocalDataSource
 import com.miruni.feature.login.domain.datasource.AuthRemoteDataSource
 import com.miruni.feature.login.domain.model.AuthToken
 import com.miruni.feature.login.domain.repository.AuthRepository
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 
 class AuthRepositoryImpl(
     private val authRemoteDataSource: AuthRemoteDataSource,
@@ -37,7 +39,12 @@ class AuthRepositoryImpl(
                     if (result == null) {
                         DataResult.Error(DataError.DataNotFound)
                     } else {
-                        authLocalDataSource.saveAccessToken(result.accessToken)
+                        coroutineScope {
+                            async { authLocalDataSource.saveAccessToken(result.accessToken) }
+                            if (autoLogin) {
+                                async { authLocalDataSource.saveAutoLogin() }
+                            }
+                        }
                         DataResult.Success(result.toDomain())
                     }
                 }
@@ -50,7 +57,10 @@ class AuthRepositoryImpl(
     }
 
 
-    override suspend fun kakaoLogin(accessToken: String): DataResult<AuthToken, DataError> {
+    override suspend fun kakaoLogin(
+        accessToken: String,
+        autoLogin: Boolean
+    ): DataResult<AuthToken, DataError> {
         return when (val net =
             authRemoteDataSource.getKakaoLogin(KakaoLoginRequest(kakaoAccessToken = accessToken))) {
             is NetworkResult.Success -> {
@@ -69,7 +79,12 @@ class AuthRepositoryImpl(
                         DataResult.Error(DataError.DataNotFound)
                     } else {
                         // 로컬 저장
-                        authLocalDataSource.saveAccessToken(result.accessToken)
+                        coroutineScope {
+                            async { authLocalDataSource.saveAccessToken(result.accessToken) }
+                            if (autoLogin) {
+                                async { authLocalDataSource.saveAutoLogin() }
+                            }
+                        }
                         DataResult.Success(result.toDomain())
                     }
                 }
@@ -81,7 +96,10 @@ class AuthRepositoryImpl(
         }
     }
 
-    override suspend fun googleLogin(idToken: String): DataResult<AuthToken, DataError> {
+    override suspend fun googleLogin(
+        idToken: String,
+        autoLogin: Boolean
+    ): DataResult<AuthToken, DataError> {
         return when (val net =
             authRemoteDataSource.getGoogleLogin(GoogleLoginRequest(googleIdToken = idToken))) {
             is NetworkResult.Success -> {
@@ -100,8 +118,12 @@ class AuthRepositoryImpl(
                         DataResult.Error(DataError.DataNotFound)
                     } else {
                         // 로컬 저장
-                        authLocalDataSource.saveAccessToken(result.accessToken)
-                        // authLocalDataSource.saveRefreshToken(result.refreshToken)
+                        coroutineScope {
+                            async { authLocalDataSource.saveAccessToken(result.accessToken) }
+                            if (autoLogin) {
+                                async { authLocalDataSource.saveAutoLogin() }
+                            }
+                        }
                         DataResult.Success(result.toDomain())
                     }
                 }
@@ -124,6 +146,7 @@ class AuthRepositoryImpl(
             null -> {
                 DataResult.Error(DataError.DataNotFound)
             }
+
             else -> {
                 DataResult.Success(token)
             }
