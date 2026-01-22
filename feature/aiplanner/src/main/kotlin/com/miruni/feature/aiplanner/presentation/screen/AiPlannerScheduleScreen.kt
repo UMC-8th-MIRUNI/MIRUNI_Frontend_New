@@ -2,7 +2,6 @@ package com.miruni.feature.aiplanner.presentation.screen
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,15 +20,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,7 +42,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -52,12 +51,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.window.Popup
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.miruni.core.designsystem.AppTypography
@@ -67,11 +64,13 @@ import com.miruni.core.navigation.MiruniRoute
 import com.miruni.feature.aiplanner.R
 import com.miruni.feature.aiplanner.presentation.AiPlannerContract
 import com.miruni.feature.aiplanner.presentation.AiPlannerViewModel
+import com.miruni.feature.aiplanner.presentation.components.CompleteTagButton
 import com.miruni.feature.aiplanner.presentation.components.DateUtils
 import com.miruni.feature.aiplanner.presentation.components.filterDateInput
 import com.miruni.feature.aiplanner.presentation.components.filterTimeInput
 import com.miruni.feature.aiplanner.presentation.model.AiPlanUiModel
 import com.miruni.feature.aiplanner.presentation.model.PlanUiModel
+import com.miruni.feature.aiplanner.presentation.model.ScheduleSource
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -93,15 +92,38 @@ fun AiPlannerScheduleScreen(
         }
     }
 
+    // 네비게이션 인자 읽기
+    val backEntry = navController.currentBackStackEntry
+    val fromArg = remember { backEntry?.arguments?.getString("from") ?: "MAIN" }
+    val planIdArg = remember { backEntry?.arguments?.getLong("planId") ?: -1L }
+
+    // Source를 상태로 관리하여 하위 컴포저블에 전달
+    val scheduleSource = remember(fromArg) {
+        when (fromArg.uppercase()) {
+            "LOADING" -> ScheduleSource.FROM_LOADING
+            "MAIN" -> ScheduleSource.FROM_MAIN
+            else -> ScheduleSource.FROM_MAIN
+        }
+    }
+
+    LaunchedEffect(fromArg, planIdArg) {
+        val planIdOrNull = if (planIdArg != -1L) planIdArg else null
+        viewModel.setEvent(AiPlannerContract.Event.EnterSchedule(from = scheduleSource, planId = planIdOrNull))
+    }
+
     state.plan?.let { plan ->
         AiPlannerScheduleContent(
             plan = plan,
+            source = scheduleSource,
             isEditMode = state.isEditMode,
             showMenu = state.showMenu,
             onBack = { viewModel.setEvent(AiPlannerContract.Event.OnMain) },
             onMenu = { viewModel.setEvent(AiPlannerContract.Event.ClickMenu) },
             onEdit = { viewModel.setEvent(AiPlannerContract.Event.ClickEdit) },
-            onDelete = { viewModel.setEvent(AiPlannerContract.Event.ClickDelete) },
+            onDeleteAll = { viewModel.setEvent(AiPlannerContract.Event.ClickDeleteAll) },
+            onDeleteItem = { deletePlanIds ->
+
+            },
             onCompleteEdit = { updatedPlan, updatedAiPlans ->
                 viewModel.setEvent(
                     AiPlannerContract.Event.ClickCompleteEdit(
@@ -121,12 +143,14 @@ fun AiPlannerScheduleScreen(
 @Composable
 fun AiPlannerScheduleContent(
     plan: PlanUiModel,
+    source: ScheduleSource,
     isEditMode: Boolean,
     showMenu: Boolean,
     onBack: () -> Unit,
     onMenu: () -> Unit,
     onEdit: () -> Unit,
-    onDelete: () -> Unit,
+    onDeleteAll: () -> Unit,
+    onDeleteItem: (List<Long>) -> Unit,
     onCompleteEdit: (PlanUiModel, List<AiPlanUiModel>) -> Unit
 ) {
     // 수정을 위한 상태
@@ -135,6 +159,11 @@ fun AiPlannerScheduleContent(
     var draftRange by remember(plan) { mutableStateOf(plan.taskRange) }
     var draftPriority by remember(plan) { mutableStateOf(plan.priority) }
     val draftAiPlans = remember(plan) { mutableStateListOf(*plan.aiPlans.toTypedArray()) }
+
+    // 체크 박스 선택 상태
+    val selectedIds = remember { mutableStateListOf<Long>() }
+    // 삭제 모드
+    val isDeleteMode = isEditMode && (source == ScheduleSource.FROM_MAIN) // 메인에서 왔을 때만 개별 삭제 모드 활성화 가능
 
     Scaffold(
         bottomBar = {
@@ -247,7 +276,7 @@ fun AiPlannerScheduleContent(
                                         .align(Alignment.TopEnd)
                                         .padding(top = 60.dp, end = 20.dp)
                                 ) {
-                                    MenuPopup(onEdit, onDelete)
+                                    MenuPopup(onEdit, onDeleteAll)
                                 }
                             }
                         }
@@ -273,10 +302,26 @@ fun AiPlannerScheduleContent(
             /** 스케줄 표 */
             ScheduleTable(
                 aiPlans = draftAiPlans,
+                source = source,
+                isDeleteMode = isDeleteMode,
+                selectedIds = selectedIds,
                 isEditMode = isEditMode,
                 modifier = Modifier.fillMaxWidth(),
                 onPlanChange = { index, updatedPlan ->
                     draftAiPlans[index] = updatedPlan
+                },
+                onToggleSection = { id ->
+                    if (selectedIds.contains(id)) selectedIds.remove(id)
+                    else selectedIds.add(id)
+                },
+                onDeleteSelected = {
+                    val deleteIds = selectedIds.toList()
+                    if (deleteIds.isNotEmpty()) {
+                        draftAiPlans.removeAll { deleteIds.contains(it.aiPlanId) } // UI에서 제거
+                        selectedIds.clear()
+
+                        onDeleteItem(deleteIds) // ViewModel 이벤트 호출 - 서버에서 제거
+                    }
                 }
             )
 
@@ -455,9 +500,14 @@ fun DescriptionRow(
 @Composable
 fun ScheduleTable(
     aiPlans: List<AiPlanUiModel>,
+    source: ScheduleSource,
+    isDeleteMode: Boolean,
+    selectedIds: List<Long>,
     isEditMode: Boolean,
     modifier: Modifier = Modifier,
-    onPlanChange: (Int, AiPlanUiModel) -> Unit
+    onPlanChange: (Int, AiPlanUiModel) -> Unit,
+    onToggleSection: (Long) -> Unit,
+    onDeleteSelected: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -476,10 +526,35 @@ fun ScheduleTable(
                 .height(43.dp)
                 .background(
                     color = Color.White,
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
                 ),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // 체크박스 열 헤더
+            if (isDeleteMode) {
+                Box(
+                    modifier = Modifier
+                        .width(40.dp)
+                        .fillMaxHeight(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    IconButton(
+                        onClick = onDeleteSelected,
+                        modifier = Modifier
+                            .background(color = Color(0xFF2483E2), shape = RoundedCornerShape(5.dp))
+                            .size(20.dp)
+                        ) {
+                        Text(
+                            text = "-",
+                            style = AppTypography.sub_bold_14,
+                            color = Color.White,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+//                HorizontalDivider(color = Color(0xFFBBBBBB), thickness = 1.dp)
+            }
+
             Text(
                 "날짜",
                 modifier = Modifier.width(70.dp),
@@ -520,8 +595,12 @@ fun ScheduleTable(
             itemsIndexed(aiPlans) { index, plan ->
                 ScheduleRow(
                     plan = plan,
+                    source = source,
+                    isDeleteMode = isDeleteMode,
+                    isSelected = selectedIds.contains(plan.aiPlanId),
                     isEditMode = isEditMode,
-                    onUpdate = { updatedPlan -> onPlanChange(index, updatedPlan) }
+                    onUpdate = { updatedPlan -> onPlanChange(index, updatedPlan) },
+                    onToggleCheck = { onToggleSection(plan.aiPlanId) }
                 )
                 if (index < aiPlans.lastIndex) {
                     Divider(color = Color(0xFFBBBBBB), thickness = 0.5.dp)
@@ -535,17 +614,43 @@ fun ScheduleTable(
 @Composable
 fun ScheduleRow(
     plan: AiPlanUiModel,
+    source: ScheduleSource,
+    isDeleteMode: Boolean,
+    isSelected: Boolean,
     isEditMode: Boolean,
-    onUpdate: (AiPlanUiModel) -> Unit
+    onUpdate: (AiPlanUiModel) -> Unit,
+    onToggleCheck: () -> Unit
 ) {
     var showDetail by remember { mutableStateOf(false) } // 길이가 길어진 세부 일정의 경우, 클릭 시 모달로 상세 내용을 확인할 수 있게 함
+
+    val isDone = (source == ScheduleSource.FROM_MAIN) && (plan.status == "DONE") // 메인에서 왔고 DONE인 경우 -> 완료
+    val rowBgColor = if (isDone) Color(0xFFF8F8F8) else Color.White
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(IntrinsicSize.Min),
+            .height(IntrinsicSize.Min)
+            .background(color = rowBgColor),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        /** 체크박스 열 */
+        if (isDeleteMode) {
+            Box(
+                modifier = Modifier
+                    .width(40.dp)
+                    .fillMaxHeight(),
+                contentAlignment = Alignment.Center
+            ) {
+                Checkbox(
+                    checked = isSelected,
+                    onCheckedChange = { onToggleCheck() },
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = Color(0xFF2483E2),
+                        uncheckedColor = Gray.gray_500
+                    )
+                )
+            }
+        }
 
         /** 날짜 + 시간 영역 */
         Column(
@@ -581,7 +686,7 @@ fun ScheduleRow(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()
-                .background(color = Color(0xFFF4FCF6))
+                .background(color = if (isDone) Color(0xFFF8F8F8) else Color(0xFFF4FCF6))
                 .clickable { if (!isEditMode) showDetail = true } // 클릭 시 모달
                 .padding(horizontal = 14.dp, vertical = 16.dp),
             contentAlignment = Alignment.CenterStart
@@ -608,21 +713,28 @@ fun ScheduleRow(
         Box(
             modifier = Modifier
                 .width(94.dp)
-                .fillMaxHeight()
-                .background(Color.White),
+                .fillMaxHeight(),
             contentAlignment = Alignment.Center
         ) {
-            // 시간 계산 표시
-            val hours = plan.expectedDuration / 60
-            val minutes = plan.expectedDuration % 60
-            val durationText = "${hours}시간 ${minutes}분"
+            if (isDone) {
+                CompleteTagButton(
+                    textColor = MainColor.miruni_green,
+                    backgroundColor = Color(0xFFE4F3E8),
+                    borderColor = Color(0xFFC6EDC9)
+                )
+            } else {
+                // 시간 계산 표시
+                val hours = plan.expectedDuration / 60
+                val minutes = plan.expectedDuration % 60
+                val durationText = "${hours}시간 ${minutes}분"
 
-            Text(
-                text = durationText,
-                style = AppTypography.sub_bold_14,
-                color = Gray.gray_700,
-                textAlign = TextAlign.Center
-            )
+                Text(
+                    text = durationText,
+                    style = AppTypography.sub_bold_14,
+                    color = Gray.gray_700,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 
@@ -641,6 +753,7 @@ fun ScheduleRow(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun DateRow(
     text: String,
@@ -674,6 +787,7 @@ private fun DateRow(
     )
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun TimeRow(
     start: String,
@@ -750,99 +864,127 @@ private fun TimeText(
     )
 }
 
-
 @Preview
 @Composable
 fun PreviewAiPlannerSchedule() {
-    AiPlannerScheduleContent(
-        plan = PlanUiModel(
-            planId = 1,
-            title = "기말고사 준비",
-            deadline = "2026-01-25",
-            taskRange = "1장부터 3장까지",
-            priority = "중",
-            aiPlans = listOf(
-                AiPlanUiModel(
-                    aiPlanId = 1,
-                    scheduledDate = "2026-01-20",
-                    startTime = "10:00",
-                    endTime = "11:00",
-                    content = "자료정리 및 요약",
-                    expectedDuration = 120
-                ),AiPlanUiModel(
-                    aiPlanId = 2,
-                    scheduledDate = "2026-01-20",
-                    startTime = "10:00",
-                    endTime = "11:00",
-                    content = "자료정리 및 요약",
-                    expectedDuration = 120
-                ),AiPlanUiModel(
-                    aiPlanId = 3,
-                    scheduledDate = "2026-01-20",
-                    startTime = "10:00",
-                    endTime = "11:00",
-                    content = "자료정리 및 요약",
-                    expectedDuration = 120)
-//                ),AiPlanUiModel(
-//                    aiPlanId = 4,
+//    AiPlannerScheduleContent(
+//        plan = PlanUiModel(
+//            planId = 1,
+//            title = "기말고사 준비",
+//            deadline = "2026-01-25",
+//            taskRange = "1장부터 3장까지",
+//            priority = "중",
+//            aiPlans = listOf(
+//                AiPlanUiModel(
+//                    aiPlanId = 1,
 //                    scheduledDate = "2026-01-20",
 //                    startTime = "10:00",
 //                    endTime = "11:00",
 //                    content = "자료정리 및 요약",
 //                    expectedDuration = 120
 //                ),AiPlanUiModel(
-//                    aiPlanId = 5,
+//                    aiPlanId = 2,
 //                    scheduledDate = "2026-01-20",
 //                    startTime = "10:00",
 //                    endTime = "11:00",
 //                    content = "자료정리 및 요약",
 //                    expectedDuration = 120
 //                ),AiPlanUiModel(
-//                    aiPlanId = 6,
+//                    aiPlanId = 3,
 //                    scheduledDate = "2026-01-20",
 //                    startTime = "10:00",
 //                    endTime = "11:00",
 //                    content = "자료정리 및 요약",
-//                    expectedDuration = 120
-//                ),AiPlanUiModel(
-//                    aiPlanId = 7,
-//                    scheduledDate = "2026-01-20",
-//                    startTime = "10:00",
-//                    endTime = "11:00",
-//                    content = "자료정리 및 요약",
-//                    expectedDuration = 120
-//                ),AiPlanUiModel(
-//                    aiPlanId = 8,
-//                    scheduledDate = "2026-01-20",
-//                    startTime = "10:00",
-//                    endTime = "11:00",
-//                    content = "자료정리 및 요약",
-//                    expectedDuration = 120
-//                ),AiPlanUiModel(
-//                    aiPlanId = 9,
-//                    scheduledDate = "2026-01-20",
-//                    startTime = "10:00",
-//                    endTime = "11:00",
-//                    content = "자료정리 및 요약",
-//                    expectedDuration = 120
-//                ),AiPlanUiModel(
-//                    aiPlanId = 10,
-//                    scheduledDate = "2026-01-20",
-//                    startTime = "10:00",
-//                    endTime = "11:00",
-//                    content = "자료정리 및 요약",
-//                    expectedDuration = 120
-//                ),
+//                    expectedDuration = 120)
+////                ),AiPlanUiModel(
+////                    aiPlanId = 4,
+////                    scheduledDate = "2026-01-20",
+////                    startTime = "10:00",
+////                    endTime = "11:00",
+////                    content = "자료정리 및 요약",
+////                    expectedDuration = 120
+////                ),AiPlanUiModel(
+////                    aiPlanId = 5,
+////                    scheduledDate = "2026-01-20",
+////                    startTime = "10:00",
+////                    endTime = "11:00",
+////                    content = "자료정리 및 요약",
+////                    expectedDuration = 120
+////                ),AiPlanUiModel(
+////                    aiPlanId = 6,
+////                    scheduledDate = "2026-01-20",
+////                    startTime = "10:00",
+////                    endTime = "11:00",
+////                    content = "자료정리 및 요약",
+////                    expectedDuration = 120
+////                ),AiPlanUiModel(
+////                    aiPlanId = 7,
+////                    scheduledDate = "2026-01-20",
+////                    startTime = "10:00",
+////                    endTime = "11:00",
+////                    content = "자료정리 및 요약",
+////                    expectedDuration = 120
+////                ),AiPlanUiModel(
+////                    aiPlanId = 8,
+////                    scheduledDate = "2026-01-20",
+////                    startTime = "10:00",
+////                    endTime = "11:00",
+////                    content = "자료정리 및 요약",
+////                    expectedDuration = 120
+////                ),AiPlanUiModel(
+////                    aiPlanId = 9,
+////                    scheduledDate = "2026-01-20",
+////                    startTime = "10:00",
+////                    endTime = "11:00",
+////                    content = "자료정리 및 요약",
+////                    expectedDuration = 120
+////                ),AiPlanUiModel(
+////                    aiPlanId = 10,
+////                    scheduledDate = "2026-01-20",
+////                    startTime = "10:00",
+////                    endTime = "11:00",
+////                    content = "자료정리 및 요약",
+////                    expectedDuration = 120
+////                ),
+//            )
+//        ),
+//        source = ScheduleSource.FROM_MAIN,
+//        isEditMode = false,
+//        showMenu = false,
+//        onBack = {},
+//        onMenu = {},
+//        onEdit = {},
+//        onDeleteAll = {},
+//        onDeleteItem = {},
+//        onCompleteEdit = { planUiModel, aiPlanUiModels -> }
+//    )
+    ScheduleTable(
+        aiPlans = listOf(
+            AiPlanUiModel(
+                aiPlanId = 1,
+                scheduledDate = "2026-01-31",
+                startTime = "10:00",
+                endTime = "11:00",
+                content = "기말고사 준비",
+                expectedDuration = 120,
+            ),
+            AiPlanUiModel(
+                aiPlanId = 2,
+                scheduledDate = "2026-01-31",
+                startTime = "10:00",
+                endTime = "11:00",
+                content = "기말고사 준비",
+                expectedDuration = 120,
+                status = "DONE"
             )
         ),
-        isEditMode = false,
-        showMenu = false,
-        onBack = {},
-        onMenu = {},
-        onEdit = {},
-        onDelete = {},
-        onCompleteEdit = { planUiModel, aiPlanUiModels ->  
-            
-        }
+        source = ScheduleSource.FROM_MAIN,
+        isDeleteMode = true,
+        selectedIds = listOf(1),
+        isEditMode = true,
+        modifier = Modifier.fillMaxWidth(),
+        onPlanChange = { index, updatedPlan -> },
+        onToggleSection = {},
+        onDeleteSelected = {}
     )
 }

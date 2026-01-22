@@ -1,26 +1,53 @@
 package com.miruni.feature.aiplanner.data.api
 
 import com.miruni.core.network.ApiResponse
+import com.miruni.feature.aiplanner.data.dto.request.PostAiPlansRequest
+import com.miruni.feature.aiplanner.data.dto.response.GetAiPlansResponse
+import com.miruni.feature.aiplanner.data.dto.response.ScheduleResponse
+import com.miruni.feature.aiplanner.data.dto.response.PlanDto
+import com.miruni.feature.aiplanner.data.dto.response.PostAiPlansResponse
+import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.PATCH
+import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface AiPlannerApi {
 
-    @GET("/")
-    suspend fun getAiPlans(): ApiResponse<List<AiPlannerMainResponse>>
+    /** AI 상위 일정 조회 */
+    @GET("api/ai-plans")
+    suspend fun getAiPlans(): ApiResponse<GetAiPlansResponse>
 
-    @GET("/")
-    suspend fun getRemain(): ApiResponse<AiPlannerRemainResponse>
+    /** AI 플래닝 */
+    @POST("api/ai-plans")
+    suspend fun postAiPlans(
+        @Body request: PostAiPlansRequest
+    ): ApiResponse<List<PostAiPlansResponse>>
+
+    /** AI 플래닝 스케줄표 조회 */
+    @GET("api/ai-plans/table/{plan_id}")
+    suspend fun getScheduleTable(
+        @Path("plan_id") planId: Long
+    ): ApiResponse<ScheduleResponse>
+
+    /** AI 플래닝 스케줄표 수정 */
+    @PATCH("api/ai-plans/table/{plan_id}")
+    suspend fun patchScheduleTable(
+        @Path("plan_id") planId: Long,
+        @Body request: PlanDto
+    ): ApiResponse<ScheduleResponse>
+
+    /** AI 플래닝 스케줄표 삭제 (스케줄표 전체 삭제) */
+    @DELETE("api/ai-plans/table/{plan_id}")
+    suspend fun deleteScheduleTable(
+        @Path("plan_id") planId: Long
+    ): ApiResponse<Boolean>
+
+    /** AI 플래닝 스케줄표 선택 삭제 (스케줄표 아이템 삭제) */
+    @DELETE("api/ai-plans/table/items/{plan_id}")
+    suspend fun deleteScheduleItem(
+        @Path("plan_id") planId: Long,
+        @Body request: List<Long> // 삭제할 AI 플랜 ID 리스트
+    ): ApiResponse<Boolean>
 }
-
-data class AiPlannerMainResponse(
-    val id: Long, // 상위 일정 ID
-    val title: String, // 상위 일정 제목
-    val isDone: Boolean, // 일정 전체에 대한 완료 여부
-    val doneCount: Long, // 세부 일정 중 완료 개수
-    val totalCount: Long, // 세부 일정 전체 개수
-    val progressRate: Long // 진행률 (%)
-)
-
-data class AiPlannerRemainResponse(
-    val remain: Int // 잔여 횟수
-)

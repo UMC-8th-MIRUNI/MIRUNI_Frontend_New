@@ -19,8 +19,9 @@ import com.miruni.feature.home.dnd.DndOnboardingScreen
 import com.miruni.feature.home.dnd.DndPauseScreen
 import com.miruni.feature.home.dnd.DndTimerScreen
 import com.miruni.feature.home.dnd.DndTimerViewModel
-import com.miruni.feature.home.dnd.component.RerunTimerErrorModal
-import com.miruni.feature.home.dnd.component.RerunTimerSettingModal
+import com.miruni.feature.home.dnd.RerunTimerErrorModal
+import com.miruni.feature.home.dnd.RerunTimerSettingModal
+import com.miruni.feature.home.runSchedule.RunScheduleTimerScreen
 import jakarta.inject.Inject
 
 class HomeNavigation @Inject constructor(
@@ -32,10 +33,7 @@ class HomeNavigation @Inject constructor(
         builder: NavGraphBuilder,
         navController: NavHostController
     ) {
-        Log.d("HomeNavigation", "Register HomeNavigation")
-
-        builder.composable(MiruniRoute.Home.route) {
-            Log.d("HomeNavigation", "HomeScreen entered")
+        builder.composable(route) {
             HomeScreen(
                 navController = navController
             )
@@ -59,7 +57,7 @@ class HomeNavigation @Inject constructor(
 
             DndTimerScreen(
                 navController = navController,
-                viewModel = viewModel
+                viewModel = viewModel,
             )
         }
 
@@ -73,7 +71,9 @@ class HomeNavigation @Inject constructor(
             Log.d("HomeNavigation", "HomeDndPause entered")
             DndPauseScreen(
                 navController = navController,
-                viewModel = viewModel
+                viewModel = viewModel,
+                hour = 0,
+                minute = 0
             )
         }
 
@@ -122,6 +122,13 @@ class HomeNavigation @Inject constructor(
             )
         }
 
+        builder.composable(
+            MiruniRoute.RunScheduleTimerSetting.route) {
+            RunScheduleTimerScreen(
+                navController = navController
+            )
+        }
+
         builder.dialog(
             ModalRoute.Setting.route
         ) {
@@ -142,6 +149,5 @@ class HomeNavigation @Inject constructor(
                 navController = navController
             )
         }
-
     }
 }
