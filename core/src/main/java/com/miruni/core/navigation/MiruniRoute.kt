@@ -43,7 +43,7 @@ sealed class MiruniRoute(val route: String) {
     data object AiPlannerPlanning : MiruniRoute("aiPlanner/planning")
     data object AiPlannerLoading : MiruniRoute("aiPlanner/loading")
     data object AiPlannerSchedule : MiruniRoute("aiPlanner/schedule")
-//    data object Dnd : MiruniRoute("dnd")
+    data object Dnd : MiruniRoute("dnd")
     data object Execution : MiruniRoute("execution")
 }
 
