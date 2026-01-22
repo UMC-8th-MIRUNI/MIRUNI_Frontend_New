@@ -4,6 +4,7 @@ import com.miruni.feature.aiplanner.data.api.AiPlannerApi
 import com.miruni.feature.login.data.api.AuthApi
 import com.miruni.feature.mypage.data.api.AccountApi
 import com.miruni.feature.mypage.data.api.ProfileApi
+import com.miruni.feature.pwreset.data.api.PwApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -44,4 +45,10 @@ object ApiModule {
     fun provideAccountApi(
         retrofit: Retrofit
     ): AccountApi = retrofit.create(AccountApi::class.java)
+
+    @Provides
+    @Singleton
+    fun providePwApi(
+        retrofit: Retrofit
+    ): PwApi = retrofit.create(PwApi::class.java)
 }

@@ -27,6 +27,7 @@ class PwResetContract {
         val passwordCheckVisible: Boolean = false,
         val otpCode: TextInputField = TextInputField(),
         val route: PwResetRoute = PwResetRoute.Email,
+        val isLoading : Boolean = false,
     ) : ViewState {
         val canNext: Boolean
             get() = when (route) {
@@ -47,6 +48,14 @@ class PwResetContract {
     }
 
     sealed class Effect : ViewSideEffect {
+        sealed class Message : Effect() {
+            data class Toast(val message: String) : Message()
+            data class Snackbar(
+                val message: String,
+                val actionLabel: String? = null,
+                val onAction: (() -> Unit)? = null
+            ) : Message()
+        }
         sealed class Navigation : Effect() {
             data object ToHome : Navigation()
             data class ToRoute(val route: PwResetRoute) : Navigation()
