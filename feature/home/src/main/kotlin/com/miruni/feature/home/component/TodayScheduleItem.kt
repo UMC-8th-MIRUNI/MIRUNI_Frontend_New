@@ -26,14 +26,14 @@ import androidx.compose.ui.unit.dp
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.MainColor
 import com.miruni.feature.home.R
-import com.miruni.feature.home.domain.TodaySchedule
+import com.miruni.feature.home.presentation.model.TodayPlanUiModel
 
 /**
  * 오늘의 일정 아이템 UI
  */
 @Composable
 fun TodayScheduleItem(
-    item: TodaySchedule,
+    item: TodayPlanUiModel,
     isSelected: Boolean,
     modifier: Modifier = Modifier,
     onClick: () -> Unit
@@ -110,7 +110,7 @@ fun TodayScheduleItem(
 @Preview
 @Composable
 private fun PreviewTodayScheduleItem() {
-    val item = TodaySchedule(1,"오후 2:20", "UMC 기획안 만들기", "상", "워크북 3페이지 슬라이드 제작")
+    val item = TodayPlanUiModel(1,"오후 2:20", "UMC 기획안 만들기", "상", "워크북 3페이지 슬라이드 제작")
     val isSelected = true
     TodayScheduleItem(item, isSelected) { }
 }
