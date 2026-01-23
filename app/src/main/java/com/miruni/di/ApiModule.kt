@@ -1,6 +1,7 @@
 package com.miruni.di
 
 import com.miruni.feature.aiplanner.data.api.AiPlannerApi
+import com.miruni.feature.home.data.api.HomeApi
 import com.miruni.feature.login.data.api.AuthApi
 import com.miruni.feature.mypage.data.api.AccountApi
 import com.miruni.feature.mypage.data.api.ProfileApi
@@ -23,6 +24,12 @@ object ApiModule {
     fun provideAiPlannerApi(
         retrofit: Retrofit
     ): AiPlannerApi = retrofit.create(AiPlannerApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideHomeApi(
+        retrofit: Retrofit
+    ): HomeApi = retrofit.create(HomeApi::class.java)
 
     // auth API
     @Provides
