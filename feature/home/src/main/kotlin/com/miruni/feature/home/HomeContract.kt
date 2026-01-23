@@ -3,19 +3,23 @@ package com.miruni.feature.home
 import com.miruni.core.common.ViewEvent
 import com.miruni.core.common.ViewSideEffect
 import com.miruni.core.common.ViewState
-import com.miruni.feature.home.domain.TodaySchedule
+import com.miruni.feature.home.presentation.model.TodayPlanUiModel
+import com.miruni.feature.home.presentation.model.UserInfoUiModel
 
 class HomeContract {
     sealed class Event : ViewEvent {
         object OnAlarmClick : Event() // 알람 기록 클릭
         object OnAiPlannerClick : Event() // AI 플래너 바로가기 클릭
         object OnDndClick : Event() // 방해금지 모드 바로가기 클릭
-        data class OnScheduleClick(val scheduleId: Long) : Event() // 일정 클릭 이벤트
+        data class OnScheduleClick(val scheduleId: Int) : Event() // 일정 클릭 이벤트
     }
 
     data class State(
-        val schedules: List<TodaySchedule>, // 오늘의 일정 리스트
-        val selectedScheduleId: Long? // 선택한 일정 ID
+        val schedules: List<TodayPlanUiModel>? = emptyList(), // 오늘의 일정 리스트
+        val progressRate: Int, // 진행률
+        val userInfo: UserInfoUiModel? = null, // 유저 정보
+        val selectedScheduleId: Int? = null, // 선택한 일정 ID
+        val isHomeLoading: Boolean = false, // 홈 화면 로딩
     ) : ViewState
 
     sealed class Effect: ViewSideEffect {
@@ -25,7 +29,8 @@ class HomeContract {
             object ToAiPlanner : Navigation()
             object ToAiPlannerOnboarding : Navigation()
             object ToDnd : Navigation()
-            data class ToExecution(val scheduleId: Long) : Navigation()
+            data class ToExecution(val scheduleId: Int) : Navigation()
         }
+        data class ShowToast(val message: String) : Effect()
     }
 }

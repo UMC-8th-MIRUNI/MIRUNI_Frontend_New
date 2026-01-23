@@ -1,5 +1,6 @@
-package com.miruni.feature.home
+package com.miruni.feature.home.presentation
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,8 +19,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -27,10 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -58,20 +54,19 @@ import com.miruni.core.designsystem.MiruniTheme
 import com.miruni.core.navigation.MiruniRoute
 import com.miruni.feature.home.component.TodayScheduleItem
 import com.miruni.core.common.convertBold
+import com.miruni.feature.home.HomeContract
+import com.miruni.feature.home.HomeViewModel
+import com.miruni.feature.home.R
 import com.miruni.feature.home.component.LinearProgressBar
-
-/** 더미 데이터 */
-val achievementRate: Float = 0.12f // 임시
-val peanut: Int = 0
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    modifier: Modifier = Modifier,
     navController: NavHostController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state = viewModel.viewState.collectAsState().value
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -81,6 +76,7 @@ fun HomeScreen(
                 HomeContract.Effect.Navigation.ToAlarms -> navController.navigate(MiruniRoute.AlarmLogs.route) // 알람 기록
                 HomeContract.Effect.Navigation.ToDnd -> navController.navigate(MiruniRoute.Dnd.route) // 방해금지 모드
                 is HomeContract.Effect.Navigation.ToExecution -> navController.navigate(MiruniRoute.Execution.route) // 일정 실행
+                is HomeContract.Effect.ShowToast -> Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show() // 토스트 출력
             }
         }
     }
@@ -89,20 +85,22 @@ fun HomeScreen(
         containerColor = MainColor.miruni_green,
         topBar = {
             HeaderRow(
+                state = state,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 18.dp, vertical = 16.dp),
-                viewModel = viewModel
+                onClickAlarm = { viewModel.setEvent(HomeContract.Event.OnAlarmClick) }
             )
         }
     ) { innerPadding ->
         HomeContent(
             state = state,
-            onEvent = viewModel::setEvent,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = innerPadding.calculateTopPadding()),
-            viewModel = viewModel
+            onClickAiPlanner = { viewModel.setEvent(HomeContract.Event.OnAiPlannerClick) },
+            onClickDnd = { viewModel.setEvent(HomeContract.Event.OnDndClick) },
+            onClickSchedule = { HomeContract.Event.OnScheduleClick(it) }
         )
     }
 }
@@ -110,40 +108,35 @@ fun HomeScreen(
 @Composable
 fun HomeContent(
     state: HomeContract.State,
-    onEvent: (HomeContract.Event) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel
+    onClickAiPlanner: () -> Unit,
+    onClickDnd: () -> Unit,
+    onClickSchedule: (Int) -> Unit
 ) {
-    LazyColumn (
+    Column (
         modifier = modifier.fillMaxSize(),
-//  만약 바텀 네비게이션으로 UI 가려지면 해당 주석 풀기
-//        contentPadding = PaddingValues(
-//            bottom = WindowInsets.navigationBars
-//                .asPaddingValues()
-//                .calculateBottomPadding()
-//        )
     ) {
-        item {
-            TopSection(
-                modifier = Modifier.wrapContentHeight(),
-                viewModel = viewModel
-            )
-        }
+        TopSection(
+            state = state,
+            modifier = Modifier.wrapContentHeight(),
+            onClickAiPlanner = onClickAiPlanner,
+            onClickDnd = onClickDnd
+        )
 
-        item {
-            BottomSection(
-                state = state,
-                onEvent = onEvent,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        BottomSection(
+            state = state,
+            modifier = Modifier.fillMaxWidth(),
+            onClickSchedule = onClickSchedule
+        )
     }
 }
 
 @Composable
 fun TopSection(
+    state: HomeContract.State,
     modifier: Modifier,
-    viewModel: HomeViewModel
+    onClickAiPlanner: () -> Unit,
+    onClickDnd: () -> Unit
 ) {
     Box (modifier = modifier
         .fillMaxWidth()
@@ -153,9 +146,12 @@ fun TopSection(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            DescriptionSection()
-            ProgressBarSection()
-            ButtonSection(viewModel = viewModel)
+            DescriptionSection(state = state)
+            ProgressBarSection(state = state)
+            ButtonSection(
+                onClickAiPlanner = onClickAiPlanner,
+                onClickDnd = onClickDnd
+            )
         }
     }
 }
@@ -163,14 +159,15 @@ fun TopSection(
 @Composable
 fun BottomSection(
     state: HomeContract.State,
-    onEvent: (HomeContract.Event) -> Unit,
-    modifier: Modifier
+    modifier: Modifier,
+    onClickSchedule: (Int) -> Unit
 ) {
     Column(
         modifier = modifier
             .background(
                 color = Color.White,
-                shape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp))
+                shape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp)
+            )
     ) {
         Text(
             text = "오늘의 일정",
@@ -184,19 +181,24 @@ fun BottomSection(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        state.schedules.forEach { schedule ->
-            TodayScheduleItem(
-                item = schedule,
-                isSelected = state.selectedScheduleId == schedule.id,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 17.dp),
-                onClick = {
-                    onEvent(HomeContract.Event.OnScheduleClick(schedule.id))
-                }
-            )
-
-            Spacer(modifier = Modifier.height(10.dp))
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 17.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            items(state.schedules?.size ?: 0) { index ->
+                val schedule = state.schedules!![index]
+                TodayScheduleItem(
+                    item = schedule,
+                    isSelected = state.selectedScheduleId == schedule.id,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 17.dp),
+                    onClick = { onClickSchedule(schedule.id) }
+                )
+            }
+            item { Spacer(modifier = Modifier.height(20.dp)) }
         }
     }
 }
@@ -206,8 +208,9 @@ fun BottomSection(
  */
 @Composable
 fun HeaderRow(
+    state: HomeContract.State,
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel
+    onClickAlarm: () -> Unit
 ) {
     Row(
         modifier = modifier
@@ -238,16 +241,14 @@ fun HeaderRow(
             contentDescription = "peanut"
         )
         Text(
-            text = peanut.toString(),
+            text = state.userInfo?.peanutCount?.toString() ?: "0",
             style = AppTypography.header_bold_16,
             modifier = Modifier.padding(horizontal = 8.dp)
         )
         Image(
             painter = painterResource(id = R.drawable.bell),
             contentDescription = "bell",
-            modifier = Modifier.clickable {
-                viewModel.setEvent(HomeContract.Event.OnAlarmClick)
-            }
+            modifier = Modifier.clickable { onClickAlarm() }
         )
     }
 }
@@ -257,6 +258,7 @@ fun HeaderRow(
  */
 @Composable
 fun DescriptionSection(
+    state: HomeContract.State,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -266,7 +268,7 @@ fun DescriptionSection(
             .padding(bottom = 26.dp)
     ) {
         Text(
-            text = convertBold("'가영'님,\n오늘은 더 나은 하루가 될거예요.\n'미루니가 함께해요!'"),
+            text = convertBold("'${state.userInfo?.nickname ?: "익명의 미루니"}'님,\n오늘은 더 나은 하루가 될거예요.\n'미루니가 함께해요!'"),
             style = AppTypography.PretendardTextStyle(
                 fontWeight = FontWeight.Medium,
                 fontSize = 20.sp,
@@ -361,6 +363,7 @@ fun MiruniIcon(
  */
 @Composable
 fun ProgressBarSection(
+    state: HomeContract.State,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -379,7 +382,7 @@ fun ProgressBarSection(
                 style = AppTypography.sub_bold_14
             )
             Text(
-                text = "오늘 목표의 " + (achievementRate * 100).toInt() + "%를 달성했어요!",
+                text = "오늘 목표의 " + (state.progressRate * 100) + "%를 달성했어요!",
                 color = Gray.gray_500,
                 style = AppTypography.description_regular_9
             )
@@ -387,7 +390,7 @@ fun ProgressBarSection(
             Spacer(modifier = Modifier.height(16.dp))
 
             LinearProgressBar(
-                progress = achievementRate,
+                progress = state.progressRate.toFloat(),
                 modifier = Modifier
                     .fillMaxWidth(),
                 height = 12.dp,
@@ -401,7 +404,8 @@ fun ProgressBarSection(
 @Composable
 fun ButtonSection(
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel
+    onClickAiPlanner: () -> Unit,
+    onClickDnd: () -> Unit
 ) {
     Row(
         modifier = modifier
@@ -415,7 +419,7 @@ fun ButtonSection(
                 .height(126.dp)
                 .background(color = Color(0xFFB9E8C6), shape = RoundedCornerShape(10.dp))
                 .padding(start = 25.dp, end = 15.dp, top = 15.dp, bottom = 15.dp)
-                .clickable { viewModel.setEvent(HomeContract.Event.OnAiPlannerClick) }
+                .clickable { onClickAiPlanner() }
         ) {
             Column(
                 modifier = Modifier
@@ -459,7 +463,7 @@ fun ButtonSection(
                 .height(126.dp)
                 .background(color = Color(0xFFB9E8C6), shape = RoundedCornerShape(10.dp))
                 .padding(start = 25.dp, end = 15.dp, top = 15.dp, bottom = 15.dp)
-                .clickable { viewModel.setEvent(HomeContract.Event.OnDndClick) }
+                .clickable { onClickDnd() }
         ) {
             Column(
                 modifier = Modifier.align(Alignment.TopStart),

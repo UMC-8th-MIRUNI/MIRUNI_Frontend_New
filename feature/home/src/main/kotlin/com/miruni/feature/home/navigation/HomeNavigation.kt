@@ -12,7 +12,7 @@ import androidx.navigation.navArgument
 import com.miruni.core.navigation.MiruniRoute
 import com.miruni.core.navigation.ModalRoute
 import com.miruni.core.navigation.NavigationDestination
-import com.miruni.feature.home.HomeScreen
+import com.miruni.feature.home.presentation.HomeScreen
 import com.miruni.feature.home.dnd.DndCompleteScreen
 import com.miruni.feature.home.dnd.DndEarlyEndScreen
 import com.miruni.feature.home.dnd.DndOnboardingScreen
