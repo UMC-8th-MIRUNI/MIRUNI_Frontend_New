@@ -1,4 +1,4 @@
-package com.miruni.feature.signup.component.step
+package com.miruni.feature.signup.presentation.component.step
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,7 +25,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,16 +32,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.Gray
 import com.miruni.core.designsystem.MainColor
 import com.miruni.feature.signup.R
 import com.miruni.feature.signup.SignUpContract
-import com.miruni.feature.signup.SignupViewModel
-import com.miruni.feature.signup.component.textfield.UnderlineTextField
-import com.miruni.feature.signup.model.TextInputField
-import com.miruni.feature.signup.model.Term
+import com.miruni.feature.signup.presentation.component.textfield.UnderlineTextField
+import com.miruni.feature.signup.presentation.model.TextInputField
+import com.miruni.feature.signup.presentation.model.Term
 
 @Composable
 fun SignUpTermStep(

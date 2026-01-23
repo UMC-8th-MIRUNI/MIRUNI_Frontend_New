@@ -1,12 +1,12 @@
 package com.miruni.feature.signup
 
 import android.util.Patterns
-import com.miruni.feature.signup.common.ViewEvent
-import com.miruni.feature.signup.common.ViewSideEffect
-import com.miruni.feature.signup.common.ViewState
-import com.miruni.feature.signup.model.Term
-import com.miruni.feature.signup.model.TextInputField
-import com.miruni.feature.signup.navigation.SignupRoute
+import com.miruni.core.common.ViewEvent
+import com.miruni.core.common.ViewSideEffect
+import com.miruni.core.common.ViewState
+import com.miruni.feature.signup.presentation.model.Term
+import com.miruni.feature.signup.presentation.model.TextInputField
+import com.miruni.feature.signup.presentation.navigation.SignupRoute
 
 
 class SignUpContract {
@@ -27,6 +27,8 @@ class SignUpContract {
         data class OnAgreeMarketingChanged(val agree: Boolean) : Event()
         data class OnAgreeAllChanged(val agree: Boolean) : Event()
         data class OnRouteChanged(val route: String) : Event()
+        data object OnRequestOtpClicked : Event()
+        data object OnVerifyOtpClicked : Event()
         data object OnNextStepClicked : Event()
         data object OnPrevStepClicked : Event()
 
@@ -38,7 +40,9 @@ class SignUpContract {
         val birth: TextInputField = TextInputField(),
         val phone: TextInputField = TextInputField(),
         val email: TextInputField = TextInputField(),
+        val isEmailVerified: Boolean = false,
         val otp: TextInputField = TextInputField(),
+        val isOtpVerified: Boolean = false,
         val password: TextInputField = TextInputField(),
         val passwordCheck: TextInputField = TextInputField(),
         val openTerm: Term? = null,
@@ -60,7 +64,7 @@ class SignUpContract {
                     name.value.isNotBlank() &&
                             birth.value.length == 8 && birth.value.all(Char::isDigit) &&
                             phone.value.length in 10..11 && phone.value.all(Char::isDigit)
-                            && emailOk && pwOk && pwMatch
+                            && emailOk && pwOk && pwMatch && isEmailVerified && isOtpVerified
                 }
 
                 SignupRoute.Terms.route -> {
@@ -76,6 +80,15 @@ class SignUpContract {
             data class ToRoute(val route: String) : Navigation()
             data object Back : Navigation()
             data object Done : Navigation()
+        }
+
+        sealed class Message : Effect() {
+            data class Toast(val message: String) : Message()
+            data class SnackBar(
+                val message: String,
+                val actionLabel: String? = null,
+                val onAction: (() -> Unit)? = null
+            ) : Message()
         }
     }
 

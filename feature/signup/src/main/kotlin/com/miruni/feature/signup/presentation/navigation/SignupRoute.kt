@@ -1,4 +1,4 @@
-package com.miruni.feature.signup.navigation
+package com.miruni.feature.signup.presentation.navigation
 
 sealed class SignupRoute(val route: String) {
 

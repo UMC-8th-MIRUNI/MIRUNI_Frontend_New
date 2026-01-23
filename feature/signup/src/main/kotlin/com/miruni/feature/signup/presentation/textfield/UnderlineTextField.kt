@@ -1,4 +1,4 @@
-package com.miruni.feature.signup.component.textfield
+package com.miruni.feature.signup.presentation.component.textfield
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource

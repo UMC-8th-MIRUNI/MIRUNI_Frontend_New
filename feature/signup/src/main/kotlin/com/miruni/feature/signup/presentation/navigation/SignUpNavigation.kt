@@ -1,4 +1,4 @@
-package com.miruni.feature.signup.navigation
+package com.miruni.feature.signup.presentation.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController

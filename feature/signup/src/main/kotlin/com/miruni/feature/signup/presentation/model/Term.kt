@@ -1,4 +1,4 @@
-package com.miruni.feature.signup.model
+package com.miruni.feature.signup.presentation.model
 
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.buildAnnotatedString
