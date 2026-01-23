@@ -25,6 +25,7 @@ class PwResetContract {
         val passwordCheck: TextInputField = TextInputField(),
         val passwordVisible: Boolean = false,
         val passwordCheckVisible: Boolean = false,
+        val authCode : String = "",
         val otpCode: TextInputField = TextInputField(),
         val route: PwResetRoute = PwResetRoute.Email,
         val isLoading : Boolean = false,

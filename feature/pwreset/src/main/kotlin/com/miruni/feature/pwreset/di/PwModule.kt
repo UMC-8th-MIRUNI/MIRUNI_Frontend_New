@@ -5,6 +5,7 @@ import com.miruni.feature.pwreset.data.datasource.PwRemoteDataSourceImpl
 import com.miruni.feature.pwreset.data.repository.PwRepositoryImpl
 import com.miruni.feature.pwreset.domain.datasource.PwRemoteDataSource
 import com.miruni.feature.pwreset.domain.repository.PwRepository
+import com.miruni.feature.pwreset.domain.usecase.ResetPasswordUseCase
 import com.miruni.feature.pwreset.domain.usecase.SendEmailVerifyUseCase
 import dagger.Module
 import dagger.Provides
@@ -37,6 +38,14 @@ object PwModule {
     fun provideSendEmailVerifyUseCase(
         pwRepository: PwRepository
     ) : SendEmailVerifyUseCase = SendEmailVerifyUseCase(
+        pwRepository
+    )
+
+    @Provides
+    @Reusable
+    fun provideResetPasswordUseCase(
+        pwRepository: PwRepository
+    ) : ResetPasswordUseCase = ResetPasswordUseCase(
         pwRepository
     )
 }

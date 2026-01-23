@@ -5,6 +5,7 @@ import com.miruni.core.network.NetworkResult
 import com.miruni.core.network.executeApiRequest
 import com.miruni.feature.pwreset.data.api.PwApi
 import com.miruni.feature.pwreset.data.dto.request.EmailVerificationRequest
+import com.miruni.feature.pwreset.data.dto.request.ResetPasswordRequest
 import com.miruni.feature.pwreset.data.dto.response.EmailVerificationResponse
 import com.miruni.feature.pwreset.domain.datasource.PwRemoteDataSource
 
@@ -14,5 +15,10 @@ class PwRemoteDataSourceImpl(
     override suspend fun sendEmailVerification(email: EmailVerificationRequest): NetworkResult<ApiResponse<EmailVerificationResponse>> =
         executeApiRequest {
             pwApi.sendEmail(email)
+        }
+
+    override suspend fun resetPassword(resetPasswordRequest: ResetPasswordRequest): NetworkResult<ApiResponse<Unit>> =
+        executeApiRequest {
+            pwApi.resetPassword(resetPasswordRequest)
         }
 }

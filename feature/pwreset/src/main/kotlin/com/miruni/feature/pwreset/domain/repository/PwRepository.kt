@@ -5,4 +5,5 @@ import com.miruni.core.result.DataResult
 
 interface PwRepository {
     suspend fun sendEmailVerification(email: String) : DataResult<String, DataError>
+    suspend fun resetPassword(password: String) : DataResult<Unit, DataError>
 }
