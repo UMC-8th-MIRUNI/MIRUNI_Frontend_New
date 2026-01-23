@@ -1,4 +1,4 @@
-package com.miruni.feature.signup.component
+package com.miruni.feature.signup.presentation.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.miruni.core.designsystem.AppTypography
-import com.miruni.feature.signup.model.Term
+import com.miruni.feature.signup.presentation.model.Term
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

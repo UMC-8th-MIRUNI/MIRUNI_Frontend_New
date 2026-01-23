@@ -1,4 +1,4 @@
-package com.miruni.feature.signup.model
+package com.miruni.feature.signup.presentation.model
 
 data class TextInputField(
     val value : String = "",

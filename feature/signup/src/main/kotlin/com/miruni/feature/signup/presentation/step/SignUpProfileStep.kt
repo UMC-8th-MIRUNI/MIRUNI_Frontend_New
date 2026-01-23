@@ -1,4 +1,4 @@
-package com.miruni.feature.signup.component.step
+package com.miruni.feature.signup.presentation.component.step
 
 import android.util.Patterns
 import androidx.compose.foundation.layout.Arrangement
@@ -34,9 +34,9 @@ import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.MainColor
 import com.miruni.core.designsystem.White
 import com.miruni.feature.signup.R
-import com.miruni.feature.signup.component.textfield.BirthDateVisualTransformation
-import com.miruni.feature.signup.component.textfield.PhoneNumberVisualTransformation
-import com.miruni.feature.signup.component.textfield.UnderlineTextField
+import com.miruni.feature.signup.presentation.component.textfield.BirthDateVisualTransformation
+import com.miruni.feature.signup.presentation.component.textfield.PhoneNumberVisualTransformation
+import com.miruni.feature.signup.presentation.component.textfield.UnderlineTextField
 import com.miruni.core.designsystem.MiruniSize
 import com.miruni.core.designsystem.MiruniSpacing
 
@@ -126,7 +126,10 @@ fun SignUpProfileStep(
             },
             trailing = {
                 Button(
-                    modifier = Modifier.size(MiruniSize.buttonSmallWidth, MiruniSize.buttonSmallHeight),
+                    modifier = Modifier.size(
+                        MiruniSize.buttonSmallWidth,
+                        MiruniSize.buttonSmallHeight
+                    ),
                     contentPadding = PaddingValues(vertical = 8.dp, horizontal = 0.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MainColor.miruni_green,
@@ -149,7 +152,10 @@ fun SignUpProfileStep(
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             trailing = {
                 Button(
-                    modifier = Modifier.size(MiruniSize.buttonSmallWidth, MiruniSize.buttonSmallHeight),
+                    modifier = Modifier.size(
+                        MiruniSize.buttonSmallWidth,
+                        MiruniSize.buttonSmallHeight
+                    ),
                     contentPadding = PaddingValues(vertical = 8.dp, horizontal = 0.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MainColor.miruni_green,
