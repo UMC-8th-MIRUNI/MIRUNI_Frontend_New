@@ -1,4 +1,4 @@
-package com.miruni.feature.signup.component
+package com.miruni.feature.signup.presentation.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

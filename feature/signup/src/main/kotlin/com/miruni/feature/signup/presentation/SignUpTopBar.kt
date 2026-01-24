@@ -1,6 +1,5 @@
-package com.miruni.feature.signup.component
+package com.miruni.feature.signup.presentation.component
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
