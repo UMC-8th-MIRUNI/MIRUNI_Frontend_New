@@ -1,24 +1,30 @@
 package com.miruni.feature.signup
 
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.AppTypography
-import com.miruni.feature.signup.component.SignUpBottomBar
-import com.miruni.feature.signup.component.SignUpTopBar
-import com.miruni.feature.signup.component.TermContentDialog
-import com.miruni.feature.signup.component.step.SignUpProfileStep
-import com.miruni.feature.signup.component.step.SignUpTermStep
-import com.miruni.feature.signup.navigation.SignupRoute
+import com.miruni.feature.signup.presentation.component.SignUpBottomBar
+import com.miruni.feature.signup.presentation.component.SignUpTopBar
+import com.miruni.feature.signup.presentation.component.TermContentDialog
+import com.miruni.feature.signup.presentation.component.step.SignUpProfileStep
+import com.miruni.feature.signup.presentation.component.step.SignUpTermStep
+import com.miruni.feature.signup.presentation.navigation.SignupRoute
 import com.miruni.core.designsystem.MiruniSpacing
 import kotlinx.coroutines.flow.collectLatest
 
@@ -28,13 +34,14 @@ fun SignupNavigator(
     onBack: () -> Unit,
     viewModel: SignupViewModel = hiltViewModel(),
 ) {
-    val uiState = viewModel.viewState.value
+    val uiState = viewModel.viewState.collectAsStateWithLifecycle().value
     val onEvent: (SignUpContract.Event) -> Unit = viewModel::setEvent
     val navController = rememberNavController()
 
     // 현재 라우트 관찰
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
         ?: SignupRoute.PROFILE
+    val snackHostState = remember { SnackbarHostState() }
 
     // VM과 라우트 동기화 (canNext, 단계표시용)
     LaunchedEffect(currentRoute) {
@@ -52,6 +59,15 @@ fun SignupNavigator(
                     if (!navController.popBackStack()) onBack()
                 }
                 is SignUpContract.Effect.Navigation.Done -> onSignUpSuccess()
+
+                is SignUpContract.Effect.Message.Toast -> {}
+                is SignUpContract.Effect.Message.SnackBar -> {
+                    snackHostState.showSnackbar(
+                        message = effect.message,
+                        actionLabel = effect.actionLabel,
+                        withDismissAction = true
+                    )
+                }
             }
         }
     }
@@ -81,7 +97,16 @@ fun SignupNavigator(
                     onEvent(SignUpContract.Event.OnNextStepClicked)
                 }
             )
-        }
+        },
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackHostState,
+                modifier = Modifier
+                    .navigationBarsPadding()
+                    .imePadding()
+                    .padding(bottom = MiruniSpacing.xxl)
+            )
+        },
     ) { innerPadding ->
 
         NavHost(

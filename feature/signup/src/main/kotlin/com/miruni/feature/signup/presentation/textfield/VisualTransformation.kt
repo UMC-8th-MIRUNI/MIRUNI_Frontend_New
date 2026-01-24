@@ -1,4 +1,4 @@
-package com.miruni.feature.signup.component.textfield
+package com.miruni.feature.signup.presentation.component.textfield
 
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.OffsetMapping

@@ -41,6 +41,8 @@ android {
 dependencies {
     implementation(project(":core"))
 
+    implementation(libs.retrofit)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
