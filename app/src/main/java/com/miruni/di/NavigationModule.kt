@@ -8,7 +8,7 @@ import com.miruni.feature.login.presentation.component.navigation.LoginNavigatio
 import com.miruni.feature.mypage.navigation.MyPageNavigation
 import com.miruni.feature.pwreset.presentation.navigation.PwResetNavigation
 import com.miruni.feature.signup.navigation.SignUpNavigation
-import com.miruni.feature.splash.navigation.MiruniSplashNavigation
+import com.miruni.feature.splash.navigation.SplashNavigation
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -22,7 +22,7 @@ abstract class NavigationModule {
     @Binds
     @IntoSet
     abstract fun bindSplashNavigation(
-        navigation: MiruniSplashNavigation
+        navigation: SplashNavigation
     ): NavigationDestination
 
     @Binds
