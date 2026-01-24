@@ -5,13 +5,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.miruni.core.navigation.MiruniRoute
 import com.miruni.core.navigation.NavigationDestination
-import com.miruni.feature.splash.MiruniSplashScreen
+import com.miruni.feature.splash.SplashScreen
 import jakarta.inject.Inject
 
-class MiruniSplashNavigation @Inject constructor(
-//    override val arguments: List<NamedNavArgument>
-) : NavigationDestination {
-
+class SplashNavigation @Inject constructor() : NavigationDestination {
     override val route: String = MiruniRoute.Splash.route
 
     override fun register(
@@ -19,14 +16,7 @@ class MiruniSplashNavigation @Inject constructor(
         navController: NavHostController
     ) {
         builder.composable(route) {
-            MiruniSplashScreen(
-                navController = navController,
-                onTimeout = {
-                    navController.navigate(MiruniRoute.Home.route) {
-                        popUpTo(MiruniRoute.Splash.route) { inclusive = true }
-                    }
-                }
-            )
+            SplashScreen(navController = navController)
         }
     }
 }
