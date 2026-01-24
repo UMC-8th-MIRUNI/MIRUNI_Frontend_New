@@ -137,7 +137,7 @@ fun OnboardContent(
                     style = AppTypography.sub_medium_14,
                     color = Color.White,
                     modifier = Modifier
-                        .padding(top = 36.dp, bottom = 70.dp, end = 16.dp)
+                        .padding(top = 76.dp, end = 16.dp)
                         .clickable { onClickSkip() }
                 )
             } else {
@@ -220,7 +220,7 @@ fun BasicLayout(
             .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(70.dp))
+        Spacer(modifier = Modifier.height(166.dp))
 
         Surface(
             modifier = Modifier.fillMaxWidth(),

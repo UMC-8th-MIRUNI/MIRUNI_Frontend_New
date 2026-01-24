@@ -69,77 +69,146 @@ fun SplashScreen(
     SplashContent()
 }
 
+//@Composable
+//fun SplashContent() {
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .background(Color(0xFF2BC559)),
+//        horizontalAlignment = Alignment.CenterHorizontally
+//    ) {
+//        Box(
+//            modifier = Modifier
+//                .fillMaxWidth(),
+//            contentAlignment = Alignment.TopEnd
+//        ) {
+//            Image(
+//                painter = painterResource(R.drawable.splash_top_img),
+//                contentDescription = null
+//            )
+//        }
+//
+//        Spacer(modifier = Modifier.height(35.dp))
+//
+//        Row(
+//            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.Center
+//        ) {
+//            Image(
+//                painter = painterResource(R.drawable.logo),
+//                contentDescription = "logo"
+//            )
+//            Spacer(modifier = Modifier.width(15.dp))
+//            Text(
+//                text = "MIRUNI",
+//                style = AppTypography.AlexandriaTextStyle(
+//                    fontWeight = FontWeight.Normal,
+//                    fontSize = 30.sp,
+//                    letterSpacing = 0.em,
+//                    lineHeightRatio = 1.0f
+//                ),
+//                color = Color(0xFF2D4327)
+//            )
+//        }
+//        Spacer(modifier = Modifier.height(34.dp))
+//        Text(
+//            text = "미루는 습관 개선 Helper",
+//            style = AppTypography.PretendardTextStyle(
+//                fontWeight = FontWeight.Normal,
+//                fontSize = 14.sp,
+//                letterSpacing = (-0.05).em
+//            ),
+//            color = Gray.gray_700
+//        )
+//        Text(
+//            text = "미루니와 DO IT!",
+//            style = AppTypography.PretendardTextStyle(
+//                fontWeight = FontWeight.Bold,
+//                fontSize = 16.sp,
+//                lineHeightRatio = 1.0f
+//            )
+//        )
+//        Spacer(modifier = Modifier.height(53.dp))
+//
+//        Box(
+//            modifier = Modifier
+//                .fillMaxWidth(),
+//            contentAlignment = Alignment.BottomStart
+//        ) {
+//            Image(
+//                painter = painterResource(R.drawable.splash_bottom_img),
+//                contentDescription = null
+//            )
+//        }
+//    }
+//}
+
 @Composable
 fun SplashContent() {
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF2BC559)),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(Color(0xFF2BC559))
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth(),
-            contentAlignment = Alignment.CenterEnd
-        ) {
-            Image(
-                painter = painterResource(R.drawable.splash_top_img),
-                contentDescription = null
-            )
-        }
+        // 상단 이미지
+        Image(
+            painter = painterResource(R.drawable.splash_top_img),
+            contentDescription = null,
+            modifier = Modifier.align(Alignment.TopEnd)
+        )
 
-        Spacer(modifier = Modifier.height(35.dp))
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+        // 중앙 로고 및 텍스트 영역
+        Column(
+            modifier = Modifier.align(Alignment.Center),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = painterResource(R.drawable.logo),
-                contentDescription = "logo"
-            )
-            Spacer(modifier = Modifier.width(15.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Image(
+                    painter = painterResource(R.drawable.logo),
+                    contentDescription = null
+                )
+                Spacer(modifier = Modifier.width(15.dp))
+                Text(
+                    text = "MIRUNI",
+                    style = AppTypography.AlexandriaTextStyle(
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 30.sp,
+                        letterSpacing = 0.em,
+                        lineHeightRatio = 1.0f
+                    ),
+                    color = Color(0xFF2D4327)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(34.dp))
+
             Text(
-                text = "MIRUNI",
-                style = AppTypography.AlexandriaTextStyle(
+                text = "미루는 습관 개선 Helper,",
+                style = AppTypography.PretendardTextStyle(
                     fontWeight = FontWeight.Normal,
-                    fontSize = 30.sp,
-                    letterSpacing = 0.em,
-                    lineHeightRatio = 1.0f
+                    fontSize = 14.sp,
+                    letterSpacing = (-0.05).em
                 ),
-                color = Color(0xFF2D4327)
+                color = Gray.gray_700
+            )
+            Text(
+                text = "미루니와 DO IT!",
+                style = AppTypography.PretendardTextStyle(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    letterSpacing = (-0.05).em,
+                    lineHeightRatio = 1f
+                ),
+                color = Gray.gray_700
             )
         }
-        Spacer(modifier = Modifier.height(34.dp))
-        Text(
-            text = "미루는 습관 개선 Helper",
-            style = AppTypography.PretendardTextStyle(
-                fontWeight = FontWeight.Normal,
-                fontSize = 14.sp,
-                letterSpacing = (-0.05).em
-            ),
-            color = Gray.gray_700
-        )
-        Text(
-            text = "미루니와 DO IT!",
-            style = AppTypography.PretendardTextStyle(
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
-                lineHeightRatio = 1.0f
-            )
-        )
-        Spacer(modifier = Modifier.height(53.dp))
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth(),
-            contentAlignment = Alignment.CenterStart
-        ) {
-            Image(
-                painter = painterResource(R.drawable.splash_bottom_img),
-                contentDescription = null
-            )
-        }
+        // 하단 이미지
+        Image(
+            painter = painterResource(R.drawable.splash_bottom_img),
+            contentDescription = null,
+            modifier = Modifier.align(Alignment.BottomStart)
+        )
     }
 }
 
