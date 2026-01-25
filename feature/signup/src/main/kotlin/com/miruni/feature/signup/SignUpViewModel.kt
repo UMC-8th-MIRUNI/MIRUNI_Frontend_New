@@ -9,17 +9,17 @@ import com.miruni.feature.signup.domain.usecase.SignupUseCase
 import com.miruni.feature.signup.domain.usecase.VerifyEmailUseCase
 import com.miruni.feature.signup.presentation.navigation.SignupRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @HiltViewModel
-class SignupViewModel(
+class SignupViewModel @Inject constructor(
     private val sendEmailVerifyUseCase: SendEmailVerifyUseCase,
     private val verifyEmailUseCase: VerifyEmailUseCase,
     private val signupUseCase: SignupUseCase
-) :
-    BaseViewModel<SignUpContract.Event, SignUpContract.State, SignUpContract.Effect>() {
+) : BaseViewModel<SignUpContract.Event, SignUpContract.State, SignUpContract.Effect>() {
 
     private val routes = SignupRoute.sequence
     override fun setInitialState(): SignUpContract.State = SignUpContract.State()
