@@ -22,15 +22,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.MiruniTheme
 import com.miruni.core.designsystem.Yellow
+import com.miruni.core.navigation.MiruniRoute
 import com.miruni.feature.mypage.R
 import com.miruni.feature.mypage.component.MyPageBottomBar
 
 @Composable
 fun SubmitFeedbackScreen(
-    modifier: Modifier = Modifier
+    navController: NavHostController,
 ) {
     Scaffold(
         containerColor = Color(0xFF24C354),
@@ -41,7 +44,9 @@ fun SubmitFeedbackScreen(
                 contentColor = Color.Black,
                 containerColor = Color.White,
                 onConfirmClick = {
-                    // TODO : navigate to InformationScreen
+                    navController.navigate(MiruniRoute.MyPageInfo.route) {
+                        popUpTo(MiruniRoute.MyPageInfo.route) { inclusive = true }
+                    }
                 },
             )
         }
@@ -100,6 +105,8 @@ fun SubmitFeedbackScreen(
 @Composable
 private fun SubmitFeedbackScreenPreview() {
     MiruniTheme {
-        SubmitFeedbackScreen()
+        SubmitFeedbackScreen(
+            navController = rememberNavController()
+        )
     }
 }
