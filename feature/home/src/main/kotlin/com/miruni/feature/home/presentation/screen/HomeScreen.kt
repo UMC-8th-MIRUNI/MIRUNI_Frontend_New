@@ -75,8 +75,8 @@ fun HomeScreen(
                 HomeContract.Effect.Navigation.ToAiPlannerOnboarding -> navController.navigate(MiruniRoute.AiPlannerOnboarding.route) // AI 플래너 온보딩
                 HomeContract.Effect.Navigation.ToAiPlanner -> navController.navigate(MiruniRoute.AiPlannerMain.route) // AI 플래너
                 HomeContract.Effect.Navigation.ToAlarms -> navController.navigate(MiruniRoute.AlarmLogs.route) // 알람 기록
-                HomeContract.Effect.Navigation.ToDnd -> navController.navigate(MiruniRoute.Dnd.route) // 방해금지 모드
-                is HomeContract.Effect.Navigation.ToExecution -> navController.navigate(MiruniRoute.Execution.route) // 일정 실행
+                HomeContract.Effect.Navigation.ToDnd -> navController.navigate(MiruniRoute.HomeDndTimerSetting.route) // 방해금지 모드 타이머
+                is HomeContract.Effect.Navigation.ToExecution -> navController.navigate(MiruniRoute.RunScheduleTimerSetting.route) // 일정 실행 타이머
                 is HomeContract.Effect.ShowToast -> Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show() // 토스트 출력
                 else -> {}
             }
