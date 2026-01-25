@@ -19,10 +19,10 @@ class SettingAccountContract {
         val isEditMode: Boolean = false,
         val isLoading: Boolean = false,
 
-        // 현재 값
-        val name: String = "",
-        val birth: String = "",
-        val phoneNumber: String = "",
+        // 현재 값. 프로덕션 시 val 로 변경.
+        var name: String = "",
+        var birth: String = "",
+        var phoneNumber: String = "",
         val email: String = "",
 
         // 원본 값 (취소 시 복원용)

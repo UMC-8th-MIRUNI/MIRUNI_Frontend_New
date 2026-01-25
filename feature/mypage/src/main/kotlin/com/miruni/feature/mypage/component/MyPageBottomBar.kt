@@ -17,8 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.MainColor
-import com.miruni.core.designsystem.White
-import java.time.format.TextStyle
 
 @Composable
 fun MyPageBottomBar(
