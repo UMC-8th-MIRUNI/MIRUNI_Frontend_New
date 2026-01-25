@@ -280,27 +280,6 @@ fun DescriptionSection(
                 .padding(top = 40.dp)
         )
 
-        // Miruni 이미지
-//        Column (
-//            modifier = Modifier
-//                .align(Alignment.BottomEnd),
-//            horizontalAlignment = Alignment.CenterHorizontally
-//        ) {
-//            Image(
-//                painter = painterResource(id = R.drawable.miruni_basic),
-//                contentDescription = null,
-//                modifier = Modifier
-//                    .size(100.dp)
-//            )
-//            Image(
-//                painter = painterResource(id = R.drawable.miruni_shadow),
-//                contentDescription = null,
-//                modifier = Modifier
-//                    .width(57.dp)
-//                    .height(12.dp)
-//                    .offset(x = 20.dp)
-//            )
-//        }
         MiruniIcon(
             modifier = Modifier
                 .size(150.dp)
