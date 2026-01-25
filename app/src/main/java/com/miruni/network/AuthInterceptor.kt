@@ -11,7 +11,7 @@ class AuthInterceptor @Inject constructor(
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val token = tokenProvider.getToken()
-        Log.d("AuthInterceptor", "called, token=$token")
+        Log.d("Token/AuthInterceptor", "called, token=$token")
 
         val request = chain.request()
             .newBuilder()
@@ -21,7 +21,7 @@ class AuthInterceptor @Inject constructor(
                 }
             }
             .build()
-        Log.d("AUTH", request.header("Authorization") ?: "NO AUTH")
+        Log.d("Token/AuthInterceptor", request.header("Authorization") ?: "NO AUTH")
 
         return chain.proceed(request)
     }
