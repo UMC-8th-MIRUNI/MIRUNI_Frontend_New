@@ -1,10 +1,9 @@
-package com.miruni.feature.home.presentation.screen
+package com.miruni.feature.home.presentation
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -75,7 +74,7 @@ fun HomeScreen(
                 HomeContract.Effect.Navigation.ToAiPlannerOnboarding -> navController.navigate(MiruniRoute.AiPlannerOnboarding.route) // AI 플래너 온보딩
                 HomeContract.Effect.Navigation.ToAiPlanner -> navController.navigate(MiruniRoute.AiPlannerMain.route) // AI 플래너
                 HomeContract.Effect.Navigation.ToAlarms -> navController.navigate(MiruniRoute.AlarmLogs.route) // 알람 기록
-                HomeContract.Effect.Navigation.ToDnd -> navController.navigate(MiruniRoute.HomeDndPause.route) // 방해금지 모드
+                HomeContract.Effect.Navigation.ToDnd -> navController.navigate(MiruniRoute.Dnd.route) // 방해금지 모드
                 is HomeContract.Effect.Navigation.ToExecution -> navController.navigate(MiruniRoute.Execution.route) // 일정 실행
                 is HomeContract.Effect.ShowToast -> Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show() // 토스트 출력
                 else -> {}
@@ -102,7 +101,7 @@ fun HomeScreen(
                 .padding(top = innerPadding.calculateTopPadding()),
             onClickAiPlanner = { viewModel.setEvent(HomeContract.Event.OnAiPlannerClick) },
             onClickDnd = { viewModel.setEvent(HomeContract.Event.OnDndClick) },
-            onClickSchedule = { HomeContract.Event.OnScheduleClick(it) }
+            onClickSchedule = { viewModel.setEvent(HomeContract.Event.OnScheduleClick(it)) }
         )
     }
 }
@@ -407,8 +406,9 @@ fun ButtonSection(
         ) {
             Column(
                 modifier = Modifier
-                    .align(Alignment.TopStart),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .align(Alignment.TopStart)
+                    .clickable { onClickAiPlanner() },
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Image(
                     painter = painterResource(R.drawable.miruni_pencil),
