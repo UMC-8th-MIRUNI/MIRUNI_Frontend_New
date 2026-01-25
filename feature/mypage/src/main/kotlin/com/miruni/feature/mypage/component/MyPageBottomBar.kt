@@ -17,13 +17,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.MainColor
-import com.miruni.core.designsystem.White
 
 @Composable
 fun MyPageBottomBar(
     canConfirm: Boolean,
     btnText: String = "제출하기",
-    onConfirmClick: () -> Unit
+    contentColor: Color = Color.White,
+    containerColor: Color = MainColor.miruni_green,
+    onConfirmClick: () -> Unit,
 ) {
     Surface(
         color = Color.Transparent,
@@ -40,8 +41,8 @@ fun MyPageBottomBar(
                     .height(50.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MainColor.miruni_green,
-                    contentColor = White
+                    containerColor = containerColor,
+                    contentColor = contentColor
                 )
             ) {
                 Text(btnText, style = AppTypography.button_semibold_16)

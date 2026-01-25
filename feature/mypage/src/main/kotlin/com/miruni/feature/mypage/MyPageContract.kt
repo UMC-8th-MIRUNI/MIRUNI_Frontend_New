@@ -31,15 +31,16 @@ class MyPageContract {
         object OnInfoClick : Event() // 문의 및 정보
     }
 
+    // 임시. 프로덕션 진행 시 초기화
     data class State(
         val isEditMode: Boolean = false, // 수정 모드
-        val nickName: String = "닉네임", // 닉네임
-        val email: String = "", // 이메일
+        val nickName: String = "김가영", // 닉네임
+        val email: String = "gayeong@gmail.com", // 이메일
         val profileImages: List<ProfileImage> = getProfileImages(), // 프로필 이미지 목록
         val selectedProfileImageIndex: Int = 0, // 현재 선택된 프로필 이미지 인덱스
 
         // 수정 전 원본 상태 (취소 시 복원용)
-        val originalNickName: String = "닉네임",
+        val originalNickName: String = "김가영",
         val originalProfileImageIndex: Int = 0,
 
         // API 요청 상태

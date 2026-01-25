@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
@@ -36,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -163,7 +165,7 @@ fun SettingAccountScreen(
                         viewModel.setEvent(
                             SettingAccountContract.Event.OnCompleteClick
                         )
-                    }
+                    },
                 )
             }
         }
@@ -185,7 +187,7 @@ fun SettingAccountScreen(
                     style = AppTypography.sub_bold_14
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 OutlinedTextField(
                     value = state.name,
@@ -207,7 +209,7 @@ fun SettingAccountScreen(
                     )
                 )
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // 생년월일
                 Text(
@@ -215,7 +217,7 @@ fun SettingAccountScreen(
                     style = AppTypography.sub_bold_14
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 OutlinedTextField(
                     value = state.birth,
@@ -224,11 +226,17 @@ fun SettingAccountScreen(
                         .testTag("birthTextField"),
                     shape = RoundedCornerShape(12.dp),
                     onValueChange = { newValue ->
+                        if (newValue.length <= 8) state.birth = newValue
                         Log.d(TAG, "Birth changed: $newValue")
                         viewModel.setEvent(
                             SettingAccountContract.Event.OnBirthChange(newValue)
                         )
                     },
+                    label = { Text("생년월일(YYYYMMDD)") },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number
+                    ),
+                    singleLine = true,
                     enabled = state.isEditMode && !state.isLoading,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MainColor.miruni_green,
@@ -237,7 +245,7 @@ fun SettingAccountScreen(
                     )
                 )
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // 전화번호
                 Text(
@@ -245,7 +253,7 @@ fun SettingAccountScreen(
                     style = AppTypography.sub_bold_14
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 OutlinedTextField(
                     value = state.phoneNumber,
@@ -259,7 +267,6 @@ fun SettingAccountScreen(
                             SettingAccountContract.Event.OnPhoneChange(newValue)
                         )
                     },
-                    enabled = state.isEditMode && !state.isLoading,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MainColor.miruni_green,
                         unfocusedBorderColor = Color(0xFFF1ECEC),
@@ -267,7 +274,7 @@ fun SettingAccountScreen(
                     )
                 )
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // 이메일 (읽기 전용)
                 Text(
@@ -275,7 +282,7 @@ fun SettingAccountScreen(
                     style = AppTypography.sub_bold_14
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 OutlinedTextField(
                     value = state.email,
@@ -292,7 +299,7 @@ fun SettingAccountScreen(
                     )
                 )
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // 설문조사
                 Text(
@@ -300,7 +307,7 @@ fun SettingAccountScreen(
                     style = AppTypography.sub_bold_14
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 OutlinedTextField(
                     value = "설문조사 내역 수정하기",
@@ -327,7 +334,7 @@ fun SettingAccountScreen(
                     )
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
                 // 로그아웃
                 OutlinedTextField(
@@ -343,7 +350,7 @@ fun SettingAccountScreen(
                     )
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
                 // 탈퇴하기
                 OutlinedTextField(

@@ -18,6 +18,41 @@ class ProfileRepositoryImpl(
     private val profileRemoteDataSource: ProfileRemoteDataSource
 ) : ProfileRepository {
 
+    override suspend fun getMyPageInfo(): DataResult<UserProfile, DataError> {
+        Log.d(TAG, "getMyPageInfo() called")
+
+        return when (val networkResult = profileRemoteDataSource.getMyPageInfo()) {
+            is NetworkResult.Success -> {
+                val response = networkResult.data
+                Log.d(TAG, "getMyPageInfo() NetworkResult.Success - response: $response")
+
+                if (!response.errorCode.isNullOrBlank()) {
+                    Log.e(TAG, "getMyPageInfo() Server error - errorCode: ${response.errorCode}, message: ${response.message}")
+                    DataResult.Error(
+                        DataError.CustomError(
+                            code = response.errorCode ?: "UNKNOWN",
+                            msg = response.message ?: "요청 처리 중 문제가 발생했어요."
+                        )
+                    )
+                } else {
+                    val result = response.result
+                    if (result == null) {
+                        Log.e(TAG, "getMyPageInfo() result is null")
+                        DataResult.Error(DataError.DataNotFound)
+                    } else {
+                        Log.d(TAG, "getMyPageInfo() Success - result: $result")
+                        DataResult.Success(result.toDomain())
+                    }
+                }
+            }
+
+            is NetworkResult.Failure -> {
+                Log.e(TAG, "getMyPageInfo() NetworkResult.Failure - error: ${networkResult.error}")
+                DataResult.Error(networkResult.error.toDomainError())
+            }
+        }
+    }
+
     override suspend fun updateProfile(
         profileImage: String,
         nickname: String

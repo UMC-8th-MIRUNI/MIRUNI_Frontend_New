@@ -8,7 +8,9 @@ import com.miruni.core.navigation.NavigationDestination
 import com.miruni.feature.mypage.MyPageRoute
 import com.miruni.feature.mypage.account.SettingAccountScreen
 import com.miruni.feature.mypage.info.InformationScreen
-import com.miruni.feature.mypage.info.WriteFeedbackScreen
+import com.miruni.feature.mypage.info.feedback.ShowFeedbackHistory
+import com.miruni.feature.mypage.info.feedback.SubmitFeedbackScreen
+import com.miruni.feature.mypage.info.feedback.WriteFeedbackScreen
 import com.miruni.feature.mypage.notification.SettingNotificationScreen
 import jakarta.inject.Inject
 
@@ -39,6 +41,14 @@ class MyPageNavigation @Inject constructor(
 
         builder.composable(MiruniRoute.MyPageWriteFeedback.route) {
             WriteFeedbackScreen(navController = navController)
+        }
+
+        builder.composable(MiruniRoute.MyPageSubmitFeedback.route) {
+            SubmitFeedbackScreen(navController = navController)
+        }
+
+        builder.composable(MiruniRoute.MyPageShowFeedbackHistory.route) {
+            ShowFeedbackHistory(navController = navController)
         }
     }
 }
