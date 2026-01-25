@@ -64,36 +64,36 @@ class LoginViewModel @Inject constructor(
             }
 
             LoginContract.Event.OnLoginClicked -> {
-//                viewModelScope.launch {
-//
-//                    val result = withContext(Dispatchers.IO) {
-//                        getLoginUseCase(
-//                            id = viewState.value.id.value,
-//                            password = viewState.value.password.value,
-//                            autoLogin = viewState.value.autoLogin
-//                        )
-//                    }
-//                    when (result) {
-//                        is DataResult.Success -> {
-//                            setEffect { LoginContract.Effect.Navigation.ToHome }
-//                        }
-//
-//                        is DataResult.Error -> {
-//                            setState {
-//                                copy(
-//                                    id = id.copy(
-//                                        isError = true,
-//                                        errorMessage = result.error.errorMessage
-//                                    ),
-//                                    password = password.copy(
-//                                        isError = true,
-//                                        errorMessage = result.error.errorMessage
-//                                    ),
-//                                )
-//                            }
-//                        }
-//                    }
-//                }
+                viewModelScope.launch {
+
+                    val result = withContext(Dispatchers.IO) {
+                        getLoginUseCase(
+                            id = viewState.value.id.value,
+                            password = viewState.value.password.value,
+                            autoLogin = viewState.value.autoLogin
+                        )
+                    }
+                    when (result) {
+                        is DataResult.Success -> {
+                            setEffect { LoginContract.Effect.Navigation.ToHome }
+                        }
+
+                        is DataResult.Error -> {
+                            setState {
+                                copy(
+                                    id = id.copy(
+                                        isError = true,
+                                        errorMessage = result.error.errorMessage
+                                    ),
+                                    password = password.copy(
+                                        isError = true,
+                                        errorMessage = result.error.errorMessage
+                                    ),
+                                )
+                            }
+                        }
+                    }
+                }
             }
 
             LoginContract.Event.OnGoogleLoginClicked -> {
