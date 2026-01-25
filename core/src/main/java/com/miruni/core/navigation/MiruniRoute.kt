@@ -33,6 +33,8 @@ sealed class MiruniRoute(val route: String) {
     data object MyPageSettingNotification : MiruniRoute("myPageSettingNotification")
     data object MyPageInfo : MiruniRoute("myPageInfo")
     data object MyPageWriteFeedback : MiruniRoute("myPageWriteFeedback")
+    data object MyPageSubmitFeedback : MiruniRoute("myPageSubmitFeedback")
+    data object MyPageShowFeedbackHistory : MiruniRoute("myPageShowFeedbackHistory")
 
     data object Login : MiruniRoute("login")
     data object SignUp : MiruniRoute("signup")

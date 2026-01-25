@@ -132,6 +132,7 @@ fun InformationScreen(
                             .testTag("historyButton"),
                         onClick = {
                             Log.d(TAG, "내역보기 button clicked")
+                            navController.navigate(MiruniRoute.MyPageShowFeedbackHistory.route)
                         },
                         border = BorderStroke(1.dp, Color(0xFF1B67FF)),
                         shape = RoundedCornerShape(6.dp)
