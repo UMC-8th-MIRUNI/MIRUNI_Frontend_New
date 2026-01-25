@@ -1,4 +1,4 @@
-package com.miruni.feature.home.presentation
+package com.miruni.feature.home.presentation.screen
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -77,6 +77,7 @@ fun HomeScreen(
                 HomeContract.Effect.Navigation.ToDnd -> navController.navigate(MiruniRoute.Dnd.route) // 방해금지 모드
                 is HomeContract.Effect.Navigation.ToExecution -> navController.navigate(MiruniRoute.Execution.route) // 일정 실행
                 is HomeContract.Effect.ShowToast -> Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show() // 토스트 출력
+                else -> {}
             }
         }
     }
