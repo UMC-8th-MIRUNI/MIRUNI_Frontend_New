@@ -8,9 +8,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_miruni"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_miruni_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MIRUNI_FE"
         tools:targetApi="31">
@@ -18,7 +18,7 @@
             android:name="com.miruni.miruni_fe.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.MIRUNI_FE">
+            android:theme="@style/Theme.MIRUNI_FE.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

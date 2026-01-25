@@ -68,6 +68,8 @@ dependencies {
 
     // material for Icons. 지워도 상관x
     implementation("androidx.compose.material:material-icons-core:1.7.8")
+    // Splash (Android 12 이하 지원)
+    implementation(libs.androidx.core.splashscreen)
 
     // The Preferences DataStore library
     implementation(libs.androidx.datastore.preferences)
