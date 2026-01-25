@@ -31,10 +31,8 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,14 +43,18 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.Gray
+import com.miruni.core.designsystem.MainColor
 import com.miruni.core.designsystem.MiruniTheme
+import com.miruni.core.navigation.MiruniRoute
 import com.miruni.feature.mypage.R
 import com.miruni.feature.mypage.component.MyPageBottomBar
 import com.miruni.feature.mypage.component.MyPageTopBar
+import kotlinx.coroutines.flow.collectLatest
 
 private const val TAG = "WriteFeedbackScreen"
 
@@ -62,21 +64,68 @@ private const val MAX_PHOTO_COUNT = 10
 fun WriteFeedbackScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    onConfirmClick: () -> Unit = {}
+    viewModel: FeedbackViewModel = hiltViewModel()
+) {
+    val state by viewModel.viewState.collectAsStateWithLifecycle()
+
+    // Handle side effects
+    LaunchedEffect(Unit) {
+        viewModel.effect.collectLatest { effect ->
+            when (effect) {
+                is FeedbackContract.Effect.Navigation.NavigateToSubmitFeedback -> {
+                    navController.navigate(MiruniRoute.MyPageSubmitFeedback.route)
+                }
+                is FeedbackContract.Effect.Navigation.NavigateBack -> {
+                    navController.popBackStack()
+                }
+                is FeedbackContract.Effect.Navigation.NavigateToInformation -> {
+                    navController.navigate(MiruniRoute.MyPageInfo.route) {
+                        popUpTo(MiruniRoute.MyPageInfo.route) { inclusive = true }
+                    }
+                }
+                is FeedbackContract.Effect.Message.Toast -> {
+                    // Handle toast
+                }
+                is FeedbackContract.Effect.Message.Error -> {
+                    // Handle error
+                }
+            }
+        }
+    }
+
+    WriteFeedbackContent(
+        state = state,
+        onTitleChange = { viewModel.setEvent(FeedbackContract.Event.OnTitleChange(it)) },
+        onContentChange = { viewModel.setEvent(FeedbackContract.Event.OnContentChange(it)) },
+        onPrivacyConsentChange = { viewModel.setEvent(FeedbackContract.Event.OnPrivacyConsentChange(it)) },
+        onPhotosSelected = { viewModel.setEvent(FeedbackContract.Event.OnPhotosSelected(it)) },
+        onSubmitClick = { viewModel.setEvent(FeedbackContract.Event.OnSubmitClick) },
+        onBackClick = { viewModel.setEvent(FeedbackContract.Event.OnBackClick) },
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun WriteFeedbackContent(
+    state: FeedbackContract.State,
+    onTitleChange: (String) -> Unit,
+    onContentChange: (String) -> Unit,
+    onPrivacyConsentChange: (Boolean) -> Unit,
+    onPhotosSelected: (List<Uri>) -> Unit,
+    onSubmitClick: () -> Unit,
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-
-    var text by remember { mutableStateOf("") }
-    var checkedState by remember { mutableStateOf(false) }
-    var selectedPhotos by remember { mutableStateOf<List<Uri>>(emptyList()) }
 
     // Photo picker launcher
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia(MAX_PHOTO_COUNT)
     ) { uris ->
         if (uris.isNotEmpty()) {
-            selectedPhotos = uris.take(MAX_PHOTO_COUNT)
-            Log.d(TAG, "Selected ${selectedPhotos.size} photos")
+            val photos = uris.take(MAX_PHOTO_COUNT)
+            Log.d(TAG, "Selected ${photos.size} photos")
+            onPhotosSelected(photos)
         }
     }
 
@@ -139,14 +188,15 @@ fun WriteFeedbackScreen(
                 text = "문의 및 피드백",
                 onBackClick = {
                     Log.d(TAG, "Back button clicked")
-                    navController.popBackStack()
+                    onBackClick()
                 }
             )
         },
         bottomBar = {
             MyPageBottomBar(
-                canConfirm = true,
-                onConfirmClick = onConfirmClick // TODO : 서버 request, novigate to InformationScreen
+                canConfirm = state.isSubmitEnabled,
+                containerColor = if (state.isSubmitEnabled) MainColor.miruni_green else Gray.gray_500,
+                onConfirmClick = onSubmitClick
             )
         }
 
@@ -174,16 +224,16 @@ fun WriteFeedbackScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
-                        value = text,
-                        onValueChange = { newText ->
-                            text = newText
-                        },
+                        value = state.title,
+                        onValueChange = onTitleChange,
                         shape = RoundedCornerShape(10.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             unfocusedContainerColor = Gray.gray_300,
                             unfocusedBorderColor = Gray.gray_400
                         ),
-                        modifier = Modifier.testTag("titleTextField")
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("titleTextField")
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -197,11 +247,10 @@ fun WriteFeedbackScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
-                        value = text,
-                        onValueChange = { newText ->
-                            text = newText
-                        },
+                        value = state.content,
+                        onValueChange = onContentChange,
                         modifier = modifier
+                            .fillMaxWidth()
                             .height(110.dp)
                             .testTag("contentTextField"),
                         shape = RoundedCornerShape(10.dp),
@@ -237,7 +286,7 @@ fun WriteFeedbackScreen(
                                 modifier = modifier.size(20.dp),
                             )
                             Text(
-                                text = "${selectedPhotos.size}/$MAX_PHOTO_COUNT",
+                                text = "${state.selectedPhotos.size}/$MAX_PHOTO_COUNT",
                                 style = AppTypography.description_regular_9
                             )
                         }
@@ -251,17 +300,20 @@ fun WriteFeedbackScreen(
                             // Make the entire row clickable and handle the state change
                             .clickable(
                                 role = Role.Checkbox,
-                                onClick = { checkedState = !checkedState }
+                                onClick = { onPrivacyConsentChange(!state.isPrivacyConsentChecked) }
                             )
                             .testTag("privacyCheckbox"),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Checkbox(
-                            checked = checkedState,
+                            checked = state.isPrivacyConsentChecked,
                             onCheckedChange = null // Set to null as the parent Row handles clicks
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("개인정보 수집 이용 동의 (필수)")
+                        Text(
+                            text = "개인정보 수집 이용 동의 (필수)",
+                            style = AppTypography.body_regular_12
+                        )
                     }
                 }
             }
@@ -271,10 +323,36 @@ fun WriteFeedbackScreen(
 
 @Preview(showBackground = true)
 @Composable
-private fun FeedbackScreenPreview() {
+private fun WriteFeedbackScreenPreview() {
     MiruniTheme {
-        WriteFeedbackScreen(
-            navController = rememberNavController()
+        WriteFeedbackContent(
+            state = FeedbackContract.State(),
+            onTitleChange = {},
+            onContentChange = {},
+            onPrivacyConsentChange = {},
+            onPhotosSelected = {},
+            onSubmitClick = {},
+            onBackClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun WriteFeedbackScreenFilledPreview() {
+    MiruniTheme {
+        WriteFeedbackContent(
+            state = FeedbackContract.State(
+                title = "제목 입력됨",
+                content = "내용 입력됨",
+                isPrivacyConsentChecked = true
+            ),
+            onTitleChange = {},
+            onContentChange = {},
+            onPrivacyConsentChange = {},
+            onPhotosSelected = {},
+            onSubmitClick = {},
+            onBackClick = {}
         )
     }
 }
