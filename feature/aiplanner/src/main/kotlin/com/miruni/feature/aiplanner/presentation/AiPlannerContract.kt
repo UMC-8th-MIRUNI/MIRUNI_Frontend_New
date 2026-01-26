@@ -87,7 +87,8 @@ object AiPlannerContract {
             object ToLoading : Effect() // 플래닝 로딩 화면 이동
             object ToMain : Effect() // 메인 화면 이동
         }
-        data class ShowToast(val message: String) : Effect()
+        data class ShowToast(val message: String) : Effect() // 토스트 메세지 출력
+        data class ToastAndNavigate(val message: String) : Effect() // 토스트 메세지 + 네비게이트
         object PopBack : Effect() // 돌아가기
     }
 }
