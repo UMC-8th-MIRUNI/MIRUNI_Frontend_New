@@ -99,6 +99,12 @@ fun AiPlannerScheduleScreen(
                 is AiPlannerContract.Effect.ShowToast -> {
                     Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
                 }
+                is AiPlannerContract.Effect.ToastAndNavigate -> {
+                    Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
+                    navController.navigate(MiruniRoute.AiPlannerMain.route) {
+                        popUpTo(MiruniRoute.AiPlannerMain.route) { inclusive = true }
+                    }
+                }
                 is AiPlannerContract.Effect.PopBack -> {
                     navController.popBackStack()
                 }

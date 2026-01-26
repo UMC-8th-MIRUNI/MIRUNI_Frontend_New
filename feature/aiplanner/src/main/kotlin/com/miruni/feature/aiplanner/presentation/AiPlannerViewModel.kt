@@ -381,14 +381,16 @@ class AiPlannerViewModel @Inject constructor(
 
             when (result) {
                 is DataResult.Success -> {
-                    setEffect { AiPlannerContract.Effect.ShowToast("일정이 삭제되었습니다.") }
-                    setEffect { AiPlannerContract.Effect.Navigation.ToMain }
+                    Log.d("deletePlan/AiPlannerViewModel", "success: ${result.data}")
+                    setState { copy(plan = null) } // 플랜 상태 제거
+                    fetchMain() // Main 데이터 재조회
+                    setEffect { AiPlannerContract.Effect.ToastAndNavigate("일정이 삭제되었습니다.") }
                 }
                 is DataResult.Error -> {
+                    Log.d("deletePlan/AiPlannerViewModel", "error: ${result.error}")
                     showErrorMessage(result.error)
                 }
             }
-
         }
     }
 
