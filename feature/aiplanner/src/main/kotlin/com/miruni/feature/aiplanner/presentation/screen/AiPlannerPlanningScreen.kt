@@ -56,9 +56,14 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun AiPlannerPlanningScreen(
-    viewModel: AiPlannerViewModel = hiltViewModel(),
     navController: NavController
 ) {
+    // 부모 그래프 BackStackEntry
+    val parentEntry = remember(navController.currentBackStackEntry) {
+        navController.getBackStackEntry("aiPlanner")
+    }
+    val viewModel: AiPlannerViewModel = hiltViewModel(parentEntry) // 공유 ViewModel
+
     val state by viewModel.viewState.collectAsState()
     val dotPositions = remember { mutableStateListOf<YInformation>() }
     var firstItemTop by remember { mutableStateOf<Float?>(null) }
