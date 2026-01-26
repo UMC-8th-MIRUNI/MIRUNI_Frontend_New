@@ -54,7 +54,7 @@ fun AiPlannerLoadingScreen(
         viewModel.effect.collect { effect ->
             when(effect) {
                 AiPlannerContract.Effect.Navigation.ToSchedule -> {
-                    navController.navigate("${MiruniRoute.AiPlannerSchedule.route}?from=LOADING&planId=-1")
+                    navController.navigate("${MiruniRoute.AiPlannerSchedule.route}?from=LOADING&planId=${state.plan?.planId}")
                 }
                 AiPlannerContract.Effect.PopBack -> {
                     navController.popBackStack()
