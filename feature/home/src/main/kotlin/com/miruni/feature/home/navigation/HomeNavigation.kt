@@ -12,7 +12,7 @@ import androidx.navigation.navArgument
 import com.miruni.core.navigation.MiruniRoute
 import com.miruni.core.navigation.ModalRoute
 import com.miruni.core.navigation.NavigationDestination
-import com.miruni.feature.home.presentation.HomeScreen
+import com.miruni.feature.home.presentation.screen.HomeScreen
 import com.miruni.feature.home.dnd.DndCompleteScreen
 import com.miruni.feature.home.dnd.DndEarlyEndScreen
 import com.miruni.feature.home.dnd.DndOnboardingScreen
@@ -21,6 +21,7 @@ import com.miruni.feature.home.dnd.DndTimerScreen
 import com.miruni.feature.home.dnd.DndTimerViewModel
 import com.miruni.feature.home.dnd.RerunTimerErrorModal
 import com.miruni.feature.home.dnd.RerunTimerSettingModal
+import com.miruni.feature.home.presentation.screen.AlarmLogScreen
 import com.miruni.feature.home.runSchedule.RunScheduleTimerScreen
 import jakarta.inject.Inject
 
@@ -35,6 +36,12 @@ class HomeNavigation @Inject constructor(
     ) {
         builder.composable(route) {
             HomeScreen(
+                navController = navController
+            )
+        }
+
+        builder.composable(MiruniRoute.AlarmLogs.route) {
+            AlarmLogScreen(
                 navController = navController
             )
         }
