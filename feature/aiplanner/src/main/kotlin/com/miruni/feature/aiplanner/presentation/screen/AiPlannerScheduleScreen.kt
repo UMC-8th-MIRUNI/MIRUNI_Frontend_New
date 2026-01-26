@@ -1,6 +1,7 @@
 package com.miruni.feature.aiplanner.presentation.screen
 
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -46,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -80,12 +82,20 @@ fun AiPlannerScheduleScreen(
     viewModel: AiPlannerViewModel = hiltViewModel()
 ) {
     val state by viewModel.viewState.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                AiPlannerContract.Effect.Navigation.ToMain -> navController.navigate(MiruniRoute.AiPlannerMain.route) {
-                    popUpTo(MiruniRoute.AiPlannerMain.route) { inclusive = true }
+                is AiPlannerContract.Effect.Navigation.ToMain ->
+                    navController.navigate(MiruniRoute.AiPlannerMain.route) {
+                        popUpTo(MiruniRoute.AiPlannerMain.route) { inclusive = true }
+                    }
+                is AiPlannerContract.Effect.ShowToast -> {
+                    Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
+                }
+                is AiPlannerContract.Effect.PopBack -> {
+                    navController.popBackStack()
                 }
                 else -> Unit
             }
@@ -95,7 +105,7 @@ fun AiPlannerScheduleScreen(
     // 네비게이션 인자 읽기
     val backEntry = navController.currentBackStackEntry
     val fromArg = remember { backEntry?.arguments?.getString("from") ?: "MAIN" }
-    val planIdArg = remember { backEntry?.arguments?.getLong("planId") ?: -1L }
+    val planIdArg = remember { backEntry?.arguments?.getInt("planId") ?: -1 }
 
     // Source를 상태로 관리하여 하위 컴포저블에 전달
     val scheduleSource = remember(fromArg) {
@@ -107,7 +117,7 @@ fun AiPlannerScheduleScreen(
     }
 
     LaunchedEffect(fromArg, planIdArg) {
-        val planIdOrNull = if (planIdArg != -1L) planIdArg else null
+        val planIdOrNull = if (planIdArg != -1) planIdArg else null
         viewModel.setEvent(AiPlannerContract.Event.EnterSchedule(from = scheduleSource, planId = planIdOrNull))
     }
 
@@ -161,7 +171,7 @@ fun AiPlannerScheduleContent(
     val draftAiPlans = remember(plan) { mutableStateListOf(*plan.aiPlans.toTypedArray()) }
 
     // 체크 박스 선택 상태
-    val selectedIds = remember { mutableStateListOf<Long>() }
+    val selectedIds = remember { mutableStateListOf<Int>() }
     // 삭제 모드
     val isDeleteMode = isEditMode && (source == ScheduleSource.FROM_MAIN) // 메인에서 왔을 때만 개별 삭제 모드 활성화 가능
 
@@ -502,11 +512,11 @@ fun ScheduleTable(
     aiPlans: List<AiPlanUiModel>,
     source: ScheduleSource,
     isDeleteMode: Boolean,
-    selectedIds: List<Long>,
+    selectedIds: List<Int>,
     isEditMode: Boolean,
     modifier: Modifier = Modifier,
     onPlanChange: (Int, AiPlanUiModel) -> Unit,
-    onToggleSection: (Long) -> Unit,
+    onToggleSection: (Int) -> Unit,
     onDeleteSelected: () -> Unit
 ) {
     Column(

@@ -46,7 +46,7 @@ class AiPlannerNavigation @Inject constructor() : NavigationDestination {
                     defaultValue = "MAIN"
                 },
                 navArgument("planId") {
-                    type = NavType.LongType
+                    type = NavType.IntType
                     defaultValue = -1L
                 }
             )

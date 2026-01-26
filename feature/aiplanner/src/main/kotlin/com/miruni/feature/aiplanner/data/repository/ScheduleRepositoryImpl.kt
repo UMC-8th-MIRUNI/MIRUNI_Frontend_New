@@ -15,7 +15,7 @@ import javax.inject.Inject
 class ScheduleRepositoryImpl @Inject constructor(
     val api: AiPlannerApi
 ) : ScheduleRepository {
-    override suspend fun getScheduleTable(id: Long): DataResult<Plan, DataError> {
+    override suspend fun getScheduleTable(id: Int): DataResult<Plan, DataError> {
         // 통신 실행
         val networkResult = executeApiRequest {
             api.getScheduleTable(planId = id)
@@ -89,7 +89,7 @@ class ScheduleRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun deleteScheduleAll(id: Long): DataResult<Boolean, DataError> {
+    override suspend fun deleteScheduleAll(id: Int): DataResult<Boolean, DataError> {
         // 통신 실행
         val networkResult = executeApiRequest {
             api.deleteScheduleTable(planId = id)
@@ -120,8 +120,8 @@ class ScheduleRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteScheduleItem(
-        planId: Long,
-        aiPlanIds: List<Long>
+        planId: Int,
+        aiPlanIds: List<Int>
     ): DataResult<Boolean, DataError> {
         // 통신 실행
         val networkResult = executeApiRequest {

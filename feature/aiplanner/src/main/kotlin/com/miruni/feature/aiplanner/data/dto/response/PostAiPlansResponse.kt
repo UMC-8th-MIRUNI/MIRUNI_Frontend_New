@@ -5,8 +5,8 @@ import com.miruni.feature.aiplanner.domain.model.Plan
 import com.miruni.feature.aiplanner.domain.model.PlanPriority
 
 data class PostAiPlansResponse(
-    val planId: Long,
-    val aiPlanId: Long,
+    val planId: Int,
+    val aiPlanId: Int,
     val title: String,
     /** yyyy-MM-dd */
     val deadline: String,

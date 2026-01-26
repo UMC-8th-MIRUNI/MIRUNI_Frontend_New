@@ -7,7 +7,7 @@ import com.miruni.feature.aiplanner.domain.model.PlanStatus
 
 /** 상위 일정 */
 data class PlanUiModel(
-    val planId: Long,
+    val planId: Int,
     val title: String,
     val deadline: String,
     val taskRange: String,
@@ -39,7 +39,7 @@ fun Plan.toUiModel(): PlanUiModel {
 
 /** AI 플랜 */
 data class AiPlanUiModel(
-    val aiPlanId: Long,
+    val aiPlanId: Int,
     val scheduledDate: String, // yyyy-MM-dd -> M/dd 변환 필요
     val startTime: String, // hh:mm:ss -> hh:mm 변환 필요
     val endTime: String, // hh:mm:ss -> hh:mm 변환 필요

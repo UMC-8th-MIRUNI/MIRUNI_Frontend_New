@@ -28,26 +28,26 @@ interface AiPlannerApi {
     /** AI 플래닝 스케줄표 조회 */
     @GET("api/ai-plans/table/{plan_id}")
     suspend fun getScheduleTable(
-        @Path("plan_id") planId: Long
+        @Path("plan_id") planId: Int
     ): ApiResponse<ScheduleResponse>
 
     /** AI 플래닝 스케줄표 수정 */
     @PATCH("api/ai-plans/table/{plan_id}")
     suspend fun patchScheduleTable(
-        @Path("plan_id") planId: Long,
+        @Path("plan_id") planId: Int,
         @Body request: PlanDto
     ): ApiResponse<ScheduleResponse>
 
     /** AI 플래닝 스케줄표 삭제 (스케줄표 전체 삭제) */
     @DELETE("api/ai-plans/table/{plan_id}")
     suspend fun deleteScheduleTable(
-        @Path("plan_id") planId: Long
+        @Path("plan_id") planId: Int
     ): ApiResponse<Boolean>
 
     /** AI 플래닝 스케줄표 선택 삭제 (스케줄표 아이템 삭제) */
     @DELETE("api/ai-plans/table/items/{plan_id}")
     suspend fun deleteScheduleItem(
-        @Path("plan_id") planId: Long,
-        @Body request: List<Long> // 삭제할 AI 플랜 ID 리스트
+        @Path("plan_id") planId: Int,
+        @Body request: List<Int> // 삭제할 AI 플랜 ID 리스트
     ): ApiResponse<Boolean>
 }
