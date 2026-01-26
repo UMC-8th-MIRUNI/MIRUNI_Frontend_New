@@ -33,6 +33,6 @@ fun AiPlan.toDto(): AiPlanDto {
         endTime = this.endTime,
         subTitle = this.subTitle,
         expectedDuration = this.expectedDuration,
-        status = this.status?.ui
+        status = this.status?.server
     )
 }

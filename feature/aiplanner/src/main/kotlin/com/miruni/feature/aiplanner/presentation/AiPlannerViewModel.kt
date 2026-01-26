@@ -345,6 +345,7 @@ class AiPlannerViewModel @Inject constructor(
 
             // API 호출
             val requestPlan = currentPlan.toDomain().copy(
+                planId = currentPlan.planId,
                 title = event.title,
                 deadline = event.deadline,
                 taskRange = event.taskRange,
@@ -363,7 +364,7 @@ class AiPlannerViewModel @Inject constructor(
 
                 is DataResult.Error -> {
                     showErrorMessage(result.error)
-                    setState { copy(isEditMode = true) }
+//                    setState { copy(isEditMode = true) } // 실패시 수정 모드 유지
                 }
             }
         }
