@@ -7,6 +7,7 @@ import com.miruni.core.result.DataResult
 import com.miruni.feature.aiplanner.data.api.AiPlannerApi
 import com.miruni.feature.aiplanner.data.dto.request.PostAiPlansRequest
 import com.miruni.core.common.mapper.toDomainError
+import com.miruni.feature.aiplanner.data.dto.response.toDomain
 import com.miruni.feature.aiplanner.domain.model.Plan
 import com.miruni.feature.aiplanner.domain.model.PlanInput
 import com.miruni.feature.aiplanner.domain.model.PlanPriority
@@ -43,7 +44,7 @@ class PlanningRepositoryImpl @Inject constructor(
         taskRange: String,
         priority: PlanPriority,
         detailRequest: String
-    ): DataResult<List<Plan>, DataError> {// 통신 실행
+    ): DataResult<Plan, DataError> {// 통신 실행
         val networkResult = executeApiRequest {
             api.postAiPlans(
                 PostAiPlansRequest(
@@ -67,9 +68,9 @@ class PlanningRepositoryImpl @Inject constructor(
                 // 비즈니스 로직 확인
                 if (response.errorCode.isNullOrBlank() && serverResult != null) {
                     // 성공 시
-                    val domainList = serverResult.map { it.toDomain() }
+                    val domainItem = serverResult.toDomain()
 
-                    DataResult.Success(domainList)
+                    DataResult.Success(domainItem)
                 } else {
                     // 통신 성공했으나 서버 에러
                     DataResult.Error(

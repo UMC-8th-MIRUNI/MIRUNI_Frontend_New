@@ -10,34 +10,37 @@ data class PostAiPlansResponse(
     val title: String,
     /** yyyy-MM-dd */
     val deadline: String,
-    val taskRange: String,
+    val scope: String,
     val priority: String,
     /** yyyy-MM-dd */
     val scheduledDate: String,
-    val description: String,
+    val subTitle: String,
     val expectedDuration: Int,
     /** hh:mm:ss */
     val startTime: String,
     /** hh:mm:ss */
     val endTime: String
-) {
-    fun toDomain(): Plan {
-        return Plan(
-            planId = planId,
-            title = title,
-            deadline = deadline,
-            taskRange = taskRange,
-            priority = PlanPriority.fromServer(priority),
-            aiPlans = listOf(
-                AiPlan(
-                    aiPlanId = aiPlanId,
-                    scheduledDate = scheduledDate,
-                    startTime = startTime,
-                    endTime = endTime,
-                    subTitle = description,
-                    expectedDuration = expectedDuration,
-                )
+)
+
+fun List<PostAiPlansResponse>.toDomain(): Plan {
+
+    val first = first()
+
+    return Plan( // planId가 모두 동일하다는 가정 -> 첫 번째 것으로 Plan 데이터 채우기
+        planId = first.planId,
+        title = first.title,
+        deadline = first.deadline,
+        taskRange = first.scope,
+        priority = PlanPriority.fromServer(first.priority),
+        aiPlans = map { aiPlan ->
+            AiPlan(
+                aiPlanId = aiPlan.aiPlanId,
+                scheduledDate = aiPlan.scheduledDate,
+                startTime = aiPlan.startTime,
+                endTime = aiPlan.endTime,
+                subTitle = aiPlan.subTitle,
+                expectedDuration = aiPlan.expectedDuration,
             )
-        )
-    }
+        }
+    )
 }
