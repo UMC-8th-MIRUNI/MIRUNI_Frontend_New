@@ -78,9 +78,14 @@ import java.time.LocalTime
 
 @Composable
 fun AiPlannerScheduleScreen(
-    navController: NavController,
-    viewModel: AiPlannerViewModel = hiltViewModel()
+    navController: NavController
 ) {
+    // 부모 그래프 BackStackEntry
+    val parentEntry = remember(navController.currentBackStackEntry) {
+        navController.getBackStackEntry("aiPlanner")
+    }
+    val viewModel: AiPlannerViewModel = hiltViewModel(parentEntry) // 공유 ViewModel
+
     val state by viewModel.viewState.collectAsState()
     val context = LocalContext.current
 
