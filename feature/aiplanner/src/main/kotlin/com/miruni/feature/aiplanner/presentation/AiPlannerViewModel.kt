@@ -1,5 +1,6 @@
 package com.miruni.feature.aiplanner.presentation
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.miruni.core.common.BaseViewModel
 import com.miruni.core.common.DateTimeHelper
@@ -251,7 +252,8 @@ class AiPlannerViewModel @Inject constructor(
             when (result) {
                 is DataResult.Success -> {
                     setEffect { AiPlannerContract.Effect.Navigation.ToLoading }
-                    setState { copy(plan = result.data.first().toUiModel()) }
+                    setState { copy(plan = result.data.toUiModel()) }
+                    Log.d("Plan/AiPlannerViewModel", "submitPlan: ${result.data.toUiModel()}")
                 }
                 is DataResult.Error -> {
                     showErrorMessage(result.error)
@@ -286,30 +288,33 @@ class AiPlannerViewModel @Inject constructor(
     /** AI 플래너 스케줄표 */
     private fun enterSchedule(
         from: ScheduleSource,
-        planId: Long?
+        planId: Int?
     ) {
         viewModelScope.launch {
-            when (from) {
-                ScheduleSource.FROM_MAIN -> { // 메인에서 오면
-                    requireNotNull(planId)
+            if (from == ScheduleSource.FROM_MAIN) { // 메인에서 오면
+                if (planId == null) {
+                    setEffect { AiPlannerContract.Effect.PopBack }
+                    return@launch
+                }
 
-                    // API 호출
-                    setState { copy(isPlanningLoading = true) }
-                    val result = scheduleRepository.getScheduleTable(planId)
-                    setState { copy(isPlanningLoading = false) }
+                // API 호출
+                setState { copy(isPlanningLoading = true) }
+                val result = scheduleRepository.getScheduleTable(planId)
+                setState { copy(isPlanningLoading = false) }
 
-                    // 결괏값 처리
-                    when (result) {
-                        is DataResult.Success -> {
-                            setState { copy(plan = result.data.toUiModel()) }
-                        }
-                        is DataResult.Error -> {
-                            showErrorMessage(result.error)
-                            setEffect { AiPlannerContract.Effect.PopBack } // 실패 시 뒤로 가기
-                        }
+                // 결괏값 처리
+                when (result) {
+                    is DataResult.Success -> {
+                        setState { copy(plan = result.data.toUiModel()) }
+                    }
+                    is DataResult.Error -> {
+                        showErrorMessage(result.error)
+                        setEffect { AiPlannerContract.Effect.PopBack } // 실패 시 뒤로 가기
                     }
                 }
-                ScheduleSource.FROM_LOADING -> { // 로딩 화면에서 오면
+            } else { // 로딩에서 온 경우
+                if (viewState.value.plan == null) { // plan null이면 메인으로 이동
+                    setEffect { AiPlannerContract.Effect.Navigation.ToMain }
                 }
             }
         }
@@ -336,6 +341,7 @@ class AiPlannerViewModel @Inject constructor(
         viewModelScope.launch {
             // 현재 보여지는 플랜
             val currentPlan = viewState.value.plan ?: return@launch
+            setState { copy(isEditMode = false) }
 
             // API 호출
             val requestPlan = currentPlan.toDomain().copy(
@@ -345,7 +351,6 @@ class AiPlannerViewModel @Inject constructor(
                 priority = event.priority.let { PlanPriority.fromUi(it) },
                 aiPlans = event.aiPlans.map { it.toDomain() }
             )
-            setState { copy(isEditMode = false) }
 
             val result = scheduleRepository.updateScheduleTable(requestPlan)
 
@@ -360,7 +365,6 @@ class AiPlannerViewModel @Inject constructor(
                     showErrorMessage(result.error)
                     setState { copy(isEditMode = true) }
                 }
-
             }
         }
     }
@@ -407,9 +411,8 @@ class AiPlannerViewModel @Inject constructor(
                         event.aiPlanIds.contains(it.aiPlanId)
                     }
 
-                    setState {
-                        copy(plan = currentPlan.copy(aiPlans = updatedAiPlans))
-                    }
+                    setState { copy(plan = currentPlan.copy(aiPlans = updatedAiPlans)) }
+                    setEffect { AiPlannerContract.Effect.ShowToast("선택한 일정이 삭제되었습니다.") }
                 }
                 is DataResult.Error -> {
                     showErrorMessage(result.error)
