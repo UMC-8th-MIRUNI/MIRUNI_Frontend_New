@@ -3,22 +3,26 @@ package com.miruni.feature.home
 import androidx.lifecycle.viewModelScope
 import com.miruni.core.domain.onboarding.OnboardingKey
 import com.miruni.core.domain.onboarding.OnboardingRepository
-import com.miruni.feature.home.common.BaseViewModel
-import com.miruni.feature.home.domain.TodaySchedule
+import com.miruni.core.common.BaseViewModel
+import com.miruni.core.result.DataError
+import com.miruni.core.result.DataResult
+import com.miruni.feature.home.domain.repository.HomeRepository
+import com.miruni.feature.home.presentation.model.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val onboardingRepository: OnboardingRepository
+    private val onboardingRepository: OnboardingRepository,
+    private val homeRepository: HomeRepository
 ) : BaseViewModel<HomeContract.Event, HomeContract.State, HomeContract.Effect>() {
 
     /** State 초기화 */
-    override fun setInitialState(): HomeContract.State = HomeContract.State(
-        schedules = createDummySchedules(),
-        selectedScheduleId = null
+    override fun setInitialState(): HomeContract.State = HomeContract.State (
+        progressRate = 0
     )
 
     /** 이벤트 핸들링 */
@@ -31,10 +35,50 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    init {
+        loadHome()
+    }
+
+    /** 홈 화면 정보 로드 */
+    private fun loadHome() {
+        viewModelScope.launch {
+            setState { copy(isHomeLoading = true) }
+            // API 호출
+            val userDeferred = async { homeRepository.getHomeUser() }
+            val planDeferred = async { homeRepository.getHomePlan() }
+
+            val userResult = userDeferred.await()
+            val planResult = planDeferred.await()
+
+            setState { copy(isHomeLoading = false) }
+
+            // 결과 처리
+            when {
+                userResult is DataResult.Error -> {
+                    showErrorMessage(userResult.error)
+                }
+                planResult is DataResult.Error -> {
+                    showErrorMessage(planResult.error)
+                }
+
+                userResult is DataResult.Success && planResult is DataResult.Success -> {
+                    setState {
+                        copy(
+                            userInfo = userResult.data.toUiModel(),
+                            progressRate = planResult.data.progressRate,
+                            schedules = planResult.data.todayPlans?.map { it.toUiModel() } ?: emptyList()
+                        )
+                    }
+                }
+            }
+
+        }
+    }
+
     /**
      * 일정 클릭 처리
      */
-    private fun handleScheduleClick(scheduleId: Long) {
+    private fun handleScheduleClick(scheduleId: Int) {
         val currentSelected = viewState.value.selectedScheduleId
 
         if (currentSelected == scheduleId) {
@@ -66,14 +110,13 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    /**
-     * 더미 데이터
-     */
-    private fun createDummySchedules(): List<TodaySchedule> =
-        listOf(
-            TodaySchedule(1,"오후 2:20", "UMC 기획안 만들기", "상", "워크북 3페이지 슬라이드 제작"),
-            TodaySchedule(2,"오후 3:20", "CMC 기획안 만들기", "중", "워크북 2페이지 슬라이드 제작"),
-            TodaySchedule(3,"오후 4:20", "DMC 기획안 만들기", "하", "워크북 1페이지 슬라이드 제작"),
-            TodaySchedule(4,"오후 5:20", "EMC 기획안 만들기", "상", "워크북 45페이지 슬라이드 제작"),
-        )
+    private fun showErrorMessage(error: DataError?) {
+        val message = when(error) {
+            is DataError.CustomError -> error.msg
+            is DataError.Unknown -> error.errorMessage
+            else -> "네트워크 연결을 확인해주세요."
+        }
+
+        setEffect { HomeContract.Effect.ShowToast(message) }
+    }
 }

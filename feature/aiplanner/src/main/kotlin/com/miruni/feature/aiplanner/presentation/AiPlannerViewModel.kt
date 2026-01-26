@@ -1,14 +1,23 @@
 package com.miruni.feature.aiplanner.presentation
 
 import androidx.lifecycle.viewModelScope
-import com.miruni.feature.aiplanner.common.BaseViewModel
+import com.miruni.core.common.BaseViewModel
+import com.miruni.core.common.DateTimeHelper
 import com.miruni.feature.aiplanner.domain.repository.MainRepository
 import com.miruni.core.domain.onboarding.OnboardingRepository
 import com.miruni.core.domain.onboarding.OnboardingKey
+import com.miruni.core.result.DataError
+import com.miruni.core.result.DataResult
 import com.miruni.feature.aiplanner.domain.model.PlanInput
+import com.miruni.feature.aiplanner.domain.model.PlanPriority
+import com.miruni.feature.aiplanner.domain.model.PlanTimePeriod
 import com.miruni.feature.aiplanner.domain.repository.PlanningRepository
+import com.miruni.feature.aiplanner.domain.repository.ScheduleRepository
 import com.miruni.feature.aiplanner.presentation.model.PlanningFormItemUiModel
+import com.miruni.feature.aiplanner.presentation.model.ScheduleSource
+import com.miruni.feature.aiplanner.presentation.model.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,7 +25,8 @@ import javax.inject.Inject
 class AiPlannerViewModel @Inject constructor(
     private val onboardingRepository: OnboardingRepository,
     private val mainRepository: MainRepository,
-    private val planningRepository: PlanningRepository
+    private val planningRepository: PlanningRepository,
+    private val scheduleRepository: ScheduleRepository
 ) : BaseViewModel<AiPlannerContract.Event, AiPlannerContract.State, AiPlannerContract.Effect>() {
 
     override fun setInitialState(): AiPlannerContract.State {
@@ -44,8 +54,14 @@ class AiPlannerViewModel @Inject constructor(
 
     override fun handleEvents(event: AiPlannerContract.Event) {
         when (event) {
-            AiPlannerContract.Event.CompleteOnboarding -> completeOnboarding()
-            AiPlannerContract.Event.Submit -> submitPlan()
+            AiPlannerContract.Event.ClickBack -> onBack() // 뒤로 가기
+            AiPlannerContract.Event.OnMain -> toMain()
+            /** AI 플래너 온보딩 */
+            AiPlannerContract.Event.CompleteOnboarding -> completeOnboarding() // 온보딩 완료
+
+            /** AI 플래너 사용자 입력 */
+            AiPlannerContract.Event.ClearForm -> clearForm()
+            AiPlannerContract.Event.ClickSubmit -> submitPlan() // 사용자 입력 제출
             is AiPlannerContract.Event.InputText -> save(event.id, PlanInput.Text(event.text))
             is AiPlannerContract.Event.SelectDate -> {
                 save(
@@ -59,12 +75,40 @@ class AiPlannerViewModel @Inject constructor(
                 )
             }
             is AiPlannerContract.Event.SelectOption -> save(event.id, PlanInput.Option(event.option))
+
+            /** AI 플래너 로딩 */
+            AiPlannerContract.Event.ShowPlanningLoading -> showPlanningLoading() // 플래닝 로딩 화면 출력
+            AiPlannerContract.Event.ClickConfirm -> onConfirm() // 플래닝 로딩 확인 클릭
+
+            /** AI 플래너 스케줄표  */
+            AiPlannerContract.Event.ClickDeleteAll -> deletePlan()
+            AiPlannerContract.Event.ClickEdit -> onEdit()
+            AiPlannerContract.Event.ClickMenu -> showMenu()
+            is AiPlannerContract.Event.ClickCompleteEdit -> updatePlan(event)
+            is AiPlannerContract.Event.EnterSchedule -> enterSchedule(event.from, event.planId)
+            is AiPlannerContract.Event.ClickDeleteItem -> deleteAiPlans(event)
         }
     }
 
     init {
-        loadAiPlanner()
+        loadMain()
         observeValues()
+    }
+
+    /**
+     * 뒤로 가기 클릭 이벤트
+     */
+    private fun onBack() {
+        setEffect { AiPlannerContract.Effect.PopBack }
+    }
+
+    /**
+     * 메인으로 가기
+     */
+    private fun toMain() {
+        viewModelScope.launch {
+            setEffect { AiPlannerContract.Effect.Navigation.ToMain }
+        }
     }
 
     /**
@@ -74,27 +118,49 @@ class AiPlannerViewModel @Inject constructor(
         viewModelScope.launch {
             onboardingRepository.completeOnboarding(OnboardingKey.AI_PLANNER)
 
-            loadAiPlanner()
+            loadMain()
         }
     }
 
     /**
      * AI 플래너 메인: AI 플래너 메인 스크린에 출력할 데이터(AI 일정, 잔여 횟수) 로드
      */
-    private fun loadAiPlanner() =
+    private fun loadMain() =
         viewModelScope.launch {
-            setState { copy(isLoading = true) }
+            setState { copy(isMainLoading = true) }
 
-            val aiPlans = mainRepository.getAiPlans()
-            val remain = mainRepository.getRemain()
-            setState {
-                copy(
-                    aiPlans = aiPlans,
-                    remain = remain,
-                    isLoading = false
-                )
+            // API 호출
+            val result = mainRepository.getAiPlans()
+            setState { copy(isMainLoading = false) }
+
+            // 결과 처리
+            when (result) {
+                is DataResult.Success -> {
+                    setState {
+                        copy(
+                            remain = result.data.remainingAiCnt,
+                            aiPlans = result.data.plans
+                        )
+                    }
+                }
+
+                is DataResult.Error -> {
+                    showErrorMessage(result.error)
+                }
             }
         }
+
+    /**
+     * AI 플래너 플래닝: 폼 초기화
+     */
+    private fun clearForm() {
+        viewModelScope.launch {
+            planningRepository.clear() // Repository 데이터 삭제
+
+            val clearForms = setInitialState().forms // state의 forms 초기화
+            setState { copy(forms = clearForms) }
+        }
+    }
 
     /**
      * AI 플래너 플래닝: 사용자가 입력한 폼 관찰
@@ -120,6 +186,7 @@ class AiPlannerViewModel @Inject constructor(
             revealNext(id)
         }
     }
+
     private fun revealNext(id: String) {
         setState {
             val idx = forms.indexOfFirst { it.id == id }
@@ -135,30 +202,229 @@ class AiPlannerViewModel @Inject constructor(
             }
         }
     }
-
     /**
-     * 사용자 입력 전송
+     * AI 플래너 플래닝: 사용자 입력 전송
      */
     private fun submitPlan() {
         viewModelScope.launch {
-            setState { copy(isLoading = true) }
+            setState { copy(isPlanningLoading = true) }
 
-            // 현재 State의 forms 데이터를 모아서 API 전송
-            val currentState = viewState.value
-            val inputs = currentState.forms.associate { it.id to it.value }
+            // 입력값 수집
+            val forms = viewState.value.forms.associateBy { it.id }
 
-            // Validation 체크
-            if (inputs.values.any { it == null }) {
-                // 필요 시 에러 이펙트
-                setState { copy(isLoading = false) }
-                return@launch
+            val title = (forms["what"]?.value as? PlanInput.Text)
+                ?.text
+                .orEmpty()
+
+            val dateInput = (forms["until"]?.value as? PlanInput.Date) ?: return@launch
+            val startDateTime = DateTimeHelper.toServerDateTime(dateInput.startDate, dateInput.startTime)
+            val endDateTime = DateTimeHelper.toServerDateTime(dateInput.endDate, dateInput.endTime)
+
+            val timePeriod = (forms["when"]?.value as? PlanInput.Option)
+                ?.option
+                ?.let { PlanTimePeriod.fromUi(it) }
+                ?: PlanTimePeriod.RANDOM
+            val taskRange = (forms["howMuch"]?.value as? PlanInput.Text)
+                ?.text
+                .orEmpty()
+            val priority = (forms["priority"]?.value as? PlanInput.Option)
+                ?.option
+                ?.let { PlanPriority.fromUi(it) }
+                ?: PlanPriority.LOW
+            val detailRequest = (forms["extra"]?.value as? PlanInput.Text)
+                ?.text
+                .orEmpty()
+
+            // API 호출
+            val result = planningRepository.postAiPlan(
+                title = title,
+                startDateTime = startDateTime,
+                endDateTime = endDateTime,
+                timePeriod = timePeriod,
+                taskRange = taskRange,
+                priority = priority,
+                detailRequest = detailRequest
+            )
+            setState { copy(isPlanningLoading = false) }
+
+            // 결과 처리
+            when (result) {
+                is DataResult.Success -> {
+                    setEffect { AiPlannerContract.Effect.Navigation.ToLoading }
+                    setState { copy(plan = result.data.first().toUiModel()) }
+                }
+                is DataResult.Error -> {
+                    showErrorMessage(result.error)
+                }
+            }
+        }
+    }
+
+    /**
+     * AI 플래너 로딩: 로딩 화면 출력
+     */
+    private fun showPlanningLoading() {
+        viewModelScope.launch {
+            delay(2500)
+
+            setState {
+                copy(
+                    isPlanningLoading = false,
+                    isFinishedPlanningLoading = true
+                )
+            }
+        }
+    }
+
+    /**
+     * AI 플래너 로딩: 완료 버튼 클릭 (플래닝 -> 스케줄 표)
+     */
+    private fun onConfirm() {
+        setEffect { AiPlannerContract.Effect.Navigation.ToSchedule }
+    }
+
+    /** AI 플래너 스케줄표 */
+    private fun enterSchedule(
+        from: ScheduleSource,
+        planId: Long?
+    ) {
+        viewModelScope.launch {
+            when (from) {
+                ScheduleSource.FROM_MAIN -> { // 메인에서 오면
+                    requireNotNull(planId)
+
+                    // API 호출
+                    setState { copy(isPlanningLoading = true) }
+                    val result = scheduleRepository.getScheduleTable(planId)
+                    setState { copy(isPlanningLoading = false) }
+
+                    // 결괏값 처리
+                    when (result) {
+                        is DataResult.Success -> {
+                            setState { copy(plan = result.data.toUiModel()) }
+                        }
+                        is DataResult.Error -> {
+                            showErrorMessage(result.error)
+                            setEffect { AiPlannerContract.Effect.PopBack } // 실패 시 뒤로 가기
+                        }
+                    }
+                }
+                ScheduleSource.FROM_LOADING -> { // 로딩 화면에서 오면
+                }
+            }
+        }
+    }
+
+    /**
+     * AI 플래너 스케줄 표: 메뉴 노출
+     */
+    private fun showMenu() {
+        setState { copy(showMenu = !showMenu) }
+    }
+
+    /**
+     * AI 플래너 스케줄 표: 수정 모드 전환
+     */
+    private fun onEdit() {
+        setState { copy(isEditMode = true, showMenu = false) }
+    }
+
+    /**
+     * AI 플래너 스케줄 표: 일정 수정
+     */
+    private fun updatePlan(event: AiPlannerContract.Event.ClickCompleteEdit) {
+        viewModelScope.launch {
+            // 현재 보여지는 플랜
+            val currentPlan = viewState.value.plan ?: return@launch
+
+            // API 호출
+            val requestPlan = currentPlan.toDomain().copy(
+                title = event.title,
+                deadline = event.deadline,
+                taskRange = event.taskRange,
+                priority = event.priority.let { PlanPriority.fromUi(it) },
+                aiPlans = event.aiPlans.map { it.toDomain() }
+            )
+            setState { copy(isEditMode = false) }
+
+            val result = scheduleRepository.updateScheduleTable(requestPlan)
+
+            // 결과 처리
+            when (result) {
+                is DataResult.Success -> {
+                    setState { copy(plan = result.data.toUiModel()) }
+                    setEffect { AiPlannerContract.Effect.ShowToast("일정이 수정되었습니다.") }
+                }
+
+                is DataResult.Error -> {
+                    showErrorMessage(result.error)
+                    setState { copy(isEditMode = true) }
+                }
+
+            }
+        }
+    }
+
+    /**
+     * AI 플래너 스케줄 표: 일정 삭제 (전체 삭제)
+     */
+    private fun deletePlan() {
+        viewModelScope.launch {
+            // API 호출
+            val planId = viewState.value.plan?.planId ?: return@launch
+            val result = scheduleRepository.deleteScheduleAll(planId)
+
+            when (result) {
+                is DataResult.Success -> {
+                    setEffect { AiPlannerContract.Effect.ShowToast("일정이 삭제되었습니다.") }
+                    setEffect { AiPlannerContract.Effect.Navigation.ToMain }
+                }
+                is DataResult.Error -> {
+                    showErrorMessage(result.error)
+                }
             }
 
-            // Repository 호출 (API 연결)
-            // val result = planningRepository.submitPlan(inputs)
-
-            // 결과 처리 후 네비게이션 Effect 발생
-            // setEffect { AiPlannerContract.Effect.NavigateToLoading }
         }
+    }
+
+    /**
+     * AI 플래너 스케줄 표: 일정 삭제 (개별 삭제)
+     */
+    private fun deleteAiPlans(event: AiPlannerContract.Event.ClickDeleteItem) {
+        viewModelScope.launch {
+            val currentPlan = viewState.value.plan ?: return@launch
+            val planId = currentPlan.planId ?: return@launch
+
+            // API 호출
+            val result = scheduleRepository.deleteScheduleItem(
+                planId = planId,
+                aiPlanIds = event.aiPlanIds
+            )
+
+            when (result) {
+                is DataResult.Success -> {
+                    val updatedAiPlans = currentPlan.aiPlans.filterNot {
+                        event.aiPlanIds.contains(it.aiPlanId)
+                    }
+
+                    setState {
+                        copy(plan = currentPlan.copy(aiPlans = updatedAiPlans))
+                    }
+                }
+                is DataResult.Error -> {
+                    showErrorMessage(result.error)
+                }
+            }
+        }
+    }
+
+    private fun showErrorMessage(error: DataError?) {
+        val message = when(error) {
+            is DataError.CustomError -> error.msg
+            is DataError.Unknown -> error.errorMessage
+            else -> "네트워크 연결을 확인해주세요."
+        }
+
+        setEffect { AiPlannerContract.Effect.ShowToast(message) }
     }
 }

@@ -1,10 +1,27 @@
 package com.miruni.feature.signup
 
-import com.miruni.feature.signup.common.BaseViewModel
+import androidx.lifecycle.viewModelScope
+import com.miruni.core.common.BaseViewModel
+import com.miruni.core.result.DataResult
+import com.miruni.feature.signup.domain.model.User
+import com.miruni.feature.signup.domain.usecase.SendEmailVerifyUseCase
+import com.miruni.feature.signup.domain.usecase.SignupUseCase
+import com.miruni.feature.signup.domain.usecase.VerifyEmailUseCase
+import com.miruni.feature.signup.presentation.navigation.SignupRoute
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class SignupViewModel : BaseViewModel<SignUpContract.Event, SignUpContract.State, SignUpContract.Effect>() {
+@HiltViewModel
+class SignupViewModel @Inject constructor(
+    private val sendEmailVerifyUseCase: SendEmailVerifyUseCase,
+    private val verifyEmailUseCase: VerifyEmailUseCase,
+    private val signupUseCase: SignupUseCase
+) : BaseViewModel<SignUpContract.Event, SignUpContract.State, SignUpContract.Effect>() {
 
-    private val steps = SignUpContract.stepSequence
+    private val routes = SignupRoute.sequence
     override fun setInitialState(): SignUpContract.State = SignUpContract.State()
 
     override fun handleEvents(event: SignUpContract.Event) {
@@ -97,13 +114,11 @@ class SignupViewModel : BaseViewModel<SignUpContract.Event, SignUpContract.State
                     )
                 }
             }
+
             is SignUpContract.Event.OnSelectedTermChanged -> {
                 setState { copy(selectedTerm = event.term) }
             }
 
-            is SignUpContract.Event.OnStepChanged -> {
-                setState { copy(step = event.step) }
-            }
 
             is SignUpContract.Event.OnAgreeRealNameChanged -> {
                 setState { copy(agreeRealName = event.agree) }
@@ -131,25 +146,114 @@ class SignupViewModel : BaseViewModel<SignUpContract.Event, SignUpContract.State
                 }
             }
 
+            is SignUpContract.Event.OnRouteChanged -> {
+                setState { copy(currentRoute = event.route) }
+            }
+
+            is SignUpContract.Event.OnRequestOtpClicked -> {
+                viewModelScope.launch {
+                    val result = withContext(Dispatchers.IO){
+                        sendEmailVerifyUseCase(viewState.value.email.value)
+                    }
+                    when(result){
+                        is DataResult.Success -> {
+                            setState {
+                                copy(
+                                    isEmailVerified = true
+                                )
+                            }
+                        }
+                        is DataResult.Error -> {
+                            setState {
+                                copy(
+                                    otp = otp.copy(
+                                        value = "",
+                                        isError = true,
+                                        errorMessage = result.error.errorMessage
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            is SignUpContract.Event.OnVerifyOtpClicked -> {
+                viewModelScope.launch {
+                    val result = withContext(Dispatchers.IO){
+                        verifyEmailUseCase(viewState.value.otp.value)
+                    }
+                    when(result) {
+                        is DataResult.Success -> {
+                            setState {
+                                copy(
+                                    isOtpVerified = true
+                                )
+                            }
+                        }
+                        is DataResult.Error -> {
+                            setState {
+                                copy(
+                                    otp = otp.copy(
+                                        value = "",
+                                        isError = true,
+                                        errorMessage = result.error.errorMessage
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
             SignUpContract.Event.OnNextStepClicked -> {
-                setState {
-                    val currentIndex = steps.indexOf(step)
-                    if (currentIndex < steps.lastIndex) {
-                        copy(step = steps[currentIndex + 1])
+                val current = viewState.value.currentRoute
+                val idx = routes.indexOf(current).coerceAtLeast(0)
+
+                if (idx >= routes.lastIndex) {
+                    setEffect { SignUpContract.Effect.Navigation.Done }
+                } else {
+                    val next = routes[idx + 1]
+                    if (next == SignupRoute.TERMS) {
+                        viewModelScope.launch {
+                            val result = withContext(Dispatchers.IO){
+                                signupUseCase(
+                                    User(
+                                        name = viewState.value.name.value,
+                                        email = viewState.value.email.value,
+                                        phoneNumber = viewState.value.phone.value,
+                                        password = viewState.value.password.value,
+                                        nickname = viewState.value.nickName.value,
+                                        birthday = viewState.value.birth.value
+                                    )
+                                )
+                            }
+                            when(result){
+                                is DataResult.Success -> {
+                                    setEffect { SignUpContract.Effect.Navigation.Done }
+                                }
+                                is DataResult.Error -> {
+                                    setEffect {
+                                        SignUpContract.Effect.Message.SnackBar(result.error.errorMessage)
+                                    }
+                                }
+                            }
+                        }
                     } else {
-                        this
+                        setEffect { SignUpContract.Effect.Navigation.ToRoute(next) }
                     }
                 }
             }
 
             SignUpContract.Event.OnPrevStepClicked -> {
-                setState {
-                    val currentIndex = steps.indexOf(step)
-                    if (currentIndex > 0) {
-                        copy(step = steps[currentIndex - 1])
-                    } else {
-                        this
-                    }
+                val current = viewState.value.currentRoute
+                val idx = routes.indexOf(current).coerceAtLeast(0)
+
+                if (idx <= 0) {
+                    setEffect { SignUpContract.Effect.Navigation.Back }
+                } else {
+                    val prev = routes[idx - 1]
+                    setEffect { SignUpContract.Effect.Navigation.ToRoute(prev) }
                 }
             }
 

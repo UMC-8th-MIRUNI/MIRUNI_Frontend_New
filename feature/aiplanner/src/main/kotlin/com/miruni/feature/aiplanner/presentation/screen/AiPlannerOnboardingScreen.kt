@@ -34,7 +34,7 @@ import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.MainColor
 import com.miruni.core.navigation.MiruniRoute
 import com.miruni.feature.aiplanner.R
-import com.miruni.feature.aiplanner.common.convertBold
+import com.miruni.core.common.convertBold
 import com.miruni.feature.aiplanner.presentation.AiPlannerContract
 import com.miruni.feature.aiplanner.presentation.AiPlannerViewModel
 
@@ -50,7 +50,7 @@ fun AiPlannerOnboardingScreen(
         onComplete = {
             viewModel.handleEvents(AiPlannerContract.Event.CompleteOnboarding)
 
-            navController.navigate(MiruniRoute.AiPlanner.route) {
+            navController.navigate(MiruniRoute.AiPlannerMain.route) {
                 popUpTo(MiruniRoute.AiPlannerOnboarding.route) {
                     inclusive = true
                 }

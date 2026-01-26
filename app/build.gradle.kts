@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.convention.hilt)
     alias(libs.plugins.compose.compiler)
+
+    alias(libs.plugins.convention.retrofit)
 }
 
 android {
@@ -17,6 +19,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"6060a4309ed695fc355f3fc8c292cc81\"")
     }
 
     buildTypes {
@@ -38,7 +41,10 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
+
+
 }
 
 dependencies {
@@ -62,6 +68,11 @@ dependencies {
 
     // material for Icons. 지워도 상관x
     implementation("androidx.compose.material:material-icons-core:1.7.8")
+    // Splash (Android 12 이하 지원)
+    implementation(libs.androidx.core.splashscreen)
+
+    // The Preferences DataStore library
+    implementation(libs.androidx.datastore.preferences)
 
     // compose dependencies
     implementation(platform(libs.androidx.compose.bom))
@@ -69,8 +80,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
 
-    // The Preferences DataStore library
-    implementation(libs.androidx.datastore.preferences)
+    // kakao dependencies
+    implementation(libs.kakao.sdk.v2.common)
 
     // test dependencies
     androidTestImplementation(libs.androidx.junit)

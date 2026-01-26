@@ -3,11 +3,12 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.convention.feature)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.convention.retrofit)
 }
 
 android {
     namespace = "com.miruni.feature.home"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 24
@@ -39,8 +40,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":domain:model"))
-    implementation(project(":domain:usecase"))
     implementation(project(":core"))
 
     implementation(libs.androidx.core.ktx)
@@ -59,6 +58,10 @@ dependencies {
     // material
     implementation(libs.material.icons.core)
     implementation(libs.material.icons.extended)
+
+    // media3
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.ui)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
