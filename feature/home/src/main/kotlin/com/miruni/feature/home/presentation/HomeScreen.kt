@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -319,7 +320,10 @@ fun MiruniIcon(
     }
 
     Box(
-        modifier = modifier.clickable {
+        modifier = modifier.clickable(
+            interactionSource = remember{ MutableInteractionSource() },
+            indication = null
+        ) {
             // 항상 처음부터 재생
             exoPlayer.seekTo(0)
             exoPlayer.play()
