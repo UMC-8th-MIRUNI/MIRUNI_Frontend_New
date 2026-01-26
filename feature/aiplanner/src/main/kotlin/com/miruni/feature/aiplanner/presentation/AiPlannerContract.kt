@@ -40,17 +40,17 @@ object AiPlannerContract {
         /** AI 플래너 스케줄 표 */
         data class EnterSchedule( // 스케줄 화면 진입
             val from: ScheduleSource, // 어디서 왔는지
-            val planId: Long? = null
+            val planId: Int? = null
         ) : Event()
         object ClickMenu : Event()
         object ClickEdit : Event()
         object ClickDeleteAll : Event() // 스케줄표 전체 삭제
         data class ClickDeleteItem( // AI 플랜 개별 삭제
-            val planId: Long,
-            val aiPlanIds: List<Long>
+            val planId: Int,
+            val aiPlanIds: List<Int>
         ) : Event()
         data class ClickCompleteEdit(
-            val planId: Long,
+            val planId: Int,
             val title: String,
             // 상위 일정 정보
             val deadline: String,

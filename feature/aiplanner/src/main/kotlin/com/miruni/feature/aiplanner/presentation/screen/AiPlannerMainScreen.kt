@@ -79,7 +79,7 @@ fun AiPlannerMainContent(
     state: AiPlannerContract.State,
     modifier: Modifier = Modifier,
     onClickAiPlanning: () -> Unit,
-    onClickItem: (Long) -> Unit
+    onClickItem: (Int) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -177,7 +177,7 @@ fun AiPlannerButton(
 
 fun LazyListScope.AiSchedules(
     state: AiPlannerContract.State,
-    onClickItem: (Long) -> Unit
+    onClickItem: (Int) -> Unit
 ) {
     item {
         Row(
