@@ -121,8 +121,8 @@ fun AiPlannerScheduleScreen(
             onMenu = { viewModel.setEvent(AiPlannerContract.Event.ClickMenu) },
             onEdit = { viewModel.setEvent(AiPlannerContract.Event.ClickEdit) },
             onDeleteAll = { viewModel.setEvent(AiPlannerContract.Event.ClickDeleteAll) },
-            onDeleteItem = { deletePlanIds ->
-
+            onDeleteItem = { planId, deletePlanIds ->
+                viewModel.setEvent(AiPlannerContract.Event.ClickDeleteItem(planId, deletePlanIds))
             },
             onCompleteEdit = { updatedPlan, updatedAiPlans ->
                 viewModel.setEvent(
@@ -150,7 +150,7 @@ fun AiPlannerScheduleContent(
     onMenu: () -> Unit,
     onEdit: () -> Unit,
     onDeleteAll: () -> Unit,
-    onDeleteItem: (List<Long>) -> Unit,
+    onDeleteItem: (Int, List<Int>) -> Unit,
     onCompleteEdit: (PlanUiModel, List<AiPlanUiModel>) -> Unit
 ) {
     // 수정을 위한 상태
@@ -320,7 +320,7 @@ fun AiPlannerScheduleContent(
                         draftAiPlans.removeAll { deleteIds.contains(it.aiPlanId) } // UI에서 제거
                         selectedIds.clear()
 
-                        onDeleteItem(deleteIds) // ViewModel 이벤트 호출 - 서버에서 제거
+                        onDeleteItem(plan.planId, deleteIds) // 서버에서 제거
                     }
                 }
             )
