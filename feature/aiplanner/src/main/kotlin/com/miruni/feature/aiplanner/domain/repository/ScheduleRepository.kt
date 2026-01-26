@@ -13,11 +13,11 @@ interface ScheduleRepository {
     suspend fun updateScheduleTable(plan: Plan): DataResult<Plan, DataError>
 
     /** AI 플래닝 스케줄표 삭제 */
-    suspend fun deleteScheduleAll(id: Int): DataResult<Boolean, DataError>
+    suspend fun deleteScheduleAll(id: Int): DataResult<Unit, DataError>
 
     /** AI 플래닝 스케줄표 선택 삭제 */
     suspend fun deleteScheduleItem(
         planId: Int,
         aiPlanIds: List<Int>
-    ): DataResult<Boolean, DataError>
+    ): DataResult<Unit, DataError>
 }

@@ -89,7 +89,7 @@ class ScheduleRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun deleteScheduleAll(id: Int): DataResult<Boolean, DataError> {
+    override suspend fun deleteScheduleAll(id: Int): DataResult<Unit, DataError> {
         // 통신 실행
         val networkResult = executeApiRequest {
             api.deleteScheduleTable(planId = id)
@@ -100,9 +100,11 @@ class ScheduleRepositoryImpl @Inject constructor(
                 val response = networkResult.data
                 val serverResult = response.result
 
-                if (response.errorCode.isNullOrBlank() && serverResult != null) {
+                val isDeleted = serverResult?.isDeleted == true
+
+                if (response.errorCode.isNullOrBlank() && isDeleted) {
                     // 삭제 성공 여부
-                    DataResult.Success(serverResult)
+                    DataResult.Success(Unit)
                 } else {
                     DataResult.Error(
                         DataError.CustomError(
@@ -122,7 +124,7 @@ class ScheduleRepositoryImpl @Inject constructor(
     override suspend fun deleteScheduleItem(
         planId: Int,
         aiPlanIds: List<Int>
-    ): DataResult<Boolean, DataError> {
+    ): DataResult<Unit, DataError> {
         // 통신 실행
         val networkResult = executeApiRequest {
             api.deleteScheduleItem(
@@ -135,8 +137,11 @@ class ScheduleRepositoryImpl @Inject constructor(
             is NetworkResult.Success -> { // 통신 성공
                 val response = networkResult.data
                 val serverResult = response.result
-                if (response.errorCode.isNullOrBlank() && serverResult != null)
-                    DataResult.Success(serverResult)
+
+                val isDeleted = serverResult?.isDeleted == true
+
+                if (response.errorCode.isNullOrBlank() && isDeleted)
+                    DataResult.Success(Unit)
                 else
                     DataResult.Error(
                         DataError.CustomError(
