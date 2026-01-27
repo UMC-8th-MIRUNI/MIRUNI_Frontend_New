@@ -208,6 +208,7 @@ class AiPlannerViewModel @Inject constructor(
      */
     private fun submitPlan() {
         viewModelScope.launch {
+            setEffect { AiPlannerContract.Effect.Navigation.ToLoading }
             setState { copy(isPlanningLoading = true) }
 
             // 입력값 수집
@@ -251,7 +252,6 @@ class AiPlannerViewModel @Inject constructor(
             // 결과 처리
             when (result) {
                 is DataResult.Success -> {
-                    setEffect { AiPlannerContract.Effect.Navigation.ToLoading }
                     setState { copy(plan = result.data.toUiModel()) }
                     fetchMain()
                     Log.d("Plan/AiPlannerViewModel", "submitPlan: ${result.data.toUiModel()}")
