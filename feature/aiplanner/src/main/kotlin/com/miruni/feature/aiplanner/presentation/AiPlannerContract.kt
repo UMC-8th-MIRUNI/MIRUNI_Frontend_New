@@ -4,7 +4,6 @@ import com.miruni.core.common.ViewEvent
 import com.miruni.core.common.ViewSideEffect
 import com.miruni.core.common.ViewState
 import com.miruni.feature.aiplanner.domain.model.PlanPreview
-import com.miruni.feature.aiplanner.presentation.model.AiPlanUiModel
 import com.miruni.feature.aiplanner.presentation.model.PlanUiModel
 import com.miruni.feature.aiplanner.presentation.model.PlanningFormItemUiModel
 import com.miruni.feature.aiplanner.presentation.model.ScheduleSource
@@ -43,21 +42,11 @@ object AiPlannerContract {
             val planId: Int? = null
         ) : Event()
         object ClickMenu : Event()
-        object ClickEdit : Event()
+        object ClickEdit : Event() // 수정하기 - 스케줄표 개별 삭제 기능 포함
         object ClickDeleteAll : Event() // 스케줄표 전체 삭제
-        data class ClickDeleteItem( // AI 플랜 개별 삭제
-            val planId: Int,
-            val aiPlanIds: List<Int>
-        ) : Event()
         data class ClickCompleteEdit(
-            val planId: Int,
-            val title: String,
-            // 상위 일정 정보
-            val deadline: String,
-            val taskRange: String,
-            val priority: String,
-            // 하위 세부 일정 리스트
-            val aiPlans: List<AiPlanUiModel>
+            val updatedPlan: PlanUiModel, // 수정된 Plan DTO
+            val deleteIds: Set<Int> = emptySet() // 삭제할 AI 플랜 ID
         ) : Event()
     }
 

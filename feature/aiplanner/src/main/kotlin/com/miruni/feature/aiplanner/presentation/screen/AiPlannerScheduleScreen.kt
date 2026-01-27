@@ -142,18 +142,11 @@ fun AiPlannerScheduleScreen(
             onMenu = { viewModel.setEvent(AiPlannerContract.Event.ClickMenu) },
             onEdit = { viewModel.setEvent(AiPlannerContract.Event.ClickEdit) },
             onDeleteAll = { viewModel.setEvent(AiPlannerContract.Event.ClickDeleteAll) },
-            onDeleteItem = { planId, deletePlanIds ->
-                viewModel.setEvent(AiPlannerContract.Event.ClickDeleteItem(planId, deletePlanIds))
-            },
-            onCompleteEdit = { updatedPlan, updatedAiPlans ->
+            onCompleteEdit = { updatedPlan, deleteAiPlanIds ->
                 viewModel.setEvent(
                     AiPlannerContract.Event.ClickCompleteEdit(
-                        planId = plan.planId,
-                        title = updatedPlan.title,
-                        deadline = updatedPlan.deadline,
-                        taskRange = updatedPlan.taskRange,
-                        priority = updatedPlan.priority,
-                        aiPlans = updatedAiPlans
+                        updatedPlan = updatedPlan,
+                        deleteIds = deleteAiPlanIds
                     )
                 )
             }
@@ -171,8 +164,7 @@ fun AiPlannerScheduleContent(
     onMenu: () -> Unit,
     onEdit: () -> Unit,
     onDeleteAll: () -> Unit,
-    onDeleteItem: (Int, List<Int>) -> Unit,
-    onCompleteEdit: (PlanUiModel, List<AiPlanUiModel>) -> Unit
+    onCompleteEdit: (PlanUiModel, Set<Int>) -> Unit
 ) {
     // 수정을 위한 상태
     var draftTitle by remember(plan) { mutableStateOf(plan.title) }
@@ -183,7 +175,7 @@ fun AiPlannerScheduleContent(
 
     // 체크 박스 선택 상태
     val selectedIds = remember { mutableStateListOf<Int>() }
-    // 삭제 모드
+    // 삭제 모드 여부
     val isDeleteMode = isEditMode && (source == ScheduleSource.FROM_MAIN) // 메인에서 왔을 때만 개별 삭제 모드 활성화 가능
 
     Scaffold(
@@ -205,15 +197,23 @@ fun AiPlannerScheduleContent(
                                 shape = RoundedCornerShape(10.dp)
                             )
                             .clickable {
-                                onCompleteEdit(
-                                    plan.copy(
-                                        title = draftTitle,
-                                        deadline = draftDeadline,
-                                        taskRange = draftRange,
-                                        priority = draftPriority
-                                    ),
-                                    draftAiPlans.toList()
+                                // UI 바탕으로 수정 데이터 수집
+                                val editedPlan = plan.copy(
+                                    title = draftTitle,
+                                    deadline = draftDeadline,
+                                    taskRange = draftRange,
+                                    priority = draftPriority,
+                                    aiPlans = draftAiPlans.map { aiPlan ->
+                                        aiPlan.copy(status = "예정")
+                                    }
                                 )
+
+                                // 삭제 대상 ID 수집
+                                val deleteIds =
+                                    if (isDeleteMode) selectedIds.toSet()
+                                    else emptySet()
+
+                                onCompleteEdit(editedPlan, deleteIds)
                             },
                         contentAlignment = Alignment.Center
                     ) {
@@ -297,7 +297,10 @@ fun AiPlannerScheduleContent(
                                         .align(Alignment.TopEnd)
                                         .padding(top = 60.dp, end = 20.dp)
                                 ) {
-                                    MenuPopup(onEdit, onDeleteAll)
+                                    MenuPopup(
+                                        onEdit = onEdit,
+                                        onDelete = onDeleteAll
+                                    )
                                 }
                             }
                         }
@@ -337,19 +340,11 @@ fun AiPlannerScheduleContent(
                 },
                 onDeleteSelected = {
                     val deleteIds = selectedIds.toList()
-                    if (deleteIds.isNotEmpty()) {
-                        draftAiPlans.removeAll { deleteIds.contains(it.aiPlanId) } // UI에서 제거
-                        selectedIds.clear()
-
-                        onDeleteItem(plan.planId, deleteIds) // 서버에서 제거
-                    }
+                    draftAiPlans.removeAll { it.aiPlanId in deleteIds }
                 }
             )
-
         }
-
     }
-
 }
 
 @Composable

@@ -123,13 +123,13 @@ class ScheduleRepositoryImpl @Inject constructor(
 
     override suspend fun deleteScheduleItem(
         planId: Int,
-        aiPlanIds: List<Int>
+        aiPlansIds: List<Int>
     ): DataResult<Unit, DataError> {
         // 통신 실행
         val networkResult = executeApiRequest {
             api.deleteScheduleItem(
                 planId = planId,
-                request = aiPlanIds
+                request = DeleteScheduleItemRequest(aiPlansIds = aiPlansIds)
             )
         }
         // 통신 결과 확인
