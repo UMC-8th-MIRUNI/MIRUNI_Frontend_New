@@ -292,7 +292,11 @@ class AiPlannerViewModel @Inject constructor(
         planId: Int?
     ) {
         viewModelScope.launch {
-            if (from == ScheduleSource.FROM_MAIN) { // 메인에서 오면
+            if (from == ScheduleSource.FROM_LOADING) { // 로딩에서 오면
+                if (viewState.value.plan == null) { // plan null이면 메인으로 이동
+                    setEffect { AiPlannerContract.Effect.Navigation.ToMain }
+                }
+            } else { // 메인에서 온 경우 / 스케줄표 새로고침
                 if (planId == null) {
                     setEffect { AiPlannerContract.Effect.PopBack }
                     return@launch
@@ -312,10 +316,6 @@ class AiPlannerViewModel @Inject constructor(
                         showErrorMessage(result.error)
                         setEffect { AiPlannerContract.Effect.PopBack } // 실패 시 뒤로 가기
                     }
-                }
-            } else { // 로딩에서 온 경우
-                if (viewState.value.plan == null) { // plan null이면 메인으로 이동
-                    setEffect { AiPlannerContract.Effect.Navigation.ToMain }
                 }
             }
         }
@@ -384,6 +384,7 @@ class AiPlannerViewModel @Inject constructor(
                 when (deleteResult) {
                     is DataResult.Success -> {
                         fetchMain()
+                        enterSchedule(ScheduleSource.FROM_SCHEDULE, updatedPlan.planId)
                         setEffect { AiPlannerContract.Effect.ShowToast("수정 및 삭제가 완료되었습니다") }
                     }
                     is DataResult.Error -> {
