@@ -1,6 +1,7 @@
 package com.miruni.feature.aiplanner.data.api
 
 import com.miruni.core.network.ApiResponse
+import com.miruni.feature.aiplanner.data.dto.request.DeleteScheduleItemRequest
 import com.miruni.feature.aiplanner.data.dto.request.PostAiPlansRequest
 import com.miruni.feature.aiplanner.data.dto.response.DeleteResponse
 import com.miruni.feature.aiplanner.data.dto.response.GetAiPlansResponse
@@ -10,6 +11,7 @@ import com.miruni.feature.aiplanner.data.dto.response.PostAiPlansResponse
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.HTTP
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -46,9 +48,13 @@ interface AiPlannerApi {
     ): ApiResponse<DeleteResponse>
 
     /** AI 플래닝 스케줄표 선택 삭제 (스케줄표 아이템 삭제) */
-    @DELETE("api/ai-plans/table/items/{plan_id}")
+    @HTTP(
+        method = "DELETE",
+        path = "api/ai-plans/table/items/{plan_id}",
+        hasBody = true
+    )
     suspend fun deleteScheduleItem(
         @Path("plan_id") planId: Int,
-        @Body request: List<Int> // 삭제할 AI 플랜 ID 리스트
+        @Body request: DeleteScheduleItemRequest // 삭제할 AI 플랜 ID 리스트
     ): ApiResponse<DeleteResponse>
 }
