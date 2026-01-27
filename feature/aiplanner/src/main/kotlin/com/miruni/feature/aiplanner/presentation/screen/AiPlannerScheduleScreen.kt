@@ -391,6 +391,7 @@ fun DescriptionSection(
     deadline: String,
     taskRange: String,
     priority: String,
+    progressRate: Int = 0,
     isEditMode: Boolean,
     onDeadlineChange: (String) -> Unit,
     onRangeChange: (String) -> Unit,
@@ -441,25 +442,27 @@ fun DescriptionSection(
             Canvas(modifier = Modifier.size(53.dp)) {
                 // 회색 배경 원
                 drawArc(
-                    color = MainColor.miruni_green,
+                    color = Gray.gray_400,
                     startAngle = 0f,
                     sweepAngle = 360f,
                     useCenter = false,
                     style = Stroke(width = 1f, cap = StrokeCap.Round)
                 )
-                // 초록색 진행도 원 (30% = 108도)
-//                drawArc(
-//                    color = MainColor.miruni_green,
-//                    startAngle = -90f,
-//                    sweepAngle = 108f, // 30%
-//                    useCenter = false,
-//                    style = Stroke(width = 15f, cap = StrokeCap.Round)
-//                )
+                // 초록색 진행도 원
+                drawArc(
+                    color = MainColor.miruni_green,
+                    startAngle = -90f,
+                    sweepAngle = progressRate / 100f * 360f,
+                    useCenter = false,
+                    style = Stroke(width = 1f, cap = StrokeCap.Round)
+                )
             }
             Text(
-                text = "30%",
+                text = "$progressRate%",
                 style = AppTypography.sub_medium_14,
-                color = MainColor.miruni_green,
+                color =
+                    if (progressRate == 0) Gray.gray_400
+                    else MainColor.miruni_green,
                 modifier = Modifier.align(Alignment.Center)
             )
         }
@@ -848,10 +851,10 @@ private fun TimeRow(
             TimeText(start) { onChange(it, end) }
         }
         Text(
-            text = " - ",
+            text = "-",
             style = AppTypography.PretendardTextStyle(
                 fontWeight = FontWeight.Normal,
-                fontSize = 9.sp
+                fontSize = 7.sp
             ).copy(color = Gray.gray_500),
             textAlign = TextAlign.Center
         )
@@ -875,7 +878,7 @@ private fun TimeText(
         singleLine = true,
         textStyle = AppTypography.PretendardTextStyle(
             fontWeight = FontWeight.Normal,
-            fontSize = 9.sp
+            fontSize = 7.sp
         ).copy(color = Gray.gray_500, textAlign = TextAlign.Center),
     )
 }
@@ -997,7 +1000,7 @@ fun PreviewAiPlannerSchedule() {
         source = ScheduleSource.FROM_MAIN,
         isDeleteMode = true,
         selectedIds = listOf(1),
-        isEditMode = true,
+        isEditMode = false,
         modifier = Modifier.fillMaxWidth(),
         onPlanChange = { index, updatedPlan -> },
         onToggleSection = {},
