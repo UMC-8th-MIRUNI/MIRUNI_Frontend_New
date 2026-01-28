@@ -1,6 +1,8 @@
 package com.miruni.network
 
+import android.util.Log
 import com.miruni.core.domain.auth.TokenDataStore
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 /**
@@ -13,18 +15,23 @@ class TokenProvider @Inject constructor(
     private var cachedToken: String? = null
 
     suspend fun init() {
-        cachedToken = tokenDataStore.getAccessToken()
+        tokenDataStore.getAccessTokenFlow().collect { token ->
+            cachedToken = token
+            Log.d("Token/TokenProvider", "Token Updated: $token")
+        }
     }
 
-    fun getToken(): String? = cachedToken
+    fun getToken(): String? {
+        return cachedToken ?: runBlocking {
+            tokenDataStore.getAccessToken().also { cachedToken = it }
+        }
+    }
 
     suspend fun updateToken(token: String) {
-        cachedToken = token
         tokenDataStore.saveAccessToken(token)
     }
 
     suspend fun clear() {
-        cachedToken = null
         tokenDataStore.clear()
     }
 }

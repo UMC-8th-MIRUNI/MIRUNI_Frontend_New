@@ -1,5 +1,6 @@
 package com.miruni.feature.aiplanner.presentation.screen
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -34,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -56,10 +58,16 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun AiPlannerPlanningScreen(
-    viewModel: AiPlannerViewModel = hiltViewModel(),
     navController: NavController
 ) {
+    // 부모 그래프 BackStackEntry
+    val parentEntry = remember(navController.currentBackStackEntry) {
+        navController.getBackStackEntry("aiPlanner")
+    }
+    val viewModel: AiPlannerViewModel = hiltViewModel(parentEntry) // 공유 ViewModel
+
     val state by viewModel.viewState.collectAsState()
+    val context = LocalContext.current
     val dotPositions = remember { mutableStateListOf<YInformation>() }
     var firstItemTop by remember { mutableStateOf<Float?>(null) }
 
@@ -79,8 +87,11 @@ fun AiPlannerPlanningScreen(
 
         viewModel.effect.collect { effect ->
             when(effect) {
-                AiPlannerContract.Effect.Navigation.ToLoading -> {
+                is AiPlannerContract.Effect.Navigation.ToLoading -> {
                     navController.navigate(MiruniRoute.AiPlannerLoading.route)
+                }
+                is AiPlannerContract.Effect.ShowToast -> {
+                    Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
                 }
                 AiPlannerContract.Effect.PopBack -> {
                     navController.popBackStack()

@@ -12,11 +12,11 @@ data class PlanPreviewDto(
 ) {
     fun toDomain(): PlanPreview {
         return PlanPreview(
-            planId = planId.toLong(),
+            planId = planId,
             title = title,
-            doneCount = doneCnt?.toLong() ?: 0,
-            totalCount = totalCnt?.toLong() ?: 0,
-            progressRate = progressRate?.toLong() ?: 0,
+            doneCount = doneCnt ?: 0,
+            totalCount = totalCnt ?: 0,
+            progressRate = progressRate ?: 0,
             isDone = isDone ?: false
         )
     }

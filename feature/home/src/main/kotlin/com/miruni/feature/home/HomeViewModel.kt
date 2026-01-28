@@ -28,6 +28,7 @@ class HomeViewModel @Inject constructor(
     /** 이벤트 핸들링 */
     override fun handleEvents(event: HomeContract.Event) {
         when (event) {
+            HomeContract.Event.OnBackClick -> setEffect { HomeContract.Effect.PopBack }
             HomeContract.Event.OnAlarmClick -> setEffect { HomeContract.Effect.Navigation.ToAlarms }
             HomeContract.Event.OnAiPlannerClick -> goToAiPlanner()
             HomeContract.Event.OnDndClick -> setEffect { HomeContract.Effect.Navigation.ToDnd }

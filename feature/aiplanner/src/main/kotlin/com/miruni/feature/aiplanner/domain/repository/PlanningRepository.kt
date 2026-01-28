@@ -23,5 +23,5 @@ interface PlanningRepository {
         taskRange: String,
         priority: PlanPriority,
         detailRequest: String
-    ): DataResult<List<Plan>, DataError>
+    ): DataResult<Plan, DataError>
 }

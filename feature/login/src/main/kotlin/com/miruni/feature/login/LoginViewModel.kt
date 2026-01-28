@@ -70,8 +70,8 @@ class LoginViewModel @Inject constructor(
             }
 
             LoginContract.Event.OnLoginClicked -> {
-//                setEffect { LoginContract.Effect.Navigation.ToHome } // 임시 로그인
                 viewModelScope.launch {
+
                     val result = withContext(Dispatchers.IO) {
                         getLoginUseCase(
                             id = viewState.value.id.value,
