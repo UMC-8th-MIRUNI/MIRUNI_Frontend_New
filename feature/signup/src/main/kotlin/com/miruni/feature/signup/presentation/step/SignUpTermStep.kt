@@ -1,4 +1,4 @@
-package com.miruni.feature.signup.presentation.component.step
+package com.miruni.feature.signup.presentation.step
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

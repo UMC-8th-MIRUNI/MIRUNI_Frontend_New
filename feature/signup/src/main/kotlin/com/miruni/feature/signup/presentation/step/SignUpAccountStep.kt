@@ -1,4 +1,4 @@
-package com.miruni.feature.signup.component.step
+package com.miruni.feature.signup.presentation.step
 
 import android.util.Patterns
 import androidx.compose.foundation.layout.Arrangement
@@ -28,14 +28,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.MainColor
 import com.miruni.core.designsystem.White
 import com.miruni.feature.signup.R
-import com.miruni.feature.signup.SignUpContract
-import com.miruni.feature.signup.SignupViewModel
-import com.miruni.feature.signup.component.textfield.UnderlineTextField
+import com.miruni.feature.signup.presentation.component.textfield.UnderlineTextField
 
 @Composable
 fun SignUpAccountStep(
