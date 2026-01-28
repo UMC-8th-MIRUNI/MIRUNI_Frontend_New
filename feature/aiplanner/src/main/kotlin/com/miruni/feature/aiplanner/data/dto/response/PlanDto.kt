@@ -4,7 +4,7 @@ import com.miruni.feature.aiplanner.domain.model.Plan
 import com.miruni.feature.aiplanner.domain.model.PlanPriority
 
 data class PlanDto(
-    val planId: Long, // 상위 일정 id
+    val planId: Int, // 상위 일정 id
     val title: String, // 상위 일정 제목
     val deadline: String, // 마감 기한
     val taskRange: String, // 일정 범위

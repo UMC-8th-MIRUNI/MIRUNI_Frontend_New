@@ -43,9 +43,14 @@ import com.miruni.feature.aiplanner.presentation.AiPlannerViewModel
  */
 @Composable
 fun AiPlannerOnboardingScreen(
-    navController: NavController,
-    viewModel: AiPlannerViewModel = hiltViewModel()
+    navController: NavController
 ) {
+    // 부모 그래프 BackStackEntry
+    val parentEntry = remember(navController.currentBackStackEntry) {
+        navController.getBackStackEntry("aiPlanner")
+    }
+    val viewModel: AiPlannerViewModel = hiltViewModel(parentEntry) // 공유 ViewModel
+
     AiPlannerOnboardingContent(
         onComplete = {
             viewModel.handleEvents(AiPlannerContract.Event.CompleteOnboarding)
