@@ -42,6 +42,8 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.messaging)
 
+    api(libs.retrofit)
+    api(libs.converter.gson)
     // The Preferences DataStore library
     implementation(libs.androidx.datastore.preferences)
 

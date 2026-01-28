@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -74,7 +75,7 @@ fun HomeScreen(
                 HomeContract.Effect.Navigation.ToAiPlannerOnboarding -> navController.navigate(MiruniRoute.AiPlannerOnboarding.route) // AI 플래너 온보딩
                 HomeContract.Effect.Navigation.ToAiPlanner -> navController.navigate(MiruniRoute.AiPlannerMain.route) // AI 플래너
                 HomeContract.Effect.Navigation.ToAlarms -> navController.navigate(MiruniRoute.AlarmLogs.route) // 알람 기록
-                HomeContract.Effect.Navigation.ToDnd -> navController.navigate(MiruniRoute.Dnd.route) // 방해금지 모드
+                HomeContract.Effect.Navigation.ToDnd -> navController.navigate(MiruniRoute.HomeDndPause.route) // 방해금지 모드
                 is HomeContract.Effect.Navigation.ToExecution -> navController.navigate(MiruniRoute.Execution.route) // 일정 실행
                 is HomeContract.Effect.ShowToast -> Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show() // 토스트 출력
                 else -> {}
@@ -281,27 +282,6 @@ fun DescriptionSection(
                 .padding(top = 40.dp)
         )
 
-        // Miruni 이미지
-//        Column (
-//            modifier = Modifier
-//                .align(Alignment.BottomEnd),
-//            horizontalAlignment = Alignment.CenterHorizontally
-//        ) {
-//            Image(
-//                painter = painterResource(id = R.drawable.miruni_basic),
-//                contentDescription = null,
-//                modifier = Modifier
-//                    .size(100.dp)
-//            )
-//            Image(
-//                painter = painterResource(id = R.drawable.miruni_shadow),
-//                contentDescription = null,
-//                modifier = Modifier
-//                    .width(57.dp)
-//                    .height(12.dp)
-//                    .offset(x = 20.dp)
-//            )
-//        }
         MiruniIcon(
             modifier = Modifier
                 .size(150.dp)
@@ -341,7 +321,10 @@ fun MiruniIcon(
     }
 
     Box(
-        modifier = modifier.clickable {
+        modifier = modifier.clickable(
+            interactionSource = remember{ MutableInteractionSource() },
+            indication = null
+        ) {
             // 항상 처음부터 재생
             exoPlayer.seekTo(0)
             exoPlayer.play()
