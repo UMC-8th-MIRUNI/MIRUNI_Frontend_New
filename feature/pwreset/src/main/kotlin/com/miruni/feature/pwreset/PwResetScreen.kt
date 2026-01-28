@@ -48,6 +48,12 @@ fun PwResetNavigator(
                         launchSingleTop = true
                     }
                 }
+                is PwResetContract.Effect.Message.Snackbar -> {
+
+                }
+                is PwResetContract.Effect.Message.Toast -> {
+
+                }
             }
         }
     }
