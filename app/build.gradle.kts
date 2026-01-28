@@ -3,8 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.convention.hilt)
     alias(libs.plugins.compose.compiler)
-
     alias(libs.plugins.convention.retrofit)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -61,6 +61,11 @@ dependencies {
     implementation(project(":feature:splash"))
     implementation(project(":feature:survey"))
     implementation(project(":core"))
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.messaging)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
