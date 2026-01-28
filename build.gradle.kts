@@ -1,4 +1,4 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.\n"+
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
@@ -11,4 +11,8 @@ plugins {
     alias(libs.plugins.convention.ui.compose) apply false
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.google.services) apply false
+}
+
+tasks.register<Delete>("clean") {
+    delete(layout.buildDirectory)
 }
