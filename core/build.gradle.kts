@@ -38,6 +38,10 @@ android {
 }
 
 dependencies {
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.messaging)
+
     // The Preferences DataStore library
     implementation(libs.androidx.datastore.preferences)
 

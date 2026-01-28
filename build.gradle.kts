@@ -10,4 +10,5 @@ plugins {
     alias(libs.plugins.jetbrains.serialization) apply false
     alias(libs.plugins.convention.ui.compose) apply false
     alias(libs.plugins.compose.compiler) apply false
+    alias(libs.plugins.google.services) apply false
 }
