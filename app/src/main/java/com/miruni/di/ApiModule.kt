@@ -6,6 +6,7 @@ import com.miruni.feature.login.data.api.AuthApi
 import com.miruni.feature.mypage.data.api.AccountApi
 import com.miruni.feature.mypage.data.api.ProfileApi
 import com.miruni.feature.pwreset.data.api.PwApi
+import com.miruni.feature.signup.data.api.SignupApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -58,4 +59,11 @@ object ApiModule {
     fun providePwApi(
         retrofit: Retrofit
     ): PwApi = retrofit.create(PwApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideSignupApi(
+        retrofit: Retrofit
+    ): SignupApi = retrofit.create(SignupApi::class.java
+    )
 }
