@@ -4,19 +4,17 @@ import com.miruni.core.result.DataError
 import com.miruni.core.result.DataResult
 import javax.inject.Inject
 
-class RegisterFcmTokenUseCase @Inject constructor(
+class UpdateFcmTokenUseCase(
     private val fcmRepository: FcmRepository
 ) {
     suspend operator fun invoke(
-        token: String,
         deviceId: String,
-        before5minAlarm: Boolean = true,
-        before10minAlarm: Boolean = true,
-        popupAlarm: Boolean = true,
-        nagAlarm: Boolean = true
+        before5minAlarm: Boolean,
+        before10minAlarm: Boolean,
+        popupAlarm: Boolean,
+        nagAlarm: Boolean
     ): DataResult<Unit, DataError> {
-        return fcmRepository.registerFcmToken(
-            token = token,
+        return fcmRepository.updateFcmToken(
             deviceId = deviceId,
             before5minAlarm = before5minAlarm,
             before10minAlarm = before10minAlarm,

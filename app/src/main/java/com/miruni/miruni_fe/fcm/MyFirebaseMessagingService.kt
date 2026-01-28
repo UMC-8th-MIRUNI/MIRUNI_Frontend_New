@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Build
+import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -29,8 +30,15 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
+        
+        @Suppress("HardwareIds")
+        val deviceId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
+
         serviceScope.launch {
-            registerFcmTokenUseCase(token)
+            registerFcmTokenUseCase(
+                token = token,
+                deviceId = deviceId ?: "unknown"
+            )
         }
     }
 

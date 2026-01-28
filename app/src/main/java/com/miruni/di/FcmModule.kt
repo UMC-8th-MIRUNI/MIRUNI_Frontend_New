@@ -6,6 +6,7 @@ import com.miruni.core.data.fcm.FcmRepositoryImpl
 import com.miruni.core.domain.fcm.FcmRemoteDataSource
 import com.miruni.core.domain.fcm.FcmRepository
 import com.miruni.core.domain.fcm.RegisterFcmTokenUseCase
+import com.miruni.core.domain.fcm.UpdateFcmTokenUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,6 +37,13 @@ object FcmModule {
     fun provideRegisterFcmTokenUseCase(fcmRepository: FcmRepository)
     : RegisterFcmTokenUseCase {
         return RegisterFcmTokenUseCase(fcmRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUpdateFcmTokenUseCase(fcmRepository: FcmRepository)
+    : UpdateFcmTokenUseCase {
+        return UpdateFcmTokenUseCase(fcmRepository)
     }
 
 }

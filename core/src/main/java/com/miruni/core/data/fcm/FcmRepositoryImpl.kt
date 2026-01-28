@@ -10,14 +10,54 @@ import com.miruni.core.result.DataResult
 class FcmRepositoryImpl(
     private val fcmRemoteDataSource: FcmRemoteDataSource
 ) : FcmRepository {
-    override suspend fun registerFcmToken(token: String): DataResult<Unit, DataError> {
-        return when (val net = fcmRemoteDataSource.registerFcmToken(token)) {
+    override suspend fun registerFcmToken(
+        token: String,
+        deviceId: String,
+        before5minAlarm: Boolean,
+        before10minAlarm: Boolean,
+        popupAlarm: Boolean,
+        nagAlarm: Boolean
+    ): DataResult<Unit, DataError> {
+        val result = fcmRemoteDataSource.registerFcmToken(
+            FcmTokenRequest(
+                token = token,
+                deviceId = deviceId,
+                before5minAlarm = before5minAlarm,
+                before10minAlarm = before10minAlarm,
+                popupAlarm = popupAlarm,
+                nagAlarm = nagAlarm
+            )
+        )
+        return handleResult(result)
+    }
+
+    override suspend fun updateFcmToken(
+        deviceId: String,
+        before5minAlarm: Boolean,
+        before10minAlarm: Boolean,
+        popupAlarm: Boolean,
+        nagAlarm: Boolean
+    ): DataResult<Unit, DataError> {
+        val result = fcmRemoteDataSource.updateFcmToken(
+            deviceId,
+            FcmUpdateTokenRequest(
+                before5minAlarm = before5minAlarm,
+                before10minAlarm = before10minAlarm,
+                popupAlarm = popupAlarm,
+                nagAlarm = nagAlarm
+            )
+        )
+        return handleResult(result)
+    }
+
+    private fun handleResult(result: NetworkResult<com.miruni.core.network.ApiResponse<Unit>>): DataResult<Unit, DataError> {
+        return when (result) {
             is NetworkResult.Success -> {
-                val response = net.data
+                val response = result.data
                 if (!response.errorCode.isNullOrBlank()) {
                     DataResult.Error(
                         DataError.CustomError(
-                            code = response.errorCode ?: "UNKNOWN",
+                            code = response.errorCode,
                             msg = response.message ?: "요청 처리 중 문제가 발생했어요."
                         )
                     )
@@ -27,7 +67,7 @@ class FcmRepositoryImpl(
             }
 
             is NetworkResult.Failure -> {
-                DataResult.Error(net.error.toDomainError())
+                DataResult.Error(result.error.toDomainError())
             }
         }
     }
