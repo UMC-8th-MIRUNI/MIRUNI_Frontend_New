@@ -22,8 +22,8 @@ import com.miruni.core.designsystem.AppTypography
 import com.miruni.feature.signup.presentation.component.SignUpBottomBar
 import com.miruni.feature.signup.presentation.component.SignUpTopBar
 import com.miruni.feature.signup.presentation.component.TermContentDialog
-import com.miruni.feature.signup.presentation.step.SignUpProfileStep
-import com.miruni.feature.signup.presentation.step.SignUpTermStep
+import com.miruni.feature.signup.presentation.component.step.SignUpProfileStep
+import com.miruni.feature.signup.presentation.component.step.SignUpTermStep
 import com.miruni.feature.signup.presentation.navigation.SignupRoute
 import com.miruni.core.designsystem.MiruniSpacing
 import kotlinx.coroutines.flow.collectLatest

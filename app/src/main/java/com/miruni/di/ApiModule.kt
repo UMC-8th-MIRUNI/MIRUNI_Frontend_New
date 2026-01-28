@@ -64,6 +64,5 @@ object ApiModule {
     @Singleton
     fun provideSignupApi(
         retrofit: Retrofit
-    ): SignupApi = retrofit.create(SignupApi::class.java
-    )
+    ): SignupApi = retrofit.create(SignupApi::class.java)
 }

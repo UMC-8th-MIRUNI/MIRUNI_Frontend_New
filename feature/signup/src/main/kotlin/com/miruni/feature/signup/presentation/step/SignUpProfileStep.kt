@@ -1,4 +1,4 @@
-package com.miruni.feature.signup.presentation.step
+package com.miruni.feature.signup.presentation.component.step
 
 import android.util.Patterns
 import androidx.compose.foundation.layout.Arrangement
