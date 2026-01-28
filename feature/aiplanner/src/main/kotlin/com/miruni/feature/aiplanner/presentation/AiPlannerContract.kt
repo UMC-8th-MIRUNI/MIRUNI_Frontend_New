@@ -4,7 +4,6 @@ import com.miruni.core.common.ViewEvent
 import com.miruni.core.common.ViewSideEffect
 import com.miruni.core.common.ViewState
 import com.miruni.feature.aiplanner.domain.model.PlanPreview
-import com.miruni.feature.aiplanner.presentation.model.AiPlanUiModel
 import com.miruni.feature.aiplanner.presentation.model.PlanUiModel
 import com.miruni.feature.aiplanner.presentation.model.PlanningFormItemUiModel
 import com.miruni.feature.aiplanner.presentation.model.ScheduleSource
@@ -40,24 +39,14 @@ object AiPlannerContract {
         /** AI 플래너 스케줄 표 */
         data class EnterSchedule( // 스케줄 화면 진입
             val from: ScheduleSource, // 어디서 왔는지
-            val planId: Long? = null
+            val planId: Int? = null
         ) : Event()
         object ClickMenu : Event()
-        object ClickEdit : Event()
+        object ClickEdit : Event() // 수정하기 - 스케줄표 개별 삭제 기능 포함
         object ClickDeleteAll : Event() // 스케줄표 전체 삭제
-        data class ClickDeleteItem( // AI 플랜 개별 삭제
-            val planId: Long,
-            val aiPlanIds: List<Long>
-        ) : Event()
         data class ClickCompleteEdit(
-            val planId: Long,
-            val title: String,
-            // 상위 일정 정보
-            val deadline: String,
-            val taskRange: String,
-            val priority: String,
-            // 하위 세부 일정 리스트
-            val aiPlans: List<AiPlanUiModel>
+            val updatedPlan: PlanUiModel, // 수정된 Plan DTO
+            val deleteIds: Set<Int> = emptySet() // 삭제할 AI 플랜 ID
         ) : Event()
     }
 
@@ -87,7 +76,8 @@ object AiPlannerContract {
             object ToLoading : Effect() // 플래닝 로딩 화면 이동
             object ToMain : Effect() // 메인 화면 이동
         }
-        data class ShowToast(val message: String) : Effect()
+        data class ShowToast(val message: String) : Effect() // 토스트 메세지 출력
+        data class ToastAndNavigate(val message: String) : Effect() // 토스트 메세지 + 네비게이트
         object PopBack : Effect() // 돌아가기
     }
 }

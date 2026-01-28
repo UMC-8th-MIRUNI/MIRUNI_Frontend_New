@@ -38,6 +38,8 @@ android {
 }
 
 dependencies {
+    api(libs.retrofit)
+    api(libs.converter.gson)
     // The Preferences DataStore library
     implementation(libs.androidx.datastore.preferences)
 

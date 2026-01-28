@@ -1,19 +1,26 @@
 package com.miruni.feature.pwreset
 
+import androidx.lifecycle.viewModelScope
 import com.miruni.core.common.BaseViewModel
+import com.miruni.core.result.DataError
+import com.miruni.core.result.DataResult
+import com.miruni.feature.pwreset.domain.usecase.ResetPasswordUseCase
+import com.miruni.feature.pwreset.domain.usecase.SendEmailVerifyUseCase
 import com.miruni.feature.pwreset.presentation.navigation.PwResetRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class PwResetViewModel @Inject constructor(
-
+    private val sendEmailVerifyUseCase: SendEmailVerifyUseCase,
+    private val resetPasswordUseCase: ResetPasswordUseCase,
 ) : BaseViewModel<PwResetContract.Event, PwResetContract.State, PwResetContract.Effect>() {
     override fun setInitialState(): PwResetContract.State = PwResetContract.State()
-
-
     override fun handleEvents(event: PwResetContract.Event) {
-        when(event){
+        when (event) {
             is PwResetContract.Event.OnEmailChanged -> {
                 setState {
                     copy(
@@ -36,9 +43,46 @@ class PwResetViewModel @Inject constructor(
                         return
                     }
                 }
-                setState { copy(route = next) }
-                setEffect { PwResetContract.Effect.Navigation.ToRoute(next) }
+                when (next) {
+                    PwResetRoute.Email -> {
+                        runNextStep(
+                            next = PwResetRoute.Notice,
+                            block = { sendEmailVerifyUseCase(state.email.value) },
+                            onSuccessReducer = { data ->
+                                copy(authCode = data)
+                            }
+                        )
+                    }
+
+                    PwResetRoute.Notice -> {
+                        goTo(next)
+                    }
+
+                    PwResetRoute.Check -> {
+                        if (state.authCode != state.otpCode.value) {
+                            goTo(next)
+                        } else {
+                            setEffect { PwResetContract.Effect.Message.Snackbar("인증번호가 일치하지 않습니다.") }
+                        }
+                    }
+
+                    PwResetRoute.SetPassword -> {
+                        if (state.password.value != state.passwordCheck.value) {
+                            setEffect { PwResetContract.Effect.Message.Snackbar("비밀번호가 일치하지 않습니다.") }
+                        } else {
+                            runNextStep(
+                                next = PwResetRoute.Success,
+                                block = { resetPasswordUseCase(state.password.value) },
+                            )
+                        }
+                    }
+                    PwResetRoute.Success -> {
+                        goTo(next)
+                    }
+                }
+
             }
+
             PwResetContract.Event.OnPrevClicked -> {
                 val state = viewState.value
                 val prev = when (state.route) {
@@ -46,6 +90,7 @@ class PwResetViewModel @Inject constructor(
                         setEffect { PwResetContract.Effect.Navigation.ToHome }
                         return
                     }
+
                     PwResetRoute.Notice -> PwResetRoute.Email
                     PwResetRoute.Check -> PwResetRoute.Notice
                     PwResetRoute.SetPassword -> PwResetRoute.Check
@@ -54,6 +99,7 @@ class PwResetViewModel @Inject constructor(
                 setState { copy(route = prev) }
                 setEffect { PwResetContract.Effect.Navigation.ToRoute(prev) }
             }
+
             is PwResetContract.Event.OnOtpCodeChanged -> {
                 setState {
                     copy(
@@ -61,6 +107,7 @@ class PwResetViewModel @Inject constructor(
                     )
                 }
             }
+
             is PwResetContract.Event.OnPasswordChanged -> {
                 setState {
                     copy(
@@ -68,6 +115,7 @@ class PwResetViewModel @Inject constructor(
                     )
                 }
             }
+
             is PwResetContract.Event.OnPasswordCheckChanged -> {
                 setState {
                     copy(
@@ -75,9 +123,11 @@ class PwResetViewModel @Inject constructor(
                     )
                 }
             }
+
             PwResetContract.Event.OnTogglePasswordVisible -> {
                 setState { copy(passwordVisible = !passwordVisible) }
             }
+
             PwResetContract.Event.OnTogglePasswordCheckVisible -> {
                 setState {
                     copy(passwordCheckVisible = !passwordCheckVisible)
@@ -86,4 +136,37 @@ class PwResetViewModel @Inject constructor(
         }
     }
 
+    private fun <T> runNextStep(
+        next: PwResetRoute,
+        block: suspend () -> DataResult<T, DataError>,
+        onSuccessReducer: PwResetContract.State.(T) -> PwResetContract.State = { this },
+    ) {
+        viewModelScope.launch {
+            // 중복 클릭 방지 원하면 여기도 추가
+            setState { copy(isLoading = true) }
+            try {
+                val result = withContext(Dispatchers.IO) { block() }
+
+                when (result) {
+                    is DataResult.Success -> {
+                        setState { onSuccessReducer(result.data).copy(route = next) }
+                        setEffect { PwResetContract.Effect.Navigation.ToRoute(next) }
+                    }
+
+                    is DataResult.Error -> {
+                        setEffect {
+                            PwResetContract.Effect.Message.Snackbar(result.error.errorMessage)
+                        }
+                    }
+                }
+            } finally {
+                setState { copy(isLoading = false) }
+            }
+        }
+    }
+
+    private fun goTo(route: PwResetRoute) {
+        setState { copy(route = route) }
+        setEffect { PwResetContract.Effect.Navigation.ToRoute(route) }
+    }
 }

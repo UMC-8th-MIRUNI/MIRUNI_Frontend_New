@@ -25,9 +25,9 @@ import com.miruni.core.designsystem.MainColor
 @Composable
 fun ScheduleItem(
     title: String,
-    doneCount: Long,
-    totalCount: Long,
-    progressRate: Long,
+    doneCount: Int,
+    totalCount: Int,
+    progressRate: Int,
     onClick: () -> Unit
 ) {
     Card(

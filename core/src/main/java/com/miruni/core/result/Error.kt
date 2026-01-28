@@ -28,6 +28,12 @@ sealed class DataError(
     data object BadRequest :
         DataError("400", "요청이 올바르지 않아요. 입력 내용을 확인해 주세요.")
 
+    data object TimeConflict :
+        DataError(errorCode = "AI_PLAN400_004", errorMessage = "같은 시간에 다른 일정이 예정되어 있습니다.")
+
+    data object PeanutInsufficient :
+        DataError(errorCode = "USER400_8", errorMessage = "땅콩 갯수가 부족합니다.")
+
     data object DataNotFound :
         DataError("404", "요청한 정보를 찾지 못했어요.")
 

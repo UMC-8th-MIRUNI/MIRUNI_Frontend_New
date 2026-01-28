@@ -5,7 +5,9 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.miruni.core.domain.auth.TokenDataStore
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
 class TokenDataStoreImpl(
     private val dataStore: DataStore<Preferences>
@@ -14,6 +16,12 @@ class TokenDataStoreImpl(
 
     override suspend fun getAccessToken(): String? {
         return dataStore.data.first()[ACCESS_TOKEN]
+    }
+
+    override suspend fun getAccessTokenFlow(): Flow<String?> {
+        return dataStore.data.map { preferences ->
+            preferences[ACCESS_TOKEN]
+        }
     }
 
     override suspend fun saveAccessToken(token: String) {

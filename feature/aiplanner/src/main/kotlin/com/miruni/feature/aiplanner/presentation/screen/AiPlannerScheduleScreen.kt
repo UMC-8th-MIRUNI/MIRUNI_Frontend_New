@@ -1,6 +1,7 @@
 package com.miruni.feature.aiplanner.presentation.screen
 
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -46,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -76,16 +78,35 @@ import java.time.LocalTime
 
 @Composable
 fun AiPlannerScheduleScreen(
-    navController: NavController,
-    viewModel: AiPlannerViewModel = hiltViewModel()
+    navController: NavController
 ) {
+    // 부모 그래프 BackStackEntry
+    val parentEntry = remember(navController.currentBackStackEntry) {
+        navController.getBackStackEntry("aiPlanner")
+    }
+    val viewModel: AiPlannerViewModel = hiltViewModel(parentEntry) // 공유 ViewModel
+
     val state by viewModel.viewState.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                AiPlannerContract.Effect.Navigation.ToMain -> navController.navigate(MiruniRoute.AiPlannerMain.route) {
-                    popUpTo(MiruniRoute.AiPlannerMain.route) { inclusive = true }
+                is AiPlannerContract.Effect.Navigation.ToMain ->
+                    navController.navigate(MiruniRoute.AiPlannerMain.route) {
+                        popUpTo(MiruniRoute.AiPlannerMain.route) { inclusive = true }
+                    }
+                is AiPlannerContract.Effect.ShowToast -> {
+                    Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
+                }
+                is AiPlannerContract.Effect.ToastAndNavigate -> {
+                    Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
+                    navController.navigate(MiruniRoute.AiPlannerMain.route) {
+                        popUpTo(MiruniRoute.AiPlannerMain.route) { inclusive = true }
+                    }
+                }
+                is AiPlannerContract.Effect.PopBack -> {
+                    navController.popBackStack()
                 }
                 else -> Unit
             }
@@ -95,7 +116,7 @@ fun AiPlannerScheduleScreen(
     // 네비게이션 인자 읽기
     val backEntry = navController.currentBackStackEntry
     val fromArg = remember { backEntry?.arguments?.getString("from") ?: "MAIN" }
-    val planIdArg = remember { backEntry?.arguments?.getLong("planId") ?: -1L }
+    val planIdArg = remember { backEntry?.arguments?.getInt("planId") ?: -1 }
 
     // Source를 상태로 관리하여 하위 컴포저블에 전달
     val scheduleSource = remember(fromArg) {
@@ -107,7 +128,7 @@ fun AiPlannerScheduleScreen(
     }
 
     LaunchedEffect(fromArg, planIdArg) {
-        val planIdOrNull = if (planIdArg != -1L) planIdArg else null
+        val planIdOrNull = if (planIdArg != -1) planIdArg else null
         viewModel.setEvent(AiPlannerContract.Event.EnterSchedule(from = scheduleSource, planId = planIdOrNull))
     }
 
@@ -121,18 +142,11 @@ fun AiPlannerScheduleScreen(
             onMenu = { viewModel.setEvent(AiPlannerContract.Event.ClickMenu) },
             onEdit = { viewModel.setEvent(AiPlannerContract.Event.ClickEdit) },
             onDeleteAll = { viewModel.setEvent(AiPlannerContract.Event.ClickDeleteAll) },
-            onDeleteItem = { deletePlanIds ->
-
-            },
-            onCompleteEdit = { updatedPlan, updatedAiPlans ->
+            onCompleteEdit = { updatedPlan, deleteAiPlanIds ->
                 viewModel.setEvent(
                     AiPlannerContract.Event.ClickCompleteEdit(
-                        planId = plan.planId,
-                        title = updatedPlan.title,
-                        deadline = updatedPlan.deadline,
-                        taskRange = updatedPlan.taskRange,
-                        priority = updatedPlan.priority,
-                        aiPlans = updatedAiPlans
+                        updatedPlan = updatedPlan,
+                        deleteIds = deleteAiPlanIds
                     )
                 )
             }
@@ -150,8 +164,7 @@ fun AiPlannerScheduleContent(
     onMenu: () -> Unit,
     onEdit: () -> Unit,
     onDeleteAll: () -> Unit,
-    onDeleteItem: (List<Long>) -> Unit,
-    onCompleteEdit: (PlanUiModel, List<AiPlanUiModel>) -> Unit
+    onCompleteEdit: (PlanUiModel, Set<Int>) -> Unit
 ) {
     // 수정을 위한 상태
     var draftTitle by remember(plan) { mutableStateOf(plan.title) }
@@ -161,8 +174,8 @@ fun AiPlannerScheduleContent(
     val draftAiPlans = remember(plan) { mutableStateListOf(*plan.aiPlans.toTypedArray()) }
 
     // 체크 박스 선택 상태
-    val selectedIds = remember { mutableStateListOf<Long>() }
-    // 삭제 모드
+    val selectedIds = remember { mutableStateListOf<Int>() }
+    // 삭제 모드 여부
     val isDeleteMode = isEditMode && (source == ScheduleSource.FROM_MAIN) // 메인에서 왔을 때만 개별 삭제 모드 활성화 가능
 
     Scaffold(
@@ -184,15 +197,23 @@ fun AiPlannerScheduleContent(
                                 shape = RoundedCornerShape(10.dp)
                             )
                             .clickable {
-                                onCompleteEdit(
-                                    plan.copy(
-                                        title = draftTitle,
-                                        deadline = draftDeadline,
-                                        taskRange = draftRange,
-                                        priority = draftPriority
-                                    ),
-                                    draftAiPlans.toList()
+                                // UI 바탕으로 수정 데이터 수집
+                                val editedPlan = plan.copy(
+                                    title = draftTitle,
+                                    deadline = draftDeadline,
+                                    taskRange = draftRange,
+                                    priority = draftPriority,
+                                    aiPlans = draftAiPlans.map { aiPlan ->
+                                        aiPlan.copy(status = "예정")
+                                    }
                                 )
+
+                                // 삭제 대상 ID 수집
+                                val deleteIds =
+                                    if (isDeleteMode) selectedIds.toSet()
+                                    else emptySet()
+
+                                onCompleteEdit(editedPlan, deleteIds)
                             },
                         contentAlignment = Alignment.Center
                     ) {
@@ -276,7 +297,10 @@ fun AiPlannerScheduleContent(
                                         .align(Alignment.TopEnd)
                                         .padding(top = 60.dp, end = 20.dp)
                                 ) {
-                                    MenuPopup(onEdit, onDeleteAll)
+                                    MenuPopup(
+                                        onEdit = onEdit,
+                                        onDelete = onDeleteAll
+                                    )
                                 }
                             }
                         }
@@ -316,19 +340,11 @@ fun AiPlannerScheduleContent(
                 },
                 onDeleteSelected = {
                     val deleteIds = selectedIds.toList()
-                    if (deleteIds.isNotEmpty()) {
-                        draftAiPlans.removeAll { deleteIds.contains(it.aiPlanId) } // UI에서 제거
-                        selectedIds.clear()
-
-                        onDeleteItem(deleteIds) // ViewModel 이벤트 호출 - 서버에서 제거
-                    }
+                    draftAiPlans.removeAll { it.aiPlanId in deleteIds }
                 }
             )
-
         }
-
     }
-
 }
 
 @Composable
@@ -375,6 +391,7 @@ fun DescriptionSection(
     deadline: String,
     taskRange: String,
     priority: String,
+    progressRate: Int = 0,
     isEditMode: Boolean,
     onDeadlineChange: (String) -> Unit,
     onRangeChange: (String) -> Unit,
@@ -425,25 +442,27 @@ fun DescriptionSection(
             Canvas(modifier = Modifier.size(53.dp)) {
                 // 회색 배경 원
                 drawArc(
-                    color = MainColor.miruni_green,
+                    color = Gray.gray_400,
                     startAngle = 0f,
                     sweepAngle = 360f,
                     useCenter = false,
                     style = Stroke(width = 1f, cap = StrokeCap.Round)
                 )
-                // 초록색 진행도 원 (30% = 108도)
-//                drawArc(
-//                    color = MainColor.miruni_green,
-//                    startAngle = -90f,
-//                    sweepAngle = 108f, // 30%
-//                    useCenter = false,
-//                    style = Stroke(width = 15f, cap = StrokeCap.Round)
-//                )
+                // 초록색 진행도 원
+                drawArc(
+                    color = MainColor.miruni_green,
+                    startAngle = -90f,
+                    sweepAngle = progressRate / 100f * 360f,
+                    useCenter = false,
+                    style = Stroke(width = 1f, cap = StrokeCap.Round)
+                )
             }
             Text(
-                text = "30%",
+                text = "$progressRate%",
                 style = AppTypography.sub_medium_14,
-                color = MainColor.miruni_green,
+                color =
+                    if (progressRate == 0) Gray.gray_400
+                    else MainColor.miruni_green,
                 modifier = Modifier.align(Alignment.Center)
             )
         }
@@ -502,11 +521,11 @@ fun ScheduleTable(
     aiPlans: List<AiPlanUiModel>,
     source: ScheduleSource,
     isDeleteMode: Boolean,
-    selectedIds: List<Long>,
+    selectedIds: List<Int>,
     isEditMode: Boolean,
     modifier: Modifier = Modifier,
     onPlanChange: (Int, AiPlanUiModel) -> Unit,
-    onToggleSection: (Long) -> Unit,
+    onToggleSection: (Int) -> Unit,
     onDeleteSelected: () -> Unit
 ) {
     Column(
@@ -832,10 +851,10 @@ private fun TimeRow(
             TimeText(start) { onChange(it, end) }
         }
         Text(
-            text = " - ",
+            text = "-",
             style = AppTypography.PretendardTextStyle(
                 fontWeight = FontWeight.Normal,
-                fontSize = 9.sp
+                fontSize = 7.sp
             ).copy(color = Gray.gray_500),
             textAlign = TextAlign.Center
         )
@@ -859,7 +878,7 @@ private fun TimeText(
         singleLine = true,
         textStyle = AppTypography.PretendardTextStyle(
             fontWeight = FontWeight.Normal,
-            fontSize = 9.sp
+            fontSize = 7.sp
         ).copy(color = Gray.gray_500, textAlign = TextAlign.Center),
     )
 }
@@ -981,7 +1000,7 @@ fun PreviewAiPlannerSchedule() {
         source = ScheduleSource.FROM_MAIN,
         isDeleteMode = true,
         selectedIds = listOf(1),
-        isEditMode = true,
+        isEditMode = false,
         modifier = Modifier.fillMaxWidth(),
         onPlanChange = { index, updatedPlan -> },
         onToggleSection = {},
