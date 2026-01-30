@@ -2,6 +2,7 @@ package com.miruni.feature.login
 
 import androidx.lifecycle.viewModelScope
 import com.miruni.core.common.BaseViewModel
+import com.miruni.core.domain.fcm.RegisterFcmTokenUseCase
 import com.miruni.core.result.DataResult
 import com.miruni.feature.login.domain.usecase.GetGoogleLoginUseCase
 import com.miruni.feature.login.domain.usecase.GetKakaoLoginUseCase
@@ -17,6 +18,7 @@ class LoginViewModel @Inject constructor(
     private val getLoginUseCase: GetLoginUseCase,
     private val getGoogleLoginUseCase: GetGoogleLoginUseCase,
     private val getKakaoLoginUseCase: GetKakaoLoginUseCase,
+    private val registerFcmTokenUseCase: RegisterFcmTokenUseCase
 ) :
     BaseViewModel<LoginContract.Event, LoginContract.State, LoginContract.Effect>() {
 
@@ -77,7 +79,19 @@ class LoginViewModel @Inject constructor(
                     }
                     when (result) {
                         is DataResult.Success -> {
-                            setEffect { LoginContract.Effect.Navigation.ToHome }
+                            val token = result.data
+                            val fcmToken = withContext(Dispatchers.IO) {
+                                registerFcmTokenUseCase(token.accessToken)
+                            }
+                            when (fcmToken) {
+                                is DataResult.Success -> {
+                                    setEffect { LoginContract.Effect.Navigation.ToHome }
+                                }
+                                is DataResult.Error -> {
+                                    setEffect { LoginContract.Effect.Message.Snackbar(fcmToken.error.errorMessage) }
+                                }
+                            }
+
                         }
 
                         is DataResult.Error -> {
