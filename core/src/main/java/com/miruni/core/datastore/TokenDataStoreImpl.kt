@@ -13,6 +13,7 @@ class TokenDataStoreImpl(
     private val dataStore: DataStore<Preferences>
 ) : TokenDataStore {
     private val ACCESS_TOKEN = stringPreferencesKey("access_token")
+    private val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
 
     override suspend fun getAccessToken(): String? {
         return dataStore.data.first()[ACCESS_TOKEN]
@@ -27,6 +28,22 @@ class TokenDataStoreImpl(
     override suspend fun saveAccessToken(token: String) {
         dataStore.edit {
             it[ACCESS_TOKEN] = token
+        }
+    }
+
+    override suspend fun getRefreshToken(): String? {
+        return dataStore.data.first()[REFRESH_TOKEN]
+    }
+
+    override suspend fun getRefreshTokenFlow(): Flow<String?> {
+        return dataStore.data.map { preferences ->
+            preferences[REFRESH_TOKEN]
+        }
+    }
+
+    override suspend fun saveRefreshToken(token: String) {
+        dataStore.edit {
+            it[REFRESH_TOKEN] = token
         }
     }
 

@@ -2,6 +2,8 @@ package com.miruni.di
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.miruni.core.domain.auth.TokenDataStore
+import com.miruni.core.network.AuthAuthenticator
 import com.miruni.network.AuthInterceptor
 import com.miruni.network.TokenProvider
 import dagger.Module
@@ -29,8 +31,18 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    fun provideAuthenticator(
+        tokenDataStore: TokenDataStore
+    ): AuthAuthenticator =
+        AuthAuthenticator(
+            tokenDataStore = tokenDataStore
+        )
+
+    @Provides
+    @Singleton
     fun provideOkHttpClient(
-        tokenProvider: TokenProvider
+        tokenProvider: TokenProvider,
+        authAuthenticator: AuthAuthenticator
     ): OkHttpClient =
         OkHttpClient.Builder()
             .addInterceptor(
@@ -39,6 +51,7 @@ object NetworkModule {
                 }
             )
             .addInterceptor(AuthInterceptor(tokenProvider))
+            .authenticator(authAuthenticator)
             .build()
 
     @Provides
@@ -53,4 +66,6 @@ object NetworkModule {
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
     }
+
+
 }

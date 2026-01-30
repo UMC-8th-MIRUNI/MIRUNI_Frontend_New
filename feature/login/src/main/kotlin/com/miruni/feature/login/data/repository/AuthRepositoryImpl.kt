@@ -41,6 +41,7 @@ class AuthRepositoryImpl(
                     } else {
                         coroutineScope {
                             async { authLocalDataSource.saveAccessToken(result.accessToken) }
+                            async { authLocalDataSource.saveRefreshToken(result.refreshToken) }
                             if (autoLogin) {
                                 async { authLocalDataSource.saveAutoLogin() }
                             }
@@ -81,6 +82,7 @@ class AuthRepositoryImpl(
                         // 로컬 저장
                         coroutineScope {
                             async { authLocalDataSource.saveAccessToken(result.accessToken) }
+                            async { authLocalDataSource.saveRefreshToken(result.refreshToken) }
                             if (autoLogin) {
                                 async { authLocalDataSource.saveAutoLogin() }
                             }
@@ -120,6 +122,7 @@ class AuthRepositoryImpl(
                         // 로컬 저장
                         coroutineScope {
                             async { authLocalDataSource.saveAccessToken(result.accessToken) }
+                            async { authLocalDataSource.saveRefreshToken(result.refreshToken) }
                             if (autoLogin) {
                                 async { authLocalDataSource.saveAutoLogin() }
                             }

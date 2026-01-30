@@ -19,6 +19,10 @@ class AuthLocalDataSourceImpl(
         tokenDataStore.saveAccessToken(accessToken)
     }
 
+    override suspend fun saveRefreshToken(refreshToken: String) {
+        tokenDataStore.saveRefreshToken(refreshToken)
+    }
+
     override suspend fun clearAccessToken() {
         tokenDataStore.clear()
     }
