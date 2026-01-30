@@ -1,6 +1,5 @@
 package com.miruni.feature.login
 
-import androidx.credentials.exceptions.NoCredentialException
 import androidx.lifecycle.viewModelScope
 import com.miruni.core.common.BaseViewModel
 import com.miruni.core.domain.fcm.RegisterFcmTokenUseCase
@@ -71,7 +70,6 @@ class LoginViewModel @Inject constructor(
 
             LoginContract.Event.OnLoginClicked -> {
                 viewModelScope.launch {
-
                     val result = withContext(Dispatchers.IO) {
                         getLoginUseCase(
                             id = viewState.value.id.value,
@@ -110,24 +108,54 @@ class LoginViewModel @Inject constructor(
                 }
             }
 
+
             LoginContract.Event.OnGoogleLoginClicked -> {
                 setEffect { LoginContract.Effect.GoogleLogin }
             }
 
             is LoginContract.Event.OnGoogleLoginSuccess -> {
-                setEffect { LoginContract.Effect.Navigation.ToNotification }
+                viewModelScope.launch {
+                    val result = withContext(Dispatchers.IO) {
+                        getGoogleLoginUseCase(event.accessToken, viewState.value.autoLogin)
+                    }
+                    when (result) {
+                        is DataResult.Success -> {
+                            setEffect { LoginContract.Effect.Navigation.ToHome }
+                        }
+
+                        is DataResult.Error -> {
+                            setEffect { LoginContract.Effect.Message.Snackbar(result.error.errorMessage) }
+                        }
+
+                    }
+
+                }
             }
 
             is LoginContract.Event.OnGoogleLoginFail -> {
                 setEffect { LoginContract.Effect.Message.Snackbar(event.message) }
             }
+
             LoginContract.Event.OnKakaoLoginClicked -> {
                 setEffect { LoginContract.Effect.KakaoLogin }
             }
 
             is LoginContract.Event.OnKakaoLoginSuccess -> {
-                // TODO: 서버에 accessToken 보내서 JWT 교환
-                setEffect { LoginContract.Effect.Navigation.ToNotification }
+                viewModelScope.launch {
+                    val result = withContext(Dispatchers.IO) {
+                        getKakaoLoginUseCase(event.accessToken, viewState.value.autoLogin)
+                    }
+                    when (result) {
+                        is DataResult.Success -> {
+                            setEffect { LoginContract.Effect.Navigation.ToHome }
+                        }
+
+                        is DataResult.Error -> {
+                            setEffect { LoginContract.Effect.Message.Snackbar(result.error.errorMessage) }
+                        }
+                    }
+                }
+
             }
 
             is LoginContract.Event.OnKakaoLoginFail -> {
