@@ -34,8 +34,8 @@ class LoginContract {
     }
 
     data class State(
-        val id: TextInputField = TextInputField("miruni888@gmail.com"),
-        val password: TextInputField = TextInputField("12345678"),
+        val id: TextInputField = TextInputField(""),
+        val password: TextInputField = TextInputField(""),
         val passwordVisible: Boolean = false,
         val autoLogin: Boolean = false,
         val isLoading: Boolean = false,
