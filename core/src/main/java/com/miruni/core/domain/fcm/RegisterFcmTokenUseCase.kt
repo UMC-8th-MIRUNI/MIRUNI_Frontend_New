@@ -4,7 +4,7 @@ import com.miruni.core.result.DataError
 import com.miruni.core.result.DataResult
 import javax.inject.Inject
 
-class RegisterFcmTokenUseCase @Inject constructor(
+class RegisterFcmTokenUseCase(
     private val fcmRepository: FcmRepository
 ) {
     suspend operator fun invoke(
