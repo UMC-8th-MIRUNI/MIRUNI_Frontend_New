@@ -8,11 +8,11 @@ plugins {
 }
 
 android {
-    namespace = "com.miruni.miruni_fe"
+    namespace = "com.miruni"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.miruni.miruni_fe"
+        applicationId = "com.miruni"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
