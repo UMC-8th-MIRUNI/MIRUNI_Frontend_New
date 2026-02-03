@@ -5,6 +5,7 @@ import com.miruni.core.common.BaseViewModel
 import com.miruni.core.domain.fcm.DeviceIdProvider
 import com.miruni.core.domain.fcm.RegisterFcmTokenUseCase
 import com.miruni.core.result.DataResult
+import com.miruni.feature.login.domain.repository.PermissionProvider
 import com.miruni.feature.login.domain.usecase.GetGoogleLoginUseCase
 import com.miruni.feature.login.domain.usecase.GetKakaoLoginUseCase
 import com.miruni.feature.login.domain.usecase.GetLoginUseCase
@@ -23,6 +24,7 @@ class LoginViewModel @Inject constructor(
     private val registerFcmTokenUseCase: RegisterFcmTokenUseCase,
     private val getTokenUseCase: GetTokenUseCase,
     private val deviceIdProvider: DeviceIdProvider,
+    private val permissionProvider: PermissionProvider
 ) :
     BaseViewModel<LoginContract.Event, LoginContract.State, LoginContract.Effect>() {
 
@@ -83,7 +85,7 @@ class LoginViewModel @Inject constructor(
                     }
                     when (result) {
                         is DataResult.Success -> {
-                            setEffect { LoginContract.Effect.Navigation.ToNotification }
+                            handleLoginSuccess()
                         }
 
                         is DataResult.Error -> {
@@ -112,7 +114,7 @@ class LoginViewModel @Inject constructor(
                     }
                     when (result) {
                         is DataResult.Success -> {
-                            setEffect { LoginContract.Effect.Navigation.ToNotification }
+                            handleLoginSuccess()
                         }
 
                         is DataResult.Error -> {
@@ -138,7 +140,7 @@ class LoginViewModel @Inject constructor(
                     }
                     when (result) {
                         is DataResult.Success -> {
-                            setEffect { LoginContract.Effect.Navigation.ToNotification }
+                            handleLoginSuccess()
                         }
 
                         is DataResult.Error -> {
@@ -154,28 +156,7 @@ class LoginViewModel @Inject constructor(
             }
 
             LoginContract.Event.OnNotificationClicked -> {
-                viewModelScope.launch {
-                    val deviceId = deviceIdProvider.getDeviceId()
-                    val tokenResult = withContext(Dispatchers.IO) { getTokenUseCase() }
-                    when (tokenResult) {
-                        is DataResult.Success -> {
-                            val fcmResult = withContext(Dispatchers.IO) {
-                                registerFcmTokenUseCase(
-                                    token = tokenResult.data,
-                                    deviceId = deviceId
-                                )
-                            }
-
-                            if (fcmResult is DataResult.Error) {
-                                setEffect { LoginContract.Effect.Message.Snackbar(fcmResult.error.errorMessage) }
-                            }
-                            setEffect { LoginContract.Effect.Navigation.ToStart }
-                        }
-                        is DataResult.Error -> {
-                            setEffect { LoginContract.Effect.Message.Snackbar(tokenResult.error.errorMessage) }
-                        }
-                    }
-                }
+                registerFcmAndNavigate(LoginContract.Effect.Navigation.ToStart)
             }
 
             LoginContract.Event.OnOpenDialog -> {
@@ -193,4 +174,46 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    /**
+     * 로그인 성공 시 권한 여부에 따른 처리
+     */
+    private fun handleLoginSuccess() {
+        if (permissionProvider.hasNotificationPermission()) {
+            // 권한이 이미 있으면 FCM 등록 후 바로 홈으로 이동
+            registerFcmAndNavigate(LoginContract.Effect.Navigation.ToHome)
+        } else {
+            // 권한이 없으면 알림 설정 화면으로 이동
+            setEffect { LoginContract.Effect.Navigation.ToNotification }
+        }
+    }
+
+    /**
+     * FCM 토큰을 등록하고 지정된 목적지로 이동
+     */
+    private fun registerFcmAndNavigate(destination: LoginContract.Effect.Navigation) {
+        viewModelScope.launch {
+            val deviceId = deviceIdProvider.getDeviceId()
+            val tokenResult = withContext(Dispatchers.IO) { getTokenUseCase() }
+
+            when (tokenResult) {
+                is DataResult.Success -> {
+                    val fcmResult = withContext(Dispatchers.IO) {
+                        registerFcmTokenUseCase(
+                            token = tokenResult.data,
+                            deviceId = deviceId
+                        )
+                    }
+                    if (fcmResult is DataResult.Error) {
+                        setEffect { LoginContract.Effect.Message.Snackbar(fcmResult.error.errorMessage) }
+                    }
+                    setEffect { destination }
+                }
+                is DataResult.Error -> {
+                    setEffect { LoginContract.Effect.Message.Snackbar(tokenResult.error.errorMessage) }
+                    // 토큰 획득에 실패해도 일단 목적지로 이동 (또는 기획에 따라 처리)
+                    setEffect { destination }
+                }
+            }
+        }
+    }
 }
