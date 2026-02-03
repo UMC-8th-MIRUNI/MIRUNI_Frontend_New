@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:546697357600:android:eb3110a437b9ae2bea0f45",
+        "android_client_info": {
+          "package_name": "com.miruni"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOZM_p1MGfhuLAu79E1eXWOrnXft-8hVs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:546697357600:android:9906e7301ea50d05ea0f45",
         "android_client_info": {
           "package_name": "com.miruni.miruni_fe"
