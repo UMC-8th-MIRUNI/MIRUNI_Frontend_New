@@ -31,7 +31,7 @@ import com.miruni.core.designsystem.MiruniTheme
 import com.miruni.feature.survey.component.SingleWhiteButton
 
 @Composable
-private fun SurveyScreen(
+private fun SurveyOnboardingScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
@@ -104,9 +104,9 @@ private fun SurveyScreen(
 
 @Preview()
 @Composable
-private fun SurveyScreenPreview() {
+private fun SurveyOnboardingScreenPreview() {
     MiruniTheme {
-        SurveyScreen(
+        SurveyOnboardingScreen(
             navController = rememberNavController()
         )
     }

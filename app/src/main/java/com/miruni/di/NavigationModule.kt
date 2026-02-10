@@ -9,6 +9,7 @@ import com.miruni.feature.mypage.navigation.MyPageNavigation
 import com.miruni.feature.onboard.navigation.OnboardNavigation
 import com.miruni.feature.pwreset.presentation.navigation.PwResetNavigation
 import com.miruni.feature.signup.presentation.navigation.SignUpNavigation
+import com.miruni.feature.survey.navigation.SurveyNavigation
 import com.miruni.feature.splash.navigation.SplashNavigation
 import dagger.Binds
 import dagger.Module
@@ -72,5 +73,11 @@ abstract class NavigationModule {
     @IntoSet
     abstract fun bindAiPlannerNavigation(
         navigation: AiPlannerNavigation
+    ): NavigationDestination
+
+    @Binds
+    @IntoSet
+    abstract fun bindSurveyNavigation(
+        navigation: SurveyNavigation
     ): NavigationDestination
 }

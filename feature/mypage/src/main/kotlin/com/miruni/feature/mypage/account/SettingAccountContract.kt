@@ -3,7 +3,6 @@ package com.miruni.feature.mypage.account
 import com.miruni.core.common.ViewEvent
 import com.miruni.core.common.ViewSideEffect
 import com.miruni.core.common.ViewState
-import com.miruni.feature.mypage.MyPageContract.Effect
 
 class SettingAccountContract {
 

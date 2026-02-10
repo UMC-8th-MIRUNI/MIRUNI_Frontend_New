@@ -37,7 +37,6 @@ import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.Gray
 import com.miruni.core.designsystem.MainColor
 import com.miruni.core.designsystem.MiruniTheme
-import com.miruni.core.designsystem.StrokeColor
 import com.miruni.feature.survey.component.SingleGreenButton
 
 enum class SurveyType {
@@ -52,7 +51,7 @@ data class SurveyQuestion(
 )
 
 @Composable
-private fun SurveyScreen(
+fun SurveyScreen(
     navController: NavHostController
 ) {
     val questions = remember {
@@ -168,6 +167,8 @@ private fun SurveyScreen(
                 if (currentStep < questions.lastIndex) {
                     currentStep++
                     selectedOptions = emptySet()
+                } else {
+                    navController.popBackStack()
                 }
             }
         )
