@@ -14,8 +14,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -43,28 +43,50 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.MainColor
 import com.miruni.core.designsystem.MiruniTheme
 import com.miruni.core.designsystem.MiruniTypography
+import com.miruni.core.navigation.MiruniRoute
 import com.miruni.feature.mypage.component.MyPageBottomBar
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 
 private const val TAG = "SettingAccountScreen"
 
 @Composable
 fun SettingAccountScreen(
     navController: NavHostController,
+    modifier: Modifier = Modifier,
     viewModel: SettingAccountViewModel = hiltViewModel(),
+) {
+    val state by viewModel.viewState.collectAsStateWithLifecycle()
+
+    SettingAccountScreenContent(
+        state = state,
+        effect = viewModel.effect,
+        onEvent = { viewModel.setEvent(it) },
+        onBackClick = { navController.popBackStack() },
+        onNavigateToSurvey = { navController.navigate(MiruniRoute.Survey.route) },
+        modifier = modifier
+    )
+}
+
+@Composable
+fun SettingAccountScreenContent(
+    state: SettingAccountContract.State,
+    effect: Flow<SettingAccountContract.Effect>,
+    onEvent: (SettingAccountContract.Event) -> Unit,
+    onBackClick: () -> Unit,
+    onNavigateToSurvey: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
-    val state by viewModel.viewState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(effect) {
         Log.d(TAG, "SettingAccountScreen LaunchedEffect - collecting effects")
-        viewModel.effect.collect { effect ->
+        effect.collect { effect ->
             Log.d(TAG, "Effect received: $effect")
             when (effect) {
                 is SettingAccountContract.Effect.Message.Toast -> {
@@ -85,10 +107,11 @@ fun SettingAccountScreen(
     }
 
     Scaffold(
+        modifier = modifier,
         containerColor = Color(0xFFF6F5F6),
         topBar = {
             Row(
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .padding(20.dp)
                     .testTag("topBar"),
@@ -97,24 +120,24 @@ fun SettingAccountScreen(
                 IconButton(
                     onClick = {
                         Log.d(TAG, "Back button clicked")
-                        navController.popBackStack()
+                        onBackClick()
                     },
                     modifier = Modifier.testTag("backButton")
                 ) {
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowLeft,
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                         contentDescription = "back"
                     )
                 }
 
-                Spacer(modifier = modifier.weight(1f))
+                Spacer(modifier = Modifier.weight(1f))
 
                 Text(
                     text = "계정 설정",
                     style = MiruniTypography.titleMedium
                 )
 
-                Spacer(modifier = modifier.weight(1f))
+                Spacer(modifier = Modifier.weight(1f))
 
                 // 수정 모드가 아닐 때만 메뉴 버튼 표시
                 if (!state.isEditMode) {
@@ -141,7 +164,7 @@ fun SettingAccountScreen(
                             onClick = {
                                 Log.d(TAG, "Menu Edit clicked")
                                 menuExpanded = false
-                                viewModel.setEvent(
+                                onEvent(
                                     SettingAccountContract.Event.OnEditClick
                                 )
                             },
@@ -162,7 +185,7 @@ fun SettingAccountScreen(
                     btnText = if (state.isLoading) "저장 중..." else "완료",
                     onConfirmClick = {
                         Log.d(TAG, "Complete button clicked")
-                        viewModel.setEvent(
+                        onEvent(
                             SettingAccountContract.Event.OnCompleteClick
                         )
                     },
@@ -171,12 +194,12 @@ fun SettingAccountScreen(
         }
     ) { innerPadding ->
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(innerPadding)
         ) {
             Column(
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .padding(20.dp),
                 horizontalAlignment = Alignment.Start
@@ -191,13 +214,13 @@ fun SettingAccountScreen(
 
                 OutlinedTextField(
                     value = state.name,
-                    modifier = modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .testTag("nameTextField"),
                     shape = RoundedCornerShape(12.dp),
                     onValueChange = { newValue ->
                         Log.d(TAG, "Name changed: $newValue")
-                        viewModel.setEvent(
+                        onEvent(
                             SettingAccountContract.Event.OnNameChange(newValue)
                         )
                     },
@@ -221,16 +244,17 @@ fun SettingAccountScreen(
 
                 OutlinedTextField(
                     value = state.birth,
-                    modifier = modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .testTag("birthTextField"),
                     shape = RoundedCornerShape(12.dp),
                     onValueChange = { newValue ->
-                        if (newValue.length <= 8) state.birth = newValue
-                        Log.d(TAG, "Birth changed: $newValue")
-                        viewModel.setEvent(
-                            SettingAccountContract.Event.OnBirthChange(newValue)
-                        )
+                        if (newValue.length <= 8) {
+                            Log.d(TAG, "Birth changed: $newValue")
+                            onEvent(
+                                SettingAccountContract.Event.OnBirthChange(newValue)
+                            )
+                        }
                     },
                     label = { Text("생년월일(YYYYMMDD)") },
                     keyboardOptions = KeyboardOptions.Default.copy(
@@ -257,16 +281,17 @@ fun SettingAccountScreen(
 
                 OutlinedTextField(
                     value = state.phoneNumber,
-                    modifier = modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .testTag("phoneTextField"),
                     shape = RoundedCornerShape(12.dp),
                     onValueChange = { newValue ->
                         Log.d(TAG, "Phone changed: $newValue")
-                        viewModel.setEvent(
+                        onEvent(
                             SettingAccountContract.Event.OnPhoneChange(newValue)
                         )
                     },
+                    enabled = state.isEditMode && !state.isLoading,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MainColor.miruni_green,
                         unfocusedBorderColor = Color(0xFFF1ECEC),
@@ -286,7 +311,7 @@ fun SettingAccountScreen(
 
                 OutlinedTextField(
                     value = state.email,
-                    modifier = modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .testTag("emailTextField"),
                     shape = RoundedCornerShape(12.dp),
@@ -311,20 +336,26 @@ fun SettingAccountScreen(
 
                 OutlinedTextField(
                     value = "설문조사 내역 수정하기",
-                    modifier = modifier
+                    modifier = Modifier
                         .fillMaxWidth()
+                        .clickable(
+                            onClick = {
+                                onNavigateToSurvey()
+                            }
+                        )
                         .testTag("surveyTextField"),
                     shape = RoundedCornerShape(12.dp),
                     onValueChange = { },
                     readOnly = true,
                     trailingIcon = {
                         Icon(
-                            imageVector = Icons.Default.KeyboardArrowRight,
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                             contentDescription = "edit survey",
-                            modifier = modifier
+                            modifier = Modifier
                                 .padding(4.dp)
                                 .clickable {
                                     Log.d(TAG, "Survey edit clicked")
+                                    onNavigateToSurvey()
                                 }
                         )
                     },
@@ -339,8 +370,11 @@ fun SettingAccountScreen(
                 // 로그아웃
                 OutlinedTextField(
                     value = "로그아웃",
-                    modifier = modifier
+                    modifier = Modifier
                         .fillMaxWidth()
+                        .clickable(onClick = {
+                            // TODO : Logout
+                        })
                         .testTag("logoutTextField"),
                     onValueChange = { },
                     readOnly = true,
@@ -355,8 +389,11 @@ fun SettingAccountScreen(
                 // 탈퇴하기
                 OutlinedTextField(
                     value = "탈퇴하기",
-                    modifier = modifier
+                    modifier = Modifier
                         .fillMaxWidth()
+                        .clickable(onClick = {
+                            // TODO : delete account
+                        })
                         .testTag("withdrawTextField"),
                     shape = RoundedCornerShape(12.dp),
                     onValueChange = { },
@@ -404,8 +441,17 @@ fun SettingAccountScreen(
 @Composable
 private fun SettingAccountScreenPreview() {
     MiruniTheme {
-        SettingAccountScreen(
-            navController = rememberNavController()
+        SettingAccountScreenContent(
+            state = SettingAccountContract.State(
+                name = "홍길동",
+                birth = "19900101",
+                phoneNumber = "010-1234-5678",
+                email = "test@test.com"
+            ),
+            effect = emptyFlow(),
+            onEvent = {},
+            onBackClick = {},
+            onNavigateToSurvey = {}
         )
     }
 }
@@ -414,9 +460,18 @@ private fun SettingAccountScreenPreview() {
 @Composable
 private fun SettingAccountScreenEditModePreview() {
     MiruniTheme {
-        // Preview with edit mode - would need custom state handling
-        SettingAccountScreen(
-            navController = rememberNavController()
+        SettingAccountScreenContent(
+            state = SettingAccountContract.State(
+                name = "홍길동",
+                birth = "19900101",
+                phoneNumber = "010-1234-5678",
+                email = "test@test.com",
+                isEditMode = true
+            ),
+            effect = emptyFlow(),
+            onEvent = {},
+            onBackClick = {},
+            onNavigateToSurvey = {}
         )
     }
 }
