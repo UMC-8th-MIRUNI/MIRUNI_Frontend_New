@@ -48,6 +48,8 @@ sealed class MiruniRoute(val route: String) {
     data object AiPlannerSchedule : MiruniRoute("aiPlanner/schedule")
     data object Dnd : MiruniRoute("dnd")
     data object Execution : MiruniRoute("execution")
+
+    data object Survey : MiruniRoute("survey")
 }
 
 sealed class ModalRoute(val route: String) {
