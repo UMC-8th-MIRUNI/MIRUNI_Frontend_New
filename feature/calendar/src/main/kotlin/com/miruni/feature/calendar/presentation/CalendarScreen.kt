@@ -1,4 +1,4 @@
-package com.miruni.feature.calendar
+package com.miruni.feature.calendar.presentation
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
@@ -47,12 +47,14 @@ import com.miruni.core.designsystem.Black
 import com.miruni.core.designsystem.Gray
 import com.miruni.core.designsystem.MainColor
 import com.miruni.core.designsystem.White
+import com.miruni.feature.calendar.CalendarState
+import com.miruni.feature.calendar.CalendarViewModel
 import com.miruni.feature.calendar.components.AddScheduleBottomSheet
 import com.miruni.feature.calendar.components.Priority
 import com.miruni.feature.calendar.components.ScheduleBottomSheet
 import com.miruni.feature.calendar.components.ScheduleItem
 import com.miruni.feature.calendar.components.YearMonthPickerDialog
-import com.miruni.feature.calendar.model.ScheduleUiModel
+import com.miruni.feature.calendar.presentation.model.ScheduleUiModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
@@ -187,6 +189,10 @@ fun CalendarScreen(
                     .fillMaxWidth()
                     .height(350.dp)
             )
+        }
+
+        item {
+
         }
 
         item {

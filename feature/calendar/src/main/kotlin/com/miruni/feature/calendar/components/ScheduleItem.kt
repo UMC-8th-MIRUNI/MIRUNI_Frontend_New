@@ -30,7 +30,7 @@ import com.miruni.core.designsystem.Black
 import com.miruni.core.designsystem.Gray
 import com.miruni.core.designsystem.MainColor
 import com.miruni.core.designsystem.White
-import com.miruni.feature.calendar.model.ScheduleUiModel
+import com.miruni.feature.calendar.presentation.model.ScheduleUiModel
 import java.time.LocalTime
 
 

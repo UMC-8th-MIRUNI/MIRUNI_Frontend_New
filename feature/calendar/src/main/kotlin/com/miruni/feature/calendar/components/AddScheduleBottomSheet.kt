@@ -36,8 +36,8 @@ import com.miruni.core.designsystem.Black
 import com.miruni.core.designsystem.Gray
 import com.miruni.feature.calendar.common.MiruniButton
 import com.miruni.feature.calendar.common.MiruniTextField
-import com.miruni.feature.calendar.model.AddScheduleState
-import com.miruni.feature.calendar.model.DateTimeRangeState
+import com.miruni.feature.calendar.presentation.model.AddScheduleState
+import com.miruni.feature.calendar.presentation.model.DateTimeRangeState
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)

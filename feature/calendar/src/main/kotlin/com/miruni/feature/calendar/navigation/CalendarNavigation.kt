@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.miruni.core.navigation.MiruniRoute
 import com.miruni.core.navigation.NavigationDestination
-import com.miruni.feature.calendar.CalendarRoute
+import com.miruni.feature.calendar.presentation.CalendarRoute
 import jakarta.inject.Inject
 
 class CalendarNavigation @Inject constructor(
