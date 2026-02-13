@@ -55,8 +55,8 @@ import com.miruni.core.designsystem.Black
 import com.miruni.core.designsystem.Gray
 import com.miruni.core.designsystem.MainColor
 import com.miruni.core.designsystem.White
-import com.miruni.feature.calendar.WeekDayHeader
-import com.miruni.feature.calendar.model.DateTimeRangeState
+import com.miruni.feature.calendar.presentation.WeekDayHeader
+import com.miruni.feature.calendar.presentation.model.DateTimeRangeState
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
