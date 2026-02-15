@@ -38,7 +38,7 @@ interface CalendarApi {
     suspend fun getMonthlyPlans(
         @Query("year") year: Int,
         @Query("month") month: Int
-    ): ApiResponse<GetMonthlyPlansResponse>
+    ): ApiResponse<List<GetMonthlyPlansResponse>>
 
     /** 특정 날짜의 완료/미완료 일정 조회 */
     @GET("api/plans/daily")

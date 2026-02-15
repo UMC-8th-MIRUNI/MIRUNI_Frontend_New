@@ -1,6 +1,6 @@
-package com.miruni.feature.calendar.data.dto.response
+package com.miruni.feature.calendar.domain.model
 
-data class BasicPlanResponse(
+data class BasicPlan(
     val id: Int,
     val userId: Int,
     val title: String,
@@ -8,6 +8,6 @@ data class BasicPlanResponse(
     val startDateTime: String,
     val endDateTime: String,
     val expectedDuration: Int,
-    val status: String,
-    val priority: String
+    val status: PlanStatus,
+    val priority: PlanPriority
 )
