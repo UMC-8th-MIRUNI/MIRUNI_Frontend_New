@@ -11,7 +11,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.MiruniTheme
-import com.miruni.core.navigation.MiruniRoute
+import com.miruni.core.navigation.HomeRoute
 import com.miruni.feature.home.dnd.component.screen.PauseOrEarlyEndScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,7 +38,7 @@ fun DndEarlyEndScreen(
         },
         onClickButton2 = { // 확인버튼
             navController.navigate(
-                MiruniRoute.HomeDndComplete.createRoute(
+                HomeRoute.HomeDndComplete.createRoute(
                     hour = currentHour,
                     minute = currentMinute
                 )

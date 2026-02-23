@@ -30,6 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.Gray
+import com.miruni.core.navigation.HomeRoute
 import com.miruni.core.navigation.MiruniRoute
 
 @Composable
@@ -54,7 +55,7 @@ fun SplashScreen(
                 }
                 SplashContract.Effect.Navigate.ToHome -> {
                     Log.d("Splash", "Navigate.ToHome")
-                    navController.navigate(MiruniRoute.Home.route) {
+                    navController.navigate(HomeRoute.Home.route) {
                         popUpTo(MiruniRoute.Splash.route) { inclusive = true }
                     }
                 }

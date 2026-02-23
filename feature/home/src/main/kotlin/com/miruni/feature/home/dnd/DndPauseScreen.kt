@@ -12,7 +12,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.MiruniTheme
-import com.miruni.core.navigation.MiruniRoute
+import com.miruni.core.navigation.HomeRoute
 import com.miruni.feature.home.dnd.component.screen.PauseOrEarlyEndScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,7 +54,7 @@ fun DndPauseScreen(
         RerunTimerSettingModal(
             onGoSetting = {
                 showRerunTimerSettingModal = false
-                navController.navigate(MiruniRoute.Home.route)
+                navController.navigate(HomeRoute.Home.route)
             },
             onClose = {
 

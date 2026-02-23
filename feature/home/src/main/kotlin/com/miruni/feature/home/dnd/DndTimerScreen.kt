@@ -12,7 +12,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.MiruniTheme
-import com.miruni.core.navigation.MiruniRoute
+import com.miruni.core.navigation.HomeRoute
 import com.miruni.feature.home.dnd.component.screen.TimerScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,13 +47,13 @@ fun DndTimerScreen(
             when (effect) {
                 DndContract.Effect.TimeFinished -> {
                     navController.navigate(
-                        MiruniRoute.HomeDndComplete.createRoute(
+                        HomeRoute.HomeDndComplete.createRoute(
                             hour = timePickerState.hour,
                             minute = timePickerState.minute
                         )
                     ) {
                         // 타이머 화면 스택에서 제거
-                        popUpTo(MiruniRoute.HomeDndTimerSetting.route) {
+                        popUpTo(HomeRoute.HomeDndTimerSetting.route) {
                             inclusive = true
                         }
                     }
@@ -61,7 +61,7 @@ fun DndTimerScreen(
 
                 DndContract.Effect.NavigateToPause -> {
                     navController.navigate(
-                        MiruniRoute.HomeDndPause.createRoute(
+                        HomeRoute.HomeDndPause.createRoute(
                             hour = state.hours,
                             minute = state.minutes
                         )
@@ -70,7 +70,7 @@ fun DndTimerScreen(
 
                 DndContract.Effect.NavigateToEarlyEnd -> {
                     navController.navigate(
-                        MiruniRoute.HomeDndEarlyEnd.createRoute(
+                        HomeRoute.HomeDndEarlyEnd.createRoute(
                             hour = state.hours,
                             minute = state.minutes
                         )
@@ -79,7 +79,7 @@ fun DndTimerScreen(
 
                 DndContract.Effect.NavigateToHome -> {
                     navController.navigate(
-                        MiruniRoute.Home.route
+                        HomeRoute.Home.route
                     )
                 }
             }

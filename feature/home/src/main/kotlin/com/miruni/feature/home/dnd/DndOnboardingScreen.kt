@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.MiruniTheme
-import com.miruni.core.navigation.MiruniRoute.HomeDndTimerSetting
+import com.miruni.core.navigation.HomeRoute.HomeDndTimerSetting
 import com.miruni.feature.home.R
 
 @Composable

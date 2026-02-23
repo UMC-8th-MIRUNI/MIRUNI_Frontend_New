@@ -29,7 +29,7 @@ import com.miruni.core.designsystem.Gray
 import com.miruni.core.designsystem.MainColor
 import com.miruni.core.designsystem.MiruniTheme
 import com.miruni.core.designsystem.MiruniTypography
-import com.miruni.core.navigation.MiruniRoute.RunScheduleTimerSetting
+import com.miruni.core.navigation.HomeRoute.RunScheduleTimerSetting
 import com.miruni.feature.home.R
 import com.miruni.feature.home.dnd.DndTimerViewModel
 import com.miruni.feature.home.dnd.component.button.RowButton

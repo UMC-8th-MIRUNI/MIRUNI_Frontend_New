@@ -9,8 +9,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
-import com.miruni.core.navigation.MiruniRoute
-import com.miruni.core.navigation.ModalRoute
+import com.miruni.core.navigation.HomeModalRoute
+import com.miruni.core.navigation.HomeRoute
 import com.miruni.core.navigation.NavigationDestination
 import com.miruni.feature.home.presentation.screen.HomeScreen
 import com.miruni.feature.home.dnd.DndCompleteScreen
@@ -28,7 +28,7 @@ import jakarta.inject.Inject
 class HomeNavigation @Inject constructor(
 //    override val arguments: List<NamedNavArgument>
 ) : NavigationDestination {
-    override val route: String = MiruniRoute.Home.route
+    override val route: String = HomeRoute.Home.route
 
     override fun register(
         builder: NavGraphBuilder,
@@ -40,22 +40,22 @@ class HomeNavigation @Inject constructor(
             )
         }
 
-        builder.composable(MiruniRoute.AlarmLogs.route) {
+        builder.composable(HomeRoute.AlarmLogs.route) {
             AlarmLogScreen(
                 navController = navController
             )
         }
 
-        builder.composable(MiruniRoute.HomeDndOnboarding.route) {
+        builder.composable(HomeRoute.HomeDndOnboarding.route) {
             Log.d("HomeNavigation", "DndOnboardingScreen entered")
             DndOnboardingScreen(
                 navController = navController
             )
         }
 
-        builder.composable(MiruniRoute.HomeDndTimerSetting.route) { backStackEntry ->
+        builder.composable(HomeRoute.HomeDndTimerSetting.route) { backStackEntry ->
             val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(MiruniRoute.Home.route)
+                navController.getBackStackEntry(HomeRoute.Home.route)
             }
 
             val viewModel: DndTimerViewModel = viewModel(parentEntry)
@@ -68,9 +68,9 @@ class HomeNavigation @Inject constructor(
             )
         }
 
-        builder.composable(MiruniRoute.HomeDndPause.route) { backStackEntry ->
+        builder.composable(HomeRoute.HomeDndPause.route) { backStackEntry ->
             val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(MiruniRoute.Home.route)
+                navController.getBackStackEntry(HomeRoute.Home.route)
             }
 
             val viewModel: DndTimerViewModel = viewModel(parentEntry)
@@ -85,7 +85,7 @@ class HomeNavigation @Inject constructor(
         }
 
         builder.composable(
-            MiruniRoute.HomeDndEarlyEnd.route,
+            HomeRoute.HomeDndEarlyEnd.route,
             arguments = listOf(
                 navArgument("hour") { type = NavType.IntType },
                 navArgument("minute") { type = NavType.IntType }
@@ -93,7 +93,7 @@ class HomeNavigation @Inject constructor(
         ) { backStackEntry ->
 
             val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(MiruniRoute.Home.route)
+                navController.getBackStackEntry(HomeRoute.Home.route)
             }
 
             val viewModel: DndTimerViewModel = viewModel(parentEntry)
@@ -111,7 +111,7 @@ class HomeNavigation @Inject constructor(
         }
 
         builder.composable(
-            MiruniRoute.HomeDndComplete.route,
+            HomeRoute.HomeDndComplete.route,
             arguments = listOf(
                 navArgument("hour") { type = NavType.IntType },
                 navArgument("minute") { type = NavType.IntType }
@@ -130,27 +130,27 @@ class HomeNavigation @Inject constructor(
         }
 
         builder.composable(
-            MiruniRoute.RunScheduleTimerSetting.route) {
+            HomeRoute.RunScheduleTimerSetting.route) {
             RunScheduleTimerScreen(
                 navController = navController
             )
         }
 
         builder.dialog(
-            ModalRoute.Setting.route
+            HomeModalRoute.Setting.route
         ) {
             RerunTimerSettingModal(
                 onGoSetting = {
-                    navController.navigate(ModalRoute.Setting.route)
+                    navController.navigate(HomeModalRoute.Setting.route)
                 },
                 onClose = {
-                    navController.navigate(MiruniRoute.HomeDndPause.route)
+                    navController.navigate(HomeRoute.HomeDndPause.route)
                 },
             )
         }
 
         builder.dialog(
-            ModalRoute.Error.route
+            HomeModalRoute.Error.route
         ) {
             RerunTimerErrorModal(
                 navController = navController
