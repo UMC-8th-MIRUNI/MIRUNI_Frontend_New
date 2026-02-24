@@ -56,7 +56,6 @@ class HomeNavigation @Inject constructor(
             val viewModel: DndTimerViewModel = hiltViewModel(parentEntry)
 
             DndOnboardingScreen(
-                navController = navController,
                 onStartClick = {
                     viewModel.setEvent(DndContract.Event.CompleteOnboarding)
                     navController.navigate(HomeRoute.HomeDndTimerSetting.route)
