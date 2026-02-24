@@ -2,7 +2,7 @@ package com.miruni.feature.home.navigation
 
 import android.util.Log
 import androidx.compose.runtime.remember
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -21,6 +21,7 @@ import com.miruni.feature.home.dnd.DndTimerScreen
 import com.miruni.feature.home.dnd.DndTimerViewModel
 import com.miruni.feature.home.dnd.RerunTimerErrorModal
 import com.miruni.feature.home.dnd.RerunTimerSettingModal
+import com.miruni.feature.home.presentation.DndContract
 import com.miruni.feature.home.presentation.screen.AlarmLogScreen
 import com.miruni.feature.home.runSchedule.RunScheduleTimerScreen
 import jakarta.inject.Inject
@@ -46,10 +47,20 @@ class HomeNavigation @Inject constructor(
             )
         }
 
-        builder.composable(HomeRoute.HomeDndOnboarding.route) {
+        builder.composable(HomeRoute.HomeDndOnboarding.route) { backStackEntry ->
             Log.d("HomeNavigation", "DndOnboardingScreen entered")
+
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(HomeRoute.Home.route)
+            }
+            val viewModel: DndTimerViewModel = hiltViewModel(parentEntry)
+
             DndOnboardingScreen(
-                navController = navController
+                navController = navController,
+                onStartClick = {
+                    viewModel.setEvent(DndContract.Event.CompleteOnboarding)
+                    navController.navigate(HomeRoute.HomeDndTimerSetting.route)
+                }
             )
         }
 
@@ -58,7 +69,7 @@ class HomeNavigation @Inject constructor(
                 navController.getBackStackEntry(HomeRoute.Home.route)
             }
 
-            val viewModel: DndTimerViewModel = viewModel(parentEntry)
+            val viewModel: DndTimerViewModel = hiltViewModel(parentEntry)
 
             Log.d("HomeNavigation", "HomeDndTimerSetting entered")
 
@@ -73,7 +84,7 @@ class HomeNavigation @Inject constructor(
                 navController.getBackStackEntry(HomeRoute.Home.route)
             }
 
-            val viewModel: DndTimerViewModel = viewModel(parentEntry)
+            val viewModel: DndTimerViewModel = hiltViewModel(parentEntry)
 
             Log.d("HomeNavigation", "HomeDndPause entered")
             DndPauseScreen(
@@ -96,7 +107,7 @@ class HomeNavigation @Inject constructor(
                 navController.getBackStackEntry(HomeRoute.Home.route)
             }
 
-            val viewModel: DndTimerViewModel = viewModel(parentEntry)
+            val viewModel: DndTimerViewModel = hiltViewModel(parentEntry)
 
             val hour = backStackEntry.arguments?.getInt("hour") ?: 0
             val minute = backStackEntry.arguments?.getInt("minute") ?: 0

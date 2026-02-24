@@ -40,12 +40,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.MiruniTheme
-import com.miruni.core.navigation.HomeRoute.HomeDndTimerSetting
 import com.miruni.feature.home.R
 
 @Composable
 fun DndOnboardingScreen(
-    navController: NavHostController
+    onStartClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -85,9 +84,7 @@ fun DndOnboardingScreen(
                     .size(190.dp)
             )
             StartButton(
-                onClick = {
-                    navController.navigate(HomeDndTimerSetting.route)
-                },
+                onClick = onStartClick,
             )
         }
     }
@@ -184,7 +181,7 @@ private fun ShadowCustomCard(
 private fun OnboardingScreenPreview() {
     MiruniTheme {
         DndOnboardingScreen(
-            navController = rememberNavController()
+            onStartClick = {}
         )
     }
 }

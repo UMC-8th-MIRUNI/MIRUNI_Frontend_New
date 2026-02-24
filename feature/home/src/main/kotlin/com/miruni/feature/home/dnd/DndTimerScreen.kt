@@ -8,18 +8,19 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.miruni.core.designsystem.MiruniTheme
 import com.miruni.core.navigation.HomeRoute
 import com.miruni.feature.home.dnd.component.screen.TimerScreen
+import com.miruni.feature.home.presentation.DndContract
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DndTimerScreen(
     navController: NavHostController,
-    viewModel: DndTimerViewModel = viewModel()
+    viewModel: DndTimerViewModel = hiltViewModel()
 ) {
     // viewmodel 이 노출한 단일 UI state
     val state by viewModel.viewState.collectAsState()

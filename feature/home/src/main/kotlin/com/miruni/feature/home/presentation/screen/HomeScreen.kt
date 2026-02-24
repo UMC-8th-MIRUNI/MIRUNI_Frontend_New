@@ -73,12 +73,21 @@ fun HomeScreen(
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
+
                 HomeContract.Effect.Navigation.ToAiPlannerOnboarding -> navController.navigate(MiruniRoute.AiPlannerOnboarding.route) // AI 플래너 온보딩
+
                 HomeContract.Effect.Navigation.ToAiPlanner -> navController.navigate(MiruniRoute.AiPlannerMain.route) // AI 플래너
+
                 HomeContract.Effect.Navigation.ToAlarms -> navController.navigate(HomeRoute.AlarmLogs.route) // 알람 기록
-                HomeContract.Effect.Navigation.ToDnd -> navController.navigate(HomeRoute.Dnd.route) // 방해금지 모드
-                is HomeContract.Effect.Navigation.ToExecution -> navController.navigate(HomeRoute.Execution.route) // 일정 실행
+
+                HomeContract.Effect.Navigation.ToDndOnboarding -> navController.navigate(HomeRoute.HomeDndOnboarding.route) // 방해금지 모드 온보딩
+
+                HomeContract.Effect.Navigation.ToDnd -> navController.navigate(HomeRoute.HomeDndTimerSetting.route) // 방해금지 모드
+
+                is HomeContract.Effect.Navigation.ToExecution -> navController.navigate(HomeRoute.RunScheduleTimerSetting.route) // 일정 실행
+
                 is HomeContract.Effect.ShowToast -> Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show() // 토스트 출력
+
                 else -> {}
             }
         }

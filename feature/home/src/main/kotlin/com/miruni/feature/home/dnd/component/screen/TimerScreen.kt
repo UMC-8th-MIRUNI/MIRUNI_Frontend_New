@@ -43,12 +43,12 @@ import com.miruni.core.designsystem.MainColor
 import com.miruni.core.designsystem.MiruniTheme
 import com.miruni.core.designsystem.MiruniTypography
 import com.miruni.feature.home.R
-import com.miruni.feature.home.dnd.DndContract
 import com.miruni.feature.home.dnd.TimerMode
 import com.miruni.feature.home.dnd.component.DndTopBar
 import com.miruni.feature.home.dnd.component.InputTimeView
 import com.miruni.feature.home.dnd.component.button.RowButton
 import com.miruni.feature.home.dnd.component.button.SingleGreenButton
+import com.miruni.feature.home.presentation.DndContract
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
