@@ -29,11 +29,11 @@ fun AiPlanningButton(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(50.dp)
+            .padding(horizontal = 15.dp)
             .background(color = Color(0xFFEAF9EE), shape = RoundedCornerShape(9.dp))
-            .border(width = (0.9).dp, color = Color(0xFF1EC718))
-            .padding(horizontal = 20.dp)
-            .clickable { onClick() },
+            .border(width = (0.9).dp, color = Color(0xFF1EC718), shape = RoundedCornerShape(9.dp))
+            .clickable { onClick() }
+            .padding(horizontal = 20.dp, vertical = 16.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
