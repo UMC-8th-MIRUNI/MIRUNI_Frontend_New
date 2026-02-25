@@ -90,7 +90,7 @@ class CalendarViewModel @Inject constructor(
                         }
                 }
                 .collect { dailyPlans ->
-                    Log.d("PLAN_DEBUG", "8️⃣ ViewModel collect됨: ${dailyPlans.unfinishedPlan.size} / ${dailyPlans.finishedPlan.size}")
+                    Log.d("PLAN_DEBUG", "8. ViewModel collect됨: ${dailyPlans.unfinishedPlan.size} / ${dailyPlans.finishedPlan.size}")
 
                     val unfinished = dailyPlans.unfinishedPlan.mapNotNull { plan ->
                         runCatching { plan.toUiModel() }.getOrNull()
@@ -151,7 +151,7 @@ class CalendarViewModel @Inject constructor(
     }
     /** 일정 생성 처리 */
     private fun createPlan(state: AddScheduleState) {
-        Log.d("PLAN_DEBUG", "2️⃣ ViewModel.createPlan 시작")
+        Log.d("PLAN_DEBUG", "2. ViewModel.createPlan 시작")
         setState { copy(isAddScheduleSheetOpened = false) }
 
         viewModelScope.launch {
@@ -159,7 +159,7 @@ class CalendarViewModel @Inject constructor(
 
             val draft = state.toDomain()
             val result = calendarRepository.createPlan(draft)
-            Log.d("PLAN_DEBUG", "3️⃣ Repository.createPlan 반환: $result")
+            Log.d("PLAN_DEBUG", "3. Repository.createPlan 반환: $result")
 
             when (result) {
                 is DataResult.Success -> {
@@ -184,11 +184,20 @@ class CalendarViewModel @Inject constructor(
     private fun cancelDelete() {
 
     }
-    private fun confirmDelete() {
-
+    /** 일정 삭제 처리 */
+    private fun confirmDelete(plan: ScheduleUiModel) {
+        viewModelScope.launch {
+            val result = calendarRepository.deletePlan(plan.id.toInt(), viewState.value.selectedDate)
+            when (result) {
+                is DataResult.Success -> {
+                    setEffect { CalendarContract.Effect.ShowToast("일정이 삭제되었습니다.") }
+                }
+                is DataResult.Error -> {
+                    setEffect { CalendarContract.Effect.ShowToast("일정 삭제 실패") }
+                }
+            }
+        }
     }
-    private fun printPlanCreationBottomSheet() {
-
     private fun printPlanCreationBottomSheet(plan: ScheduleUiModel) {
         setState { copy(isAddScheduleSheetOpened = true, selectedPlan = plan) }
     }

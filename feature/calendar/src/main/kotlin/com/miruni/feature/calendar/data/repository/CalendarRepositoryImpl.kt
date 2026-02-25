@@ -283,7 +283,7 @@ class CalendarRepositoryImpl @Inject constructor(
     override fun observeDailyPlans(date: LocalDate): Flow<DailyPlans> {
         return dailyCache
             .map { cache ->
-                Log.d("PLAN_DEBUG", "7️⃣ observeDailyPlans emission: ${cache[date]}")
+                Log.d("PLAN_DEBUG", "7. observeDailyPlans emission: ${cache[date]}")
                 cache[date] ?: DailyPlans(unfinishedPlan = emptyList(), finishedPlan = emptyList())
             }
             .distinctUntilChanged()
