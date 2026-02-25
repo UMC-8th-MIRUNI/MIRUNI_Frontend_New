@@ -55,7 +55,11 @@ interface CalendarRepository {
         planId: Int,
         planType: PlanType
     ): DataResult<Plan, DataError>
-
+    /** 일정 예상 소요 시간 조회 */
+    suspend fun getExpectedDuration(
+        planId: Int,
+        planType: PlanType
+    ): DataResult<Int, DataError>
     /** 캘린더 조회
      * 특정 연월의 날짜별 미완료 일정 개수 조회
      */

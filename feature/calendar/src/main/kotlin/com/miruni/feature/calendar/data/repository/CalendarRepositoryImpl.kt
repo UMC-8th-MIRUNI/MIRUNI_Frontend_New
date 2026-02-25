@@ -118,6 +118,41 @@ class CalendarRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getExpectedDuration(
+        planId: Int,
+        planType: PlanType
+    ): DataResult<Int, DataError> {
+        val networkResult = executeApiRequest {
+            api.getExpectedDuration(
+                planId = planId,
+                planType = planType.server
+            )
+        }
+
+        return when (networkResult) {
+            is NetworkResult.Success -> {
+                val response = networkResult.data
+                val serverResult = response.result
+
+                if (response.errorCode.isNullOrBlank() && serverResult != null) {
+                    val domainItem = serverResult.expectedDuration
+
+                    DataResult.Success(domainItem)
+                } else {
+                    DataResult.Error(
+                        DataError.CustomError(
+                            code = response.errorCode ?: "UNKNOWN",
+                            msg = response.message ?: "요청 처리 중 문제가 발생했어요."
+                        )
+                    )
+                }
+            }
+            is NetworkResult.Failure -> {
+                DataResult.Error(networkResult.error.toDomainError())
+            }
+        }
+    }
+
     override suspend fun getMonthlyPlanCount(
         year: Int,
         month: Int

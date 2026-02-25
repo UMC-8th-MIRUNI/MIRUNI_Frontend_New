@@ -10,6 +10,7 @@ import com.miruni.feature.calendar.data.dto.response.GetDailyPlansResponse
 import com.miruni.feature.calendar.data.dto.response.GetMonthlyPlansResponse
 import com.miruni.feature.calendar.data.dto.response.GetPlanResponse
 import com.miruni.feature.calendar.data.dto.response.PostPlanFinishResponse
+import com.miruni.feature.calendar.data.dto.response.GetExpectedDurationResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.HTTP
@@ -23,6 +24,8 @@ interface CalendarApi {
     /** 일정 완료 */
     @POST("api/plans/finish/{planType}/{id}")
     suspend fun postPlanFinish(
+        @Path("planType") planType: String,
+        @Path("id") planId: Int,
         @Body request: PostPlanFinishRequest
     ): ApiResponse<PostPlanFinishResponse>
 
@@ -32,6 +35,13 @@ interface CalendarApi {
         @Path("planId") planId: Int,
         @Query("planType") planType: String = "BASIC"
     ): ApiResponse<GetPlanResponse>
+
+    /** 일정 예상 소요 시간 조회 */
+    @GET("api/plans/{planId}/expected-duration")
+    suspend fun getExpectedDuration(
+        @Path("planId") planId: Int,
+        @Query("planType") planType: String
+    ): ApiResponse<GetExpectedDurationResponse>
 
     /** 캘린더 조회 */
     @GET("api/plans/monthly")
