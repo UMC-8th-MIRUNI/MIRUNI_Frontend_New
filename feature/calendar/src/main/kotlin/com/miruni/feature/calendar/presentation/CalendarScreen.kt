@@ -220,7 +220,11 @@ fun CalendarScreen(
         }
 
         item {
-
+            AiPlanningButton(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                onClick = { onAiPlanningClicked() }
+            )
+            Spacer(modifier = Modifier.height(25.dp))
         }
 
         item {
