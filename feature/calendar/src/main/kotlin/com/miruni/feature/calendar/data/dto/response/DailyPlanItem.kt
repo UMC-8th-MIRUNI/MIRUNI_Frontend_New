@@ -9,8 +9,8 @@ data class DailyPlanItem(
     val planId: Int,
     val title: String,
     val subTitle: String,
-    val startTime: String,
-    val endTime: String,
+    val startTime: String, // 오전/오후 HH:mm
+    val endTime: String, // 오전/오후 HH:mm
     val priority: String,
     val isDone: Boolean
 ) {
@@ -20,6 +20,7 @@ data class DailyPlanItem(
             planType = PlanType.fromServer(planType),
             title = title,
             subTitle = subTitle,
+            description = null,
             startTime = startTime,
             endTime = endTime,
             priority = PlanPriority.fromServer(priority),

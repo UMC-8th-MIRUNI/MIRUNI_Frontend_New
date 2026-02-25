@@ -36,6 +36,7 @@ import com.miruni.core.designsystem.Black
 import com.miruni.core.designsystem.Gray
 import com.miruni.feature.calendar.common.MiruniButton
 import com.miruni.feature.calendar.common.MiruniTextField
+import com.miruni.feature.calendar.domain.model.PlanPriority
 import com.miruni.feature.calendar.presentation.model.AddScheduleState
 import com.miruni.feature.calendar.presentation.model.DateTimeRangeState
 import java.time.LocalDate
@@ -44,13 +45,14 @@ import java.time.LocalDate
 @Composable
 fun AddScheduleBottomSheet(
     selectedDate: LocalDate,
+    isLoading: Boolean,
     modifier: Modifier = Modifier,
     onConfirm: (AddScheduleState) -> Unit,
     onDismiss: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var title by remember { mutableStateOf("") }
-    var priority by remember { mutableStateOf(Priority.MEDIUM) }
+    var priority by remember { mutableStateOf(PlanPriority.MEDIUM) }
     var description by remember { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
     var dateTimeRange by remember {
@@ -124,7 +126,7 @@ fun AddScheduleBottomSheet(
                 Spacer(modifier = Modifier.height(50.dp))
 
                 MiruniButton.Single(
-                    text = "완료",
+                    text = if (isLoading) "등록중..." else "완료",
                     onClick = {
                         onConfirm(
                             AddScheduleState(
@@ -135,7 +137,7 @@ fun AddScheduleBottomSheet(
                             )
                         )
                     },
-                    enabled = title.isNotBlank()
+                    enabled = title.isNotBlank() && !isLoading
                 )
             }
         }

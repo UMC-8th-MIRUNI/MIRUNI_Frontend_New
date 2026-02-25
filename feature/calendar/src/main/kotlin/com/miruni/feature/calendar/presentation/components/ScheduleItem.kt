@@ -30,9 +30,8 @@ import com.miruni.core.designsystem.Black
 import com.miruni.core.designsystem.Gray
 import com.miruni.core.designsystem.MainColor
 import com.miruni.core.designsystem.White
+import com.miruni.feature.calendar.domain.model.PlanPriority
 import com.miruni.feature.calendar.presentation.model.ScheduleUiModel
-import java.time.LocalTime
-
 
 @Composable
 fun ScheduleItem(
@@ -137,9 +136,9 @@ fun ScheduleItemPreview() {
             id = "1",
             title = "스케줄 등록",
             description = "스케줄 Content",
-            startTime = LocalTime.of(3, 40),
-            endTime = LocalTime.of(9, 40),
-            priority = Priority.HIGH
+//            startTime = LocalTime.of(3, 40),
+//            endTime = LocalTime.of(9, 40),
+            priority = PlanPriority.HIGH
         ),
         onClick = {},
         onCheckedChange = {}

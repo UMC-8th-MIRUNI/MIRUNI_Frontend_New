@@ -31,7 +31,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -53,10 +52,10 @@ import com.miruni.core.designsystem.AppTypography
 import com.miruni.core.designsystem.Black
 import com.miruni.core.designsystem.Gray
 import com.miruni.core.designsystem.MainColor
-import com.miruni.core.designsystem.MiruniTypography
 import com.miruni.core.designsystem.White
 import com.miruni.feature.calendar.common.MiruniButton
 import com.miruni.feature.calendar.common.MiruniTextField
+import com.miruni.feature.calendar.domain.model.PlanPriority
 
 @Composable
 fun isKeyboardVisible(): Boolean {
@@ -85,7 +84,7 @@ fun isKeyboardVisible(): Boolean {
 fun ScheduleBottomSheet(
     title: String,
     description: String,
-    priority: Priority,
+    priority: PlanPriority,
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit,
     onEdit: () -> Unit,
@@ -331,7 +330,7 @@ fun ScheduleBottomSheetPreview() {
     ScheduleBottomSheet(
         title = "타이틀",
         description = "설명",
-        priority = Priority.MEDIUM,
+        priority = PlanPriority.MEDIUM,
         onDismiss = {},
         onEdit = {},
         onDelete = {}

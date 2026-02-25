@@ -16,8 +16,8 @@ data class GetPlanResponse(
 ) {
     fun toDomain(): Plan {
         return Plan(
-            planType = PlanType.fromServer(planType),
             planId = planId,
+            planType = PlanType.fromServer(planType),
             title = title,
             subTitle = subTitle,
             description = description,

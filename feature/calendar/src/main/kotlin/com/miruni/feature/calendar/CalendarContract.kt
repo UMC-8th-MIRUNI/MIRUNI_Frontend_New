@@ -12,11 +12,12 @@ object CalendarContract {
         object YearMonthClicked : Event() // 연월 클릭
         object BeforeMonthClicked : Event() // 이전 달로 가기
         object NextMonthClicked : Event() // 다음 달로 가기
-        object OpenPlanCreation : Event() // 일정 등록하기 바텀시트 열기
-        object DayClicked : Event() // 날짜 클릭
+        object ChangeIsPlanCreationOpened : Event() // 일정 등록하기 바텀시트 열기
+        data class DayClicked(val date: LocalDate) : Event() // 날짜 클릭
         object AiPlannerClicked : Event() // AI 플래닝 하러 가기
         data class PlanClicked(val planId: Int) : Event() // 일정 클릭 -> 일정 설명 바텀시트 출력
         object SubmitPlan : Event() // 일정 작성 완료
+        data class SubmitPlan(val state: AddScheduleState) : Event() // 일정 작성 완료
 
         /** 일정 설명 바텀 시트 */
         object PlanMenuClicked : Event() // 메뉴 클릭
@@ -31,7 +32,14 @@ object CalendarContract {
     data class State(
         val currentMonth: YearMonth = YearMonth.now(),
         val selectedDate: LocalDate = LocalDate.now(),
-        val today: LocalDate = LocalDate.now()
+        val today: LocalDate = LocalDate.now(),
+        val isLoading: Boolean = false,
+
+        val unfinishedDailyPlans: List<ScheduleUiModel> = emptyList(),
+        val finishedDailyPlans: List<ScheduleUiModel> = emptyList(),
+
+        val selectedPlan: ScheduleUiModel? = null,
+        val isAddScheduleSheetOpened: Boolean = false
     ) : ViewState
 
     sealed class Effect : ViewSideEffect {

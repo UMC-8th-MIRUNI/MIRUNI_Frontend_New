@@ -52,7 +52,7 @@ interface CalendarApi {
     @POST("api/plans")
     suspend fun postPlan(
         @Body request: PostPlanRequest
-    ): ApiResponse<BasicPlanResponse>
+    ): ApiResponse<List<BasicPlanResponse>>
 
     /** 일반 일정 삭제 */
     @HTTP(

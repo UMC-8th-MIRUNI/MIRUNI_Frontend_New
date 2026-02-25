@@ -1,31 +1,33 @@
 package com.miruni.feature.calendar.presentation.model
 
-import android.annotation.SuppressLint
-import com.miruni.feature.calendar.components.Priority
-import java.time.LocalTime
+import com.miruni.feature.calendar.domain.model.Plan
+import com.miruni.feature.calendar.domain.model.PlanPriority
+import com.miruni.feature.calendar.domain.model.PlanType
 
 data class ScheduleUiModel(
+    val planType: PlanType = PlanType.BASIC,
     val id: String,
     val title: String,
     val description: String = "",
-    val startTime: LocalTime,
-    val endTime: LocalTime,
-    val priority: Priority,
+    val startTime: String? = "",
+    val endTime: String? = "",
+    val priority: PlanPriority,
     val isCompleted: Boolean = false,
+    val expectedTime: String = "0"
 ) {
     val timeRange: String
-        get() = "${formatTime(startTime)} - ${formatTime(endTime)}"
+        get() = "$startTime - $endTime"
+}
 
-    @SuppressLint("NewApi")
-    private fun formatTime(time: LocalTime): String {
-        val hour = when {
-            time.hour == 0 -> 12
-            time.hour == 12 -> 12
-            time.hour > 12 -> time.hour - 12
-            else -> time.hour
-        }
-        val minute = time.minute.toString().padStart(2, '0')
-        val amPm = if (time.hour < 12) "오전" else "오후"
-        return "$amPm $hour:$minute"
-    }
+fun Plan.toUiModel(): ScheduleUiModel {
+    return ScheduleUiModel(
+        id = planId.toString(),
+        title = title,
+        description = description ?: "",
+        startTime = startTime,
+        endTime = endTime,
+        priority = priority,
+        isCompleted = isDone,
+        expectedTime = (expectedDuration ?: "").toString()
+    )
 }
