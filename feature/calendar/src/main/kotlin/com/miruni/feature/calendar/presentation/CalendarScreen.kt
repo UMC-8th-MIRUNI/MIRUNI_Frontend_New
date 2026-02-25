@@ -2,6 +2,7 @@ package com.miruni.feature.calendar.presentation
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,13 +34,16 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.CalendarDay
@@ -50,6 +54,7 @@ import com.miruni.core.designsystem.Gray
 import com.miruni.core.designsystem.MainColor
 import com.miruni.core.designsystem.MiruniTheme
 import com.miruni.core.designsystem.White
+import com.miruni.core.navigation.MiruniRoute
 import com.miruni.feature.calendar.CalendarContract
 import com.miruni.feature.calendar.CalendarViewModel
 import com.miruni.feature.calendar.R
@@ -58,8 +63,6 @@ import com.miruni.feature.calendar.presentation.components.AiPlanningButton
 import com.miruni.feature.calendar.presentation.components.ScheduleBottomSheet
 import com.miruni.feature.calendar.presentation.components.ScheduleItem
 import com.miruni.feature.calendar.presentation.components.YearMonthPickerDialog
-import com.miruni.feature.calendar.domain.model.PlanPriority
-import com.miruni.feature.calendar.presentation.components.EmptySchedule
 import com.miruni.feature.calendar.presentation.model.AddScheduleState
 import com.miruni.feature.calendar.presentation.model.ScheduleUiModel
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -69,9 +72,28 @@ import java.time.YearMonth
 
 @Composable
 fun CalendarRoute(
-    viewModel: CalendarViewModel = hiltViewModel(),
+    navController: NavHostController,
+    viewModel: CalendarViewModel = hiltViewModel()
 ) {
     val state by viewModel.viewState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                CalendarContract.Effect.NavigateToAiPlanner -> navController.navigate(MiruniRoute.AiPlannerMain.route)
+                is CalendarContract.Effect.NavigateToScheduleTable -> {
+                    navController.navigate("aiPlanner") {
+                        launchSingleTop = true
+                    }
+                    navController.navigate(
+                        "${MiruniRoute.AiPlannerSchedule.route}?from=MAIN&planId=${effect.planId}"
+                    )
+                }
+                is CalendarContract.Effect.ShowToast -> Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     CalendarScreen(
         state = state,
@@ -87,6 +109,9 @@ fun CalendarRoute(
         onPlanClicked = { plan ->
             viewModel.setEvent(CalendarContract.Event.PlanClicked(plan))
         },
+        onPlanDetailClicked = { plan ->
+            viewModel.setEvent(CalendarContract.Event.ShowDetailClicked(plan))
+        },
         onCheckBoxClicked = { plan ->
             viewModel.setEvent(CalendarContract.Event.PlanChecked(plan = plan, expectedTime = plan.expectedTime))
         },
@@ -95,6 +120,9 @@ fun CalendarRoute(
         },
         changeIsPlanCreationSheetOpened = {
             viewModel.setEvent(CalendarContract.Event.ChangeIsPlanCreationOpened)
+        },
+        changeIsPlanSheetOpened = {
+            viewModel.setEvent(CalendarContract.Event.ChangeIsPlanSheetOpened)
         }
     )
 }
@@ -108,13 +136,14 @@ fun CalendarScreen(
     onAiPlanningClicked: () -> Unit,
     onDayClicked: (java.time.LocalDate) -> Unit = {},
     onPlanClicked: (ScheduleUiModel) -> Unit,
+    onPlanDetailClicked: (ScheduleUiModel) -> Unit,
     onCheckBoxClicked: (ScheduleUiModel) -> Unit,
     onAddConfirmClicked: (AddScheduleState) -> Unit,
-    changeIsPlanCreationSheetOpened: () -> Unit
+    changeIsPlanCreationSheetOpened: () -> Unit,
+    changeIsPlanSheetOpened: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     var showYearMonthPicker by remember { mutableStateOf(false) }
-    var selectedSchedule by remember { mutableStateOf<ScheduleUiModel?>(null) }
 
     val startMonth = remember { YearMonth.now().minusMonths(24) }
     val endMonth = remember { YearMonth.now().plusMonths(24) }
@@ -138,7 +167,6 @@ fun CalendarScreen(
         Log.d("Calendar", "List changed: ${state.unfinishedDailyPlans.size}")
     }
 
-
     if (showYearMonthPicker) {
         YearMonthPickerDialog(
             currentYearMonth = state.currentMonth,
@@ -149,6 +177,7 @@ fun CalendarScreen(
         )
     }
 
+    /** 일정 등록 바텀 시트 */
     if (state.isAddScheduleSheetOpened) {
         AddScheduleBottomSheet(
             isLoading = state.isLoading,
@@ -160,17 +189,19 @@ fun CalendarScreen(
         )
     }
 
-    selectedSchedule?.let { schedule ->
-        ScheduleBottomSheet(
-            title = "타이틀",
-            description = "설명",
-            priority = PlanPriority.MEDIUM,
-            onDismiss = {
-                selectedSchedule = null
-            },
-            onEdit = {},
-            onDelete = {}
-        )
+    /** 일정 설명 바텀 시트 */
+    if (state.isPlanSheetOpened) {
+        state.selectedPlan?.let { plan ->
+            ScheduleBottomSheet(
+                title = plan.title,
+                description = plan.description,
+                priority = plan.priority,
+                onDismiss = { changeIsPlanSheetOpened() },
+                onClickPlanDetail = { onPlanDetailClicked(plan) },
+                onEdit = { changeIsPlanSheetOpened() },
+                onDelete = { changeIsPlanSheetOpened() }
+            )
+        }
     }
 
     LazyColumn(
@@ -233,14 +264,25 @@ fun CalendarScreen(
 
             when {
                 unfinished.isEmpty() && finished.isEmpty() -> {
-                    EmptySchedule("오늘은 일정이 없어요.")
+                    Text(
+                        text = "오늘은 일정이 없어요",
+                        style = AppTypography.sub_semibold_12,
+                        modifier = Modifier.padding(start = 16.dp, top = 10.dp)
+                    )
                 }
 
                 unfinished.isNotEmpty() -> {
                     unfinished.forEach { plan ->
                         ScheduleItem(
                             schedule = plan,
-                            onClick = { onPlanClicked(plan) },
+                            onClick = {
+                                if (state.selectedPlan == plan) {
+                                    changeIsPlanSheetOpened()
+                                } else {
+                                    onPlanClicked(plan)
+                                }
+                            },
+                            isSelected = state.selectedPlan == plan,
                             onCheckedChange = { onCheckBoxClicked(plan) }
                         )
                     }
@@ -250,21 +292,22 @@ fun CalendarScreen(
                         Text(
                             text = "완료",
                             style = AppTypography.sub_bold_14,
-                            modifier = Modifier.padding(start = 16.dp)
+                            modifier = Modifier.padding(start = 16.dp, top = 9.dp, bottom = 5.dp)
                         )
                         finished.forEach { plan ->
                             ScheduleItem(
                                 schedule = plan,
-                                onClick = { onPlanClicked(plan) },
+                                onClick = {
+                                    if (state.selectedPlan == plan) {
+                                        changeIsPlanSheetOpened()
+                                    } else {
+                                        onPlanClicked(plan)
+                                    }
+                                },
+                                isSelected = state.selectedPlan == plan,
                                 onCheckedChange = { onCheckBoxClicked(plan) }
                             )
                         }
-                    } else {
-                        Text(
-                            text = "완료된 일정이 없어요.",
-                            style = AppTypography.body_regular_12,
-                            modifier = Modifier.padding(16.dp)
-                        )
                     }
                 }
             }
@@ -357,6 +400,7 @@ fun DayCell(
     val isCurrentMonth = day.position == DayPosition.MonthDate
     val textColor = when {
         isToday -> MainColor.miruni_green
+        isSelected -> Color(0xFFFBBC05)
         !isCurrentMonth -> Gray.gray_500
         isCurrentMonth -> Black
         else -> White
@@ -402,7 +446,10 @@ fun CalendarScreenPreview() {
             onPlanClicked = {},
             onCheckBoxClicked = {},
             onAddConfirmClicked = {},
-            changeIsPlanCreationSheetOpened = {}
+            changeIsPlanCreationSheetOpened = {},
+            changeIsPlanSheetOpened = {},
+            onDayClicked = {},
+            onPlanDetailClicked = {}
         )
     }
 }

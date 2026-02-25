@@ -89,6 +89,7 @@ fun ScheduleBottomSheet(
     onDismiss: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
+    onClickPlanDetail: () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -179,6 +180,7 @@ fun ScheduleBottomSheet(
                                     )
                                 },
                                 onClick = {
+                                    onClickPlanDetail()
                                     showMenu = false
                                 }
                             )
@@ -333,6 +335,7 @@ fun ScheduleBottomSheetPreview() {
         priority = PlanPriority.MEDIUM,
         onDismiss = {},
         onEdit = {},
-        onDelete = {}
+        onDelete = {},
+        onClickPlanDetail = {}
     )
 }

@@ -18,7 +18,9 @@ class CalendarNavigation @Inject constructor(
         navController: NavHostController,
     ) {
         builder.composable(route) {
-            CalendarRoute()
+            CalendarRoute(
+                navController = navController
+            )
         }
     }
 }

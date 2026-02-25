@@ -49,6 +49,7 @@ class CalendarViewModel @Inject constructor(
 
             // 일정 클릭
             is CalendarContract.Event.PlanClicked -> selectPlan(event.plan)
+            CalendarContract.Event.ChangeIsPlanSheetOpened -> changeIsPlanSheetOpened()
             // 일정 완료 설정
             is CalendarContract.Event.PlanChecked -> finishPlan(event.plan, event.expectedTime)
             // 일정 메뉴
@@ -171,12 +172,18 @@ class CalendarViewModel @Inject constructor(
             }
         }
     }
+    /** 일정 등록 바텀 시트 여닫기 */
     private fun changeIsPlanCreationOpened() {
         val isAddScheduleSheetOpened = viewState.value.isAddScheduleSheetOpened
         setState { copy(isAddScheduleSheetOpened = !isAddScheduleSheetOpened) }
     }
+    /** 일정 선택 */
     private fun selectPlan(plan: ScheduleUiModel) {
-
+        setState { copy(selectedPlan = plan) }
+    }
+    /** 동일 일정 2번 클릭 시 일정 설명 바텀 시트 출력 */
+    private fun changeIsPlanSheetOpened() {
+        setState { copy(isPlanSheetOpened = !isPlanSheetOpened) }
     }
     private fun printDeleteConfirmationDialog() {
 
