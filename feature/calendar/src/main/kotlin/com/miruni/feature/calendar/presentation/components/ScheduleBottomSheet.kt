@@ -1,6 +1,7 @@
 package com.miruni.feature.calendar.presentation.components
 
 import android.graphics.Rect
+import android.util.Log
 import android.view.ViewTreeObserver
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -84,6 +85,7 @@ fun isKeyboardVisible(): Boolean {
 fun ScheduleBottomSheet(
     title: String,
     description: String,
+    date: String,
     priority: PlanPriority,
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit,
@@ -97,9 +99,11 @@ fun ScheduleBottomSheet(
     // 3dot 메뉴 상태
     var showMenu by remember { mutableStateOf(false) }
 
-    var editedDescription by remember { mutableStateOf(description) }
+    var editedDescription by remember(description) { mutableStateOf(description) }
     val descriptionFocusRequester = remember { FocusRequester() }
     val isKeyboardVisible = isKeyboardVisible()
+
+    Log.d("Refresh/Get Plan", "11. ScheduleBottomSheet Title: $title, Description: $description")
 
     if (showDeleteDialog) {
         DeleteScheduleDialog(
@@ -145,7 +149,7 @@ fun ScheduleBottomSheet(
                     ) {
                         Text(
                             text = title,
-                            style = AppTypography.header_bold_16,
+                            style = AppTypography.sub_bold_14,
                             color = Black
                         )
 
@@ -237,7 +241,7 @@ fun ScheduleBottomSheet(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 MiruniTextField.InputText(
-                    value = "2025년 9월 20일 오후 2:20 ~ 오후 5:50",
+                    value = date,
                     onValueChange = {},
                     enabled = false,
                     textColor = Gray.gray_500,
@@ -332,6 +336,7 @@ fun ScheduleBottomSheetPreview() {
     ScheduleBottomSheet(
         title = "타이틀",
         description = "설명",
+        date = "~~~~",
         priority = PlanPriority.MEDIUM,
         onDismiss = {},
         onEdit = {},

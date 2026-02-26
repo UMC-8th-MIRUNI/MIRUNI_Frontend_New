@@ -342,6 +342,7 @@ class CalendarRepositoryImpl @Inject constructor(
         planId: Int,
         planType: PlanType
     ): DataResult<Plan, DataError> {
+        Log.d("Refresh/Get Plan", "1. API Request: $planId, $planType")
         val planNetworkResult = executeApiRequest {
             api.getPlan(
                 planId = planId,
@@ -356,8 +357,10 @@ class CalendarRepositoryImpl @Inject constructor(
 
                 if (response.errorCode.isNullOrBlank() && serverResult != null) {
                     val plan = serverResult.toDomain()
+                    Log.d("Refresh/Get Plan", "2. API Response: $plan")
 
                     // 예상 소요 시간 업데이트 시도
+                    Log.d("Refresh/Get Plan", "3. API Request-1")
                     val expNetworkResult = executeApiRequest {
                         api.getExpectedDuration(
                             planId = planId,
@@ -369,6 +372,7 @@ class CalendarRepositoryImpl @Inject constructor(
                             val expResponse = expNetworkResult.data
                             val expServerResult = expResponse.result
 
+                            Log.d("Refresh/Get Plan", "4. API Response: $expServerResult")
                             if (expResponse.errorCode.isNullOrBlank() && expServerResult != null) {
                                 plan.copy(expectedDuration = expServerResult.expectedDuration)
                             } else {
@@ -379,11 +383,13 @@ class CalendarRepositoryImpl @Inject constructor(
                             plan
                         }
                     }
+                    Log.d("Refresh/Get Plan", "5. Result(plan): $plan")
 
                     // plan 캐시 업데이트
                     _planCache.update { old ->
                         old + (Pair(planId, planType) to merged)
                     }
+                    Log.d("Refresh/Get Plan", "6. Result(_planCache): $_planCache")
 
                     DataResult.Success(merged)
                 } else {

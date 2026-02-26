@@ -58,6 +58,7 @@ import com.miruni.core.navigation.MiruniRoute
 import com.miruni.feature.calendar.CalendarContract
 import com.miruni.feature.calendar.CalendarViewModel
 import com.miruni.feature.calendar.R
+import com.miruni.feature.calendar.domain.model.PlanType
 import com.miruni.feature.calendar.presentation.components.AddScheduleBottomSheet
 import com.miruni.feature.calendar.presentation.components.AiPlanningButton
 import com.miruni.feature.calendar.presentation.components.ScheduleBottomSheet
@@ -69,6 +70,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun CalendarRoute(
@@ -121,8 +123,11 @@ fun CalendarRoute(
         changeIsPlanCreationSheetOpened = {
             viewModel.setEvent(CalendarContract.Event.ChangeIsPlanCreationOpened)
         },
-        changeIsPlanSheetOpened = {
-            viewModel.setEvent(CalendarContract.Event.ChangeIsPlanSheetOpened)
+        openPlanSheet = { planType, planId ->
+            viewModel.setEvent(CalendarContract.Event.OpenPlanSheet(planType, planId))
+        },
+        closePlanSheet = {
+            viewModel.setEvent(CalendarContract.Event.ClosePlanSheet)
         }
     )
 }
@@ -140,7 +145,8 @@ fun CalendarScreen(
     onCheckBoxClicked: (ScheduleUiModel) -> Unit,
     onAddConfirmClicked: (AddScheduleState) -> Unit,
     changeIsPlanCreationSheetOpened: () -> Unit,
-    changeIsPlanSheetOpened: () -> Unit,
+    openPlanSheet: (PlanType, Int) -> Unit,
+    closePlanSheet: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
     var showYearMonthPicker by remember { mutableStateOf(false) }
@@ -192,14 +198,16 @@ fun CalendarScreen(
     /** 일정 설명 바텀 시트 */
     if (state.isPlanSheetOpened) {
         state.selectedPlan?.let { plan ->
+            Log.d("Refresh/Get Plan", "10. selectedPlan: $plan")
             ScheduleBottomSheet(
                 title = plan.title,
                 description = plan.description,
+                date = "${state.selectedDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))} ${plan.startTime} - ${plan.endTime}",
                 priority = plan.priority,
-                onDismiss = { changeIsPlanSheetOpened() },
+                onDismiss = { closePlanSheet() },
                 onClickPlanDetail = { onPlanDetailClicked(plan) },
-                onEdit = { changeIsPlanSheetOpened() },
-                onDelete = { changeIsPlanSheetOpened() }
+                onEdit = { closePlanSheet() },
+                onDelete = { closePlanSheet() }
             )
         }
     }
@@ -277,7 +285,7 @@ fun CalendarScreen(
                             schedule = plan,
                             onClick = {
                                 if (state.selectedPlan == plan) {
-                                    changeIsPlanSheetOpened()
+                                    openPlanSheet(plan.planType, plan.id.toInt())
                                 } else {
                                     onPlanClicked(plan)
                                 }
@@ -299,7 +307,7 @@ fun CalendarScreen(
                                 schedule = plan,
                                 onClick = {
                                     if (state.selectedPlan == plan) {
-                                        changeIsPlanSheetOpened()
+                                        openPlanSheet(plan.planType, plan.id.toInt())
                                     } else {
                                         onPlanClicked(plan)
                                     }
@@ -447,7 +455,9 @@ fun CalendarScreenPreview() {
             onCheckBoxClicked = {},
             onAddConfirmClicked = {},
             changeIsPlanCreationSheetOpened = {},
-            changeIsPlanSheetOpened = {},
+            openPlanSheet = { planType, planId ->
+            },
+            closePlanSheet = {},
             onDayClicked = {},
             onPlanDetailClicked = {}
         )

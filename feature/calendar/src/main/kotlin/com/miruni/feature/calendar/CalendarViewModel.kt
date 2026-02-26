@@ -6,6 +6,7 @@ import com.miruni.core.common.BaseViewModel
 import com.miruni.core.result.DataError
 import com.miruni.core.result.DataResult
 import com.miruni.feature.calendar.domain.model.DailyPlans
+import com.miruni.feature.calendar.domain.model.PlanType
 import com.miruni.feature.calendar.domain.repository.CalendarRepository
 import com.miruni.feature.calendar.presentation.model.AddScheduleState
 import com.miruni.feature.calendar.presentation.model.ScheduleUiModel
@@ -49,7 +50,8 @@ class CalendarViewModel @Inject constructor(
 
             // 일정 클릭
             is CalendarContract.Event.PlanClicked -> selectPlan(event.plan)
-            CalendarContract.Event.ChangeIsPlanSheetOpened -> changeIsPlanSheetOpened()
+            is CalendarContract.Event.OpenPlanSheet -> openPlanSheet(event.planType, event.planId)
+            CalendarContract.Event.ClosePlanSheet -> setState { copy(isPlanSheetOpened = false) }
             // 일정 완료 설정
             is CalendarContract.Event.PlanChecked -> finishPlan(event.plan, event.expectedTime)
             // 일정 메뉴
@@ -182,7 +184,41 @@ class CalendarViewModel @Inject constructor(
         setState { copy(selectedPlan = plan) }
     }
     /** 동일 일정 2번 클릭 시 일정 설명 바텀 시트 출력 */
-    private fun changeIsPlanSheetOpened() {
+    private fun openPlanSheet(
+        planType: PlanType,
+        planId: Int
+    ) {
+        viewModelScope.launch {
+            setState { copy(isLoading = true) }
+
+            val result = calendarRepository.refreshPlan(planId, planType)
+            Log.d("Refresh/Get Plan", "7. ViewModel Result: $result")
+
+            when (result) {
+                is DataResult.Success -> {
+
+                    val plan = result.data
+                    val planUiModel = plan.toUiModel()
+
+                    setState {
+                        copy(
+                            // selectedPlan의 필드 업데이트
+                            selectedPlan = planUiModel,
+                            isLoading = false
+                        )
+                    }
+                    Log.d("Refresh/Get Plan", "8. ViewModel plan: $plan")
+                    Log.d("Refresh/Get Plan", "9. ViewModel planUiModel: $planUiModel")
+
+                }
+                is DataResult.Error -> {
+                    setState { copy(isLoading = false) }
+                    showErrorMessage(result.error)
+                }
+            }
+
+        }
+
         setState { copy(isPlanSheetOpened = !isPlanSheetOpened) }
     }
     private fun printDeleteConfirmationDialog() {
