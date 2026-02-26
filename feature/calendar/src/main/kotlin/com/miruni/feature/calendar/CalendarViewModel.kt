@@ -136,18 +136,52 @@ class CalendarViewModel @Inject constructor(
     /** 일정 완료 처리 */
     private fun finishPlan(plan: ScheduleUiModel, expectedTime: String) {
         viewModelScope.launch {
-            val result = calendarRepository.postPlanFinish(
-                planType = plan.planType,
-                planId = plan.id.toInt(),
-                expectedTime = expectedTime
-            )
+            setState { copy(isLoading = true) }
 
-            when (result) {
+            val planResult = calendarRepository.refreshPlan(
+                planType = plan.planType,
+                planId = plan.id.toInt()
+            )
+            Log.d("Refresh/Get Plan", "7. ViewModel Result: $planResult")
+
+            when (planResult) {
                 is DataResult.Success -> {
-                    calendarRepository.refreshDailyPlans(viewState.value.selectedDate)
+
+                    val planData = planResult.data
+                    val planUiModel = planData.toUiModel()
+
+                    setState {
+                        copy(
+                            // selectedPlan의 필드 업데이트
+                            selectedPlan = planUiModel,
+                            isLoading = false
+                        )
+                    }
+                    Log.d("Refresh/Get Plan", "8. ViewModel plan: $planData")
+                    Log.d("Refresh/Get Plan", "9. ViewModel planUiModel: $planUiModel")
+
+                    val hour = planUiModel.expectedTime.toInt() / 60
+                    val minute = planUiModel.expectedTime.toInt() % 60
+
+                    val result = calendarRepository.finishPlan(
+                        planType = planUiModel.planType,
+                        planId = planUiModel.id.toInt(),
+                        expectedTime = "$hour:$minute",
+                        date = viewState.value.selectedDate
+                    )
+
+                    when (result) {
+                        is DataResult.Success -> {
+                            calendarRepository.refreshDailyPlans(viewState.value.selectedDate)
+                        }
+                        is DataResult.Error -> setEffect {
+                            CalendarContract.Effect.ShowToast("완료 처리 실패")
+                        }
+                    }
                 }
-                is DataResult.Error -> setEffect {
-                    CalendarContract.Effect.ShowToast("완료 처리 실패")
+                is DataResult.Error -> {
+                    setState { copy(isLoading = false) }
+                    showErrorMessage(planResult.error)
                 }
             }
         }
@@ -216,7 +250,6 @@ class CalendarViewModel @Inject constructor(
                     showErrorMessage(result.error)
                 }
             }
-
         }
 
         setState { copy(isPlanSheetOpened = !isPlanSheetOpened) }
