@@ -27,6 +27,7 @@ interface CalendarRepository {
         date: LocalDate
     ): DataResult<DailyPlans, DataError>
 
+    /** 특정 일정 조회/갱신 */
     suspend fun refreshPlan(
         planId: Int,
         planType: PlanType
@@ -37,24 +38,13 @@ interface CalendarRepository {
     suspend fun createPlan(
         draft: PlanDraft
     ): DataResult<List<Plan>, DataError>
-    /** 일정 완료 (변경) */
+    /** 일정 완료 */
     suspend fun finishPlan(
         planId: Int,
         planType: PlanType,
         expectedTime: String,
         date: LocalDate
     ): DataResult<FinishPlan, DataError>
-    /** 일정 완료 (이전) */
-    suspend fun postPlanFinish(
-        planId: Int,
-        planType: PlanType,
-        expectedTime: String
-    ): DataResult<FinishPlan, DataError>
-    /** 특정 일정 조회 */
-    suspend fun getPlan(
-        planId: Int,
-        planType: PlanType
-    ): DataResult<Plan, DataError>
     /** 일정 예상 소요 시간 조회 */
     suspend fun getExpectedDuration(
         planId: Int,
