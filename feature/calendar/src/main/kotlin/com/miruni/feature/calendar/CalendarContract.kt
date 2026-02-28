@@ -48,7 +48,9 @@ object CalendarContract {
         val selectedPlan: ScheduleUiModel? = null,
         val isPlanSheetOpened: Boolean = false, // 일정 설명 바텀시트 열렸는지
         val isAddScheduleSheetOpened: Boolean = false, // 일정 추가 바텀시트 열렸는지
-        val editingPlan: ScheduleUiModel? = null // 수정 일정
+        val editingPlan: ScheduleUiModel? = null, // 수정 일정
+
+        val unfinishedCountByDate: Map<LocalDate, Int> = emptyMap() // 날짜에 따른 미완료 일정 개수
     ) : ViewState
 
     sealed class Effect : ViewSideEffect {

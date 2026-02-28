@@ -3,6 +3,7 @@ package com.miruni.feature.calendar.presentation
 import android.annotation.SuppressLint
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -70,6 +71,7 @@ import com.miruni.feature.calendar.presentation.model.ScheduleUiModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
+import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
@@ -274,8 +276,11 @@ fun CalendarScreen(
                     WeekDayHeader()
                 },
                 dayContent = { day ->
+                    val count = state.unfinishedCountByDate[day.date] ?: 0
+
                     DayCell(
                         day = day,
+                        unfinishedCount = count,
                         isSelected = state.selectedDate == day.date,
                         isToday = state.today == day.date,
                         onClick = { onDayClicked(day.date) }
@@ -429,6 +434,7 @@ fun WeekDayHeader(
 @Composable
 fun DayCell(
     day: CalendarDay,
+    unfinishedCount: Int,
     modifier: Modifier = Modifier,
     isSelected: Boolean,
     isToday: Boolean,
@@ -442,11 +448,18 @@ fun DayCell(
         isCurrentMonth -> Black
         else -> White
     }
+    val indicatorColor = when (unfinishedCount) {
+        in 1..5 -> Color(0xFFCBCBCB)
+        in 6..10 -> Color(0xFF8FDA8D)
+        in 11..15 -> Color(0xFF1EC718)
+        in 16..Int.MAX_VALUE -> Color(0xFF0D7C0A)
+        else -> Color.Transparent
+    }
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .height(50.dp)
+            .height(55.dp)
             .padding(2.dp)
             .clip(CircleShape)
             .clickable(
@@ -462,13 +475,24 @@ fun DayCell(
                 .size(36.dp),
             contentAlignment = Alignment.Center
         ) {
-            Text(
+            Text( // 날짜
                 text = day.date.dayOfMonth.toString(),
                 style = AppTypography.sub_medium_14,
                 color = textColor
             )
         }
         Spacer(modifier = Modifier.height(4.dp))
+
+        if (unfinishedCount > 0) {
+            Canvas(
+                modifier = Modifier.size(8.dp)
+            ) {
+                drawCircle(
+                    color = indicatorColor,
+                    radius = size.minDimension / 2
+                )
+            }
+        }
     }
 }
 
@@ -476,22 +500,34 @@ fun DayCell(
 @Composable
 fun CalendarScreenPreview() {
     MiruniTheme {
-        CalendarScreen(
-            state = CalendarContract.State(),
-            onMonthChanged = {},
-            onAiPlanningClicked = {},
-            onPlanClicked = {},
-            onCheckBoxClicked = {},
-            onAddConfirmClicked = {},
-            changeIsPlanCreationSheetOpened = {},
-            openPlanSheet = { planType, planId ->
-            },
-            closePlanSheet = {},
-            onDayClicked = {},
-            onPlanDetailClicked = {},
-            onPlanEditClicked = {},
-            onEditConfirmClicked = { _, _ -> },
-            onPlanDeleteClicked = {}
+//        CalendarScreen(
+//            state = CalendarContract.State(),
+//            onMonthChanged = {},
+//            onAiPlanningClicked = {},
+//            onPlanClicked = {},
+//            onCheckBoxClicked = {},
+//            onAddConfirmClicked = {},
+//            changeIsPlanCreationSheetOpened = {},
+//            openPlanSheet = { planType, planId ->
+//            },
+//            closePlanSheet = {},
+//            onDayClicked = {},
+//            onPlanDetailClicked = {},
+//            onPlanEditClicked = {},
+//            onEditConfirmClicked = { _, _ -> },
+//            onPlanDeleteClicked = {}
+//        )
+
+        DayCell(
+            day = CalendarDay(
+                date = LocalDate.of(2026, 3, 1),
+                position = DayPosition.MonthDate
+            ),
+            unfinishedCount = 10,
+            modifier = Modifier,
+            isSelected = false,
+            isToday = false,
+            onClick = {}
         )
     }
 }

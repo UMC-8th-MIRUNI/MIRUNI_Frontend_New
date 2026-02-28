@@ -65,9 +65,26 @@ class CalendarViewModel @Inject constructor(
         refreshDailyPlans()
     }
 
+    @Suppress("NewApi")
     fun onMonthChanged(yearMonth: YearMonth) {
         viewModelScope.launch {
             setState { copy(currentMonth = yearMonth) }
+
+            val result = calendarRepository.getMonthlyPlanCount(yearMonth.year, yearMonth.monthValue)
+
+            when (result) {
+                is DataResult.Success -> {
+                    val resultMap = result.data.associate { dayInfo ->
+                        LocalDate.parse(dayInfo.date) to dayInfo.unfinishedPlanCount
+                    }
+
+                    setState { copy(unfinishedCountByDate = resultMap) }
+                }
+
+                is DataResult.Error -> {
+                    showErrorMessage(result.error)
+                }
+            }
         }
     }
 
