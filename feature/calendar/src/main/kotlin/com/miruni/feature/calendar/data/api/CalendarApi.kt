@@ -5,7 +5,6 @@ import com.miruni.feature.calendar.data.dto.request.PatchPlanRequest
 import com.miruni.feature.calendar.data.dto.request.PostPlanFinishRequest
 import com.miruni.feature.calendar.data.dto.request.PostPlanRequest
 import com.miruni.feature.calendar.data.dto.response.BasicPlanResponse
-import com.miruni.feature.calendar.data.dto.response.DeletePlanResponse
 import com.miruni.feature.calendar.data.dto.response.GetDailyPlansResponse
 import com.miruni.feature.calendar.data.dto.response.GetMonthlyPlansResponse
 import com.miruni.feature.calendar.data.dto.response.GetPlanResponse
