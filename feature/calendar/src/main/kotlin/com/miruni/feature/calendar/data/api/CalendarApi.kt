@@ -72,7 +72,7 @@ interface CalendarApi {
     )
     suspend fun deletePlan(
         @Path("basicPlanId") basicPlanId: Int
-    ): ApiResponse<DeletePlanResponse>
+    ): ApiResponse<Int>
 
     /** 일반 일정 수정 */
     @PATCH("api/plans/{basicPlanId}")

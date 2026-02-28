@@ -23,6 +23,7 @@ interface CalendarRepository {
     ): Flow<Plan?>
 
     /** ---------- 갱신 API ---------- */
+    /** 특정 날짜의 완료/미완료 일정 조회 */
     suspend fun refreshDailyPlans(
         date: LocalDate
     ): DataResult<DailyPlans, DataError>
@@ -57,12 +58,6 @@ interface CalendarRepository {
         year: Int,
         month: Int
     ): DataResult<List<DayInfo>, DataError>
-    /** 특정 날짜의 완료/미완료 일정 조회 */
-    suspend fun getDailyPlans(
-        year: Int,
-        month: Int,
-        day: Int
-    ): DataResult<DailyPlans, DataError>
 
     /** 일반 일정 수정 */
     suspend fun editPlan(
@@ -70,13 +65,9 @@ interface CalendarRepository {
         draft: PlanDraft
     ): DataResult<Plan, DataError>
 
-    /** 일반 일정 삭제 (변경) */
+    /** 일반 일정 삭제 */
     suspend fun deletePlan(
         planId: Int,
         date: LocalDate
-    ): DataResult<Int, DataError>
-    /** 일반 일정 삭제 (이전) */
-    suspend fun deletePlan(
-        basicPlanId: Int
     ): DataResult<Int, DataError>
 }

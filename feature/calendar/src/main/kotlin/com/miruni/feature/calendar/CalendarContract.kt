@@ -12,15 +12,11 @@ import java.time.YearMonth
 
 object CalendarContract {
     sealed class Event : ViewEvent {
-        object YearMonthClicked : Event() // 연월 클릭
-        object BeforeMonthClicked : Event() // 이전 달로 가기
-        object NextMonthClicked : Event() // 다음 달로 가기
-
         object ChangeIsPlanCreationOpened : Event() // 일정 등록하기 바텀시트 열고 닫기
         data class DayClicked(val date: LocalDate) : Event() // 날짜 클릭
         object AiPlannerClicked : Event() // AI 플래닝 하러 가기
         data class PlanClicked(val plan: ScheduleUiModel) : Event() // 일정 클릭 (1번)
-        data class PlanChecked(val plan: ScheduleUiModel, val expectedTime: String) : Event() // 일정 완료 여부 변경
+        data class PlanChecked(val plan: ScheduleUiModel) : Event() // 일정 완료 여부 변경
         data class SubmitPlan(val state: AddScheduleState) : Event() // 일정 작성 완료
 
         /** 일정 설명 바텀 시트 */
@@ -29,7 +25,6 @@ object CalendarContract {
             val planId: Int
         ) : Event() // 일정 설명 바텀시트 열기 (일정 클릭 2번으로)
         object ClosePlanSheet : Event() // 일정 설명 바텀 시트 닫기
-        object PlanMenuClicked : Event() // 메뉴 클릭
         data class ShowDetailClicked(val plan: ScheduleUiModel) : Event() // 일정 전체보기 클릭
 
         data class PlanEditClicked(val plan: ScheduleUiModel) : Event() // 수정 클릭
@@ -37,9 +32,7 @@ object CalendarContract {
             val editedPlan: ScheduleUiModel,
             val addScheduleState: AddScheduleState
         ) : Event()
-        data class PlanDeleteClicked(val plan: ScheduleUiModel) : Event() // 삭제 클릭
-        data class PlanDeleteConfirmClicked(val plan: ScheduleUiModel) : Event() // 삭제 확인 클릭
-        object PlanDeleteCancelClicked : Event() // 삭제 취소 클릭
+        object PlanDeleteClicked : Event() // 일정 삭제
     }
 
     @SuppressLint("NewApi")

@@ -119,7 +119,7 @@ fun CalendarRoute(
             viewModel.setEvent(CalendarContract.Event.PlanEditClicked(state.selectedPlan!!))
         },
         onCheckBoxClicked = { plan ->
-            viewModel.setEvent(CalendarContract.Event.PlanChecked(plan = plan, expectedTime = plan.expectedTime))
+            viewModel.setEvent(CalendarContract.Event.PlanChecked(plan = plan))
         },
         onAddConfirmClicked = { addScheduleState ->
             viewModel.setEvent(CalendarContract.Event.SubmitPlan(addScheduleState))
@@ -131,6 +131,9 @@ fun CalendarRoute(
                     addScheduleState
                 )
             )
+        },
+        onPlanDeleteClicked = {
+            viewModel.setEvent(CalendarContract.Event.PlanDeleteClicked)
         },
         changeIsPlanCreationSheetOpened = {
             viewModel.setEvent(CalendarContract.Event.ChangeIsPlanCreationOpened)
@@ -155,6 +158,7 @@ fun CalendarScreen(
     onPlanClicked: (ScheduleUiModel) -> Unit,
     onPlanDetailClicked: (ScheduleUiModel) -> Unit,
     onPlanEditClicked: () -> Unit,
+    onPlanDeleteClicked: () -> Unit,
     onCheckBoxClicked: (ScheduleUiModel) -> Unit,
     onAddConfirmClicked: (AddScheduleState) -> Unit,
     onEditConfirmClicked: (ScheduleUiModel, AddScheduleState) -> Unit,
@@ -229,7 +233,10 @@ fun CalendarScreen(
                     closePlanSheet()
                     onPlanEditClicked()
                 },
-                onDelete = { closePlanSheet() }
+                onDelete = {
+                    closePlanSheet()
+                    onPlanDeleteClicked()
+                }
             )
         }
     }
@@ -483,7 +490,8 @@ fun CalendarScreenPreview() {
             onDayClicked = {},
             onPlanDetailClicked = {},
             onPlanEditClicked = {},
-            onEditConfirmClicked = { _, _ -> }
+            onEditConfirmClicked = { _, _ -> },
+            onPlanDeleteClicked = {}
         )
     }
 }

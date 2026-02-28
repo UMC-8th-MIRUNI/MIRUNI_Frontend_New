@@ -95,7 +95,6 @@ fun ScheduleBottomSheet(
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showDeleteDialog by remember { mutableStateOf(false) }
-//    var isEditMode by remember { mutableStateOf(false) }
     // 3dot 메뉴 상태
     var showMenu by remember { mutableStateOf(false) }
 
@@ -108,6 +107,7 @@ fun ScheduleBottomSheet(
     if (showDeleteDialog) {
         DeleteScheduleDialog(
             onConfirm = {
+                onDelete()
                 showDeleteDialog = false
             },
             onDismiss = {
@@ -115,12 +115,6 @@ fun ScheduleBottomSheet(
             }
         )
     }
-
-//    LaunchedEffect(isEditMode) {
-//        if (isEditMode) {
-//            descriptionFocusRequester.requestFocus()
-//        }
-//    }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -204,7 +198,6 @@ fun ScheduleBottomSheet(
                                 },
                                 onClick = {
                                     showMenu = false
-//                                    isEditMode = true
                                     onEdit()
                                 }
                             )
@@ -236,7 +229,6 @@ fun ScheduleBottomSheet(
                 MiruniTextField.InputText(
                     value = editedDescription,
                     onValueChange = {editedDescription = it},
-//                    enabled = isEditMode,
                     enabled = false,
                     focusRequester = descriptionFocusRequester,
                 )
@@ -261,15 +253,6 @@ fun ScheduleBottomSheet(
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
-
-//                if (isEditMode && !isKeyboardVisible) {
-//                    MiruniButton.Single(
-//                        text = "확인",
-//                        onClick = {
-//                            isEditMode = false
-//                        }
-//                    )
-//                }
             }
         }
     }

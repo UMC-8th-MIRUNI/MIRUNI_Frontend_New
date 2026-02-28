@@ -37,10 +37,6 @@ class CalendarViewModel @Inject constructor(
             // AI 플래닝하러 가기
             CalendarContract.Event.AiPlannerClicked -> setEffect { CalendarContract.Effect.NavigateToAiPlanner }
 
-            // 날짜 변경 관련
-            CalendarContract.Event.YearMonthClicked -> printYearMonthPicker()
-            CalendarContract.Event.BeforeMonthClicked -> printBeforeMonth()
-            CalendarContract.Event.NextMonthClicked -> printNextMonth()
             // 날짜 타일 클릭
             is CalendarContract.Event.DayClicked -> setSelectedDay(event.date)
 
@@ -53,18 +49,14 @@ class CalendarViewModel @Inject constructor(
             is CalendarContract.Event.OpenPlanSheet -> openPlanSheet(event.planType, event.planId)
             CalendarContract.Event.ClosePlanSheet -> setState { copy(isPlanSheetOpened = false) }
             // 일정 완료 설정
-            is CalendarContract.Event.PlanChecked -> finishPlan(event.plan, event.expectedTime)
-            // 일정 메뉴
-            CalendarContract.Event.PlanMenuClicked -> printMenu()
+            is CalendarContract.Event.PlanChecked -> finishPlan(event.plan)
             // - 전체 보기
             is CalendarContract.Event.ShowDetailClicked -> setEffect { CalendarContract.Effect.NavigateToScheduleTable(event.plan.id.toInt()) }
             // - 수정하기
             is CalendarContract.Event.PlanEditClicked -> setEditMode(event.plan)
             is CalendarContract.Event.SubmitEditedPlan -> submitEditedPlan(event.editedPlan, event.addScheduleState)
             // - 삭제하기
-            is CalendarContract.Event.PlanDeleteClicked -> printDeleteConfirmationDialog()
-            is CalendarContract.Event.PlanDeleteConfirmClicked -> confirmDelete(event.plan)
-            CalendarContract.Event.PlanDeleteCancelClicked -> cancelDelete()
+            CalendarContract.Event.PlanDeleteClicked -> deletePlan()
         }
     }
 
@@ -121,12 +113,6 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
-    private fun printBeforeMonth() {
-
-    }
-    private fun printNextMonth() {
-
-    }
     /** 날짜 선택 처리 */
     private fun setSelectedDay(date: LocalDate) {
         setState { copy(selectedDate = date) }
@@ -135,7 +121,7 @@ class CalendarViewModel @Inject constructor(
         viewModelScope.launch { calendarRepository.refreshDailyPlans(date) }
     }
     /** 일정 완료 처리 */
-    private fun finishPlan(plan: ScheduleUiModel, expectedTime: String) {
+    private fun finishPlan(plan: ScheduleUiModel) {
         viewModelScope.launch {
             setState { copy(isLoading = true) }
 
@@ -176,7 +162,7 @@ class CalendarViewModel @Inject constructor(
                             calendarRepository.refreshDailyPlans(viewState.value.selectedDate)
                         }
                         is DataResult.Error -> setEffect {
-                            CalendarContract.Effect.ShowToast("완료 처리 실패")
+                            CalendarContract.Effect.ShowToast("완료 처리 실패. ${result.error}")
                         }
                     }
                 }
@@ -204,7 +190,7 @@ class CalendarViewModel @Inject constructor(
                     setEffect { CalendarContract.Effect.ShowToast("일정이 생성되었습니다.") }
                 }
                 is DataResult.Error -> {
-                    setEffect { CalendarContract.Effect.ShowToast("일정 생성 실패") }
+                    setEffect { CalendarContract.Effect.ShowToast("일정 생성 실패. ${result.error}") }
                 }
             }
         }
@@ -255,26 +241,7 @@ class CalendarViewModel @Inject constructor(
 
         setState { copy(isPlanSheetOpened = !isPlanSheetOpened) }
     }
-    private fun printDeleteConfirmationDialog() {
 
-    }
-    private fun cancelDelete() {
-
-    }
-    /** 일정 삭제 처리 */
-    private fun confirmDelete(plan: ScheduleUiModel) {
-        viewModelScope.launch {
-            val result = calendarRepository.deletePlan(plan.id.toInt(), viewState.value.selectedDate)
-            when (result) {
-                is DataResult.Success -> {
-                    setEffect { CalendarContract.Effect.ShowToast("일정이 삭제되었습니다.") }
-                }
-                is DataResult.Error -> {
-                    setEffect { CalendarContract.Effect.ShowToast("일정 삭제 실패") }
-                }
-            }
-        }
-    }
     private fun setEditMode(plan: ScheduleUiModel) {
         setState {
             copy(
@@ -314,16 +281,37 @@ class CalendarViewModel @Inject constructor(
 
                 is DataResult.Error -> {
                     setState { copy(isLoading = false) }
-                    setEffect { CalendarContract.Effect.ShowToast("일정 수정 실패") }
+                    setEffect { CalendarContract.Effect.ShowToast("일정 수정 실패. ${result.error}") }
                 }
             }
         }
     }
-    private fun printMenu() {
 
-    }
-    private fun printYearMonthPicker() {
+    private fun deletePlan() {
+        viewModelScope.launch {
+            setState { copy(isLoading = true) }
+            val state = viewState.value
 
+            val result = calendarRepository.deletePlan(
+                planId = state.selectedPlan!!.id.toInt(),
+                date = viewState.value.selectedDate
+            )
+
+            Log.d("Delete Plan", "5. ViewModel Result: $result")
+
+            when (result) {
+                is DataResult.Success -> {
+                    calendarRepository.refreshDailyPlans(state.selectedDate)
+
+                    setState { copy(isLoading = false) }
+                    setEffect { CalendarContract.Effect.ShowToast("일정이 삭제되었습니다.") }
+                }
+                is DataResult.Error -> {
+                    setState { copy(isLoading = false) }
+                    setEffect { CalendarContract.Effect.ShowToast("일정 삭제 실패. ${result.error}") }
+                }
+            }
+        }
     }
 
     private fun showErrorMessage(error: DataError?) {

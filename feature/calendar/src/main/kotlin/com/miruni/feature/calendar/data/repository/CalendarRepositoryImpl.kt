@@ -111,82 +111,6 @@ class CalendarRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getDailyPlans(
-        year: Int,
-        month: Int,
-        day: Int
-    ): DataResult<DailyPlans, DataError> {
-        // 통신 실행
-        val networkResult = executeApiRequest {
-            api.getDailyPlans(
-                year = year,
-                month = month,
-                day = day
-            )
-        }
-
-        return when(networkResult) {
-            is NetworkResult.Success -> { // 통신 성공
-                val response = networkResult.data
-                val serverResult = response.result
-
-                // 비즈니스 로직 확인
-                if (response.errorCode.isNullOrBlank() && serverResult != null) {
-                    // 성공시
-                    val domainItem = serverResult.toDomain()
-
-                    DataResult.Success(domainItem)
-                } else {
-                    DataResult.Error(
-                        DataError.CustomError(
-                            code = response.errorCode ?: "UNKNOWN",
-                            msg = response.message ?: "요청 처리 중 문제가 발생했어요."
-                        )
-                    )
-                }
-            }
-
-            is NetworkResult.Failure -> { // 통신 실패
-                DataResult.Error(networkResult.error.toDomainError())
-            }
-        }
-    }
-
-    override suspend fun deletePlan(basicPlanId: Int): DataResult<Int, DataError> {
-        // 통신 실행
-        val networkResult = executeApiRequest {
-            api.deletePlan(
-                basicPlanId = basicPlanId
-            )
-        }
-
-        return when(networkResult) {
-            is NetworkResult.Success -> { // 통신 성공
-                val response = networkResult.data
-                val serverResult = response.result
-
-                // 비즈니스 로직 확인
-                if (response.errorCode.isNullOrBlank() && serverResult != null) {
-                    // 성공시
-                    val domainItem = serverResult.deletedPlanId
-
-                    DataResult.Success(domainItem)
-                } else {
-                    DataResult.Error(
-                        DataError.CustomError(
-                            code = response.errorCode ?: "UNKNOWN",
-                            msg = response.message ?: "요청 처리 중 문제가 발생했어요."
-                        )
-                    )
-                }
-            }
-
-            is NetworkResult.Failure -> { // 통신 실패
-                DataResult.Error(networkResult.error.toDomainError())
-            }
-        }
-    }
-
     // 특정 일자 plan 캐시: 날짜 - DailyPlans
     private val _dailyCache: MutableStateFlow<Map<LocalDate, DailyPlans>> = MutableStateFlow(emptyMap())
     private val dailyCache: StateFlow<Map<LocalDate, DailyPlans>> = _dailyCache.asStateFlow()
@@ -492,17 +416,21 @@ class CalendarRepositoryImpl @Inject constructor(
         planId: Int,
         date: LocalDate
     ): DataResult<Int, DataError> {
+        Log.d("Delete Plan", "1. API Request: $planId")
         val networkResult = executeApiRequest {
             api.deletePlan(basicPlanId = planId)
         }
+        Log.d("Delete Plan", "2. API Response: $networkResult")
 
         return when (networkResult) {
             is NetworkResult.Success -> {
+                Log.d("Delete Plan", "3. NetworkResult Success")
                 val response = networkResult.data
                 val serverResult = response.result
 
                 if (response.errorCode.isNullOrBlank() && serverResult != null) {
-                    val deleteId = serverResult.deletedPlanId
+                    val deleteId = serverResult
+                    Log.d("Delete Plan", "4. Deleted Id: $deleteId")
 
                     // 캐시 업데이트
                     _dailyCache.update { old ->
@@ -522,6 +450,7 @@ class CalendarRepositoryImpl @Inject constructor(
 
                     DataResult.Success(deleteId)
                 } else {
+                    Log.d("Delete Plan", "4. Error: ${response.errorCode.isNullOrBlank()}, Server Result: $serverResult")
                     DataResult.Error(
                         DataError.CustomError(
                             code = response.errorCode ?: "UNKNOWN",
@@ -531,6 +460,7 @@ class CalendarRepositoryImpl @Inject constructor(
                 }
             }
             is NetworkResult.Failure -> {
+                Log.d("Delete Plan", "3. NetworkResult Failure")
                 DataResult.Error(networkResult.error.toDomainError())
             }
         }
