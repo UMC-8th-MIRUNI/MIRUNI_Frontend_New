@@ -31,7 +31,12 @@ object CalendarContract {
         object ClosePlanSheet : Event() // 일정 설명 바텀 시트 닫기
         object PlanMenuClicked : Event() // 메뉴 클릭
         data class ShowDetailClicked(val plan: ScheduleUiModel) : Event() // 일정 전체보기 클릭
+
         data class PlanEditClicked(val plan: ScheduleUiModel) : Event() // 수정 클릭
+        data class SubmitEditedPlan( // 수정 완료
+            val editedPlan: ScheduleUiModel,
+            val addScheduleState: AddScheduleState
+        ) : Event()
         data class PlanDeleteClicked(val plan: ScheduleUiModel) : Event() // 삭제 클릭
         data class PlanDeleteConfirmClicked(val plan: ScheduleUiModel) : Event() // 삭제 확인 클릭
         object PlanDeleteCancelClicked : Event() // 삭제 취소 클릭
@@ -49,7 +54,8 @@ object CalendarContract {
 
         val selectedPlan: ScheduleUiModel? = null,
         val isPlanSheetOpened: Boolean = false, // 일정 설명 바텀시트 열렸는지
-        val isAddScheduleSheetOpened: Boolean = false
+        val isAddScheduleSheetOpened: Boolean = false, // 일정 추가 바텀시트 열렸는지
+        val editingPlan: ScheduleUiModel? = null // 수정 일정
     ) : ViewState
 
     sealed class Effect : ViewSideEffect {

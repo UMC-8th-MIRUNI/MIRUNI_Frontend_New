@@ -67,7 +67,7 @@ import java.time.YearMonth
 @Composable
 fun DateTimeRangeDialog(
     initialRange: DateTimeRangeState?,
-    modifier: Modifier = Modifier,
+    isSingleDateMode: Boolean = false,
     onConfirm: (DateTimeRangeState) -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -137,15 +137,21 @@ fun DateTimeRangeDialog(
                             startDate = startDate,
                             endDate = endDate,
                             onClick = {
-                                handleDateClick(
-                                    clickedDate = day.date,
-                                    currentStart = startDate,
-                                    currentEnd = endDate,
-                                    onRangeChanged = { start, end ->
-                                        startDate = start
-                                        endDate = end
-                                    }
-                                )
+                                if (isSingleDateMode) {
+                                    startDate = day.date
+                                    endDate = day.date
+                                } else {
+                                    handleDateClick(
+                                        isSingleDateMode = isSingleDateMode,
+                                        clickedDate = day.date,
+                                        currentStart = startDate,
+                                        currentEnd = endDate,
+                                        onRangeChanged = { start, end ->
+                                            startDate = start
+                                            endDate = end
+                                        }
+                                    )
+                                }
                             }
                         )
                     }
@@ -316,11 +322,17 @@ fun RangeDayCell(
 
 @SuppressLint("NewApi")
 fun handleDateClick(
+    isSingleDateMode: Boolean,
     clickedDate: LocalDate,
     currentStart: LocalDate,
     currentEnd: LocalDate,
     onRangeChanged: (LocalDate, LocalDate) -> Unit,
 ) {
+    if (isSingleDateMode) { // 수정 모드 - 단일 날짜 선택
+        onRangeChanged(clickedDate, clickedDate)
+        return
+    }
+
     when {
         // 같은 날짜 2번 클릭 = 단일 날짜 유지
         currentStart == currentEnd && clickedDate == currentStart -> {

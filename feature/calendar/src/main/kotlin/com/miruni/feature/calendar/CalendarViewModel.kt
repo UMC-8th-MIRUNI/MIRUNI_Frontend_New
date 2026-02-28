@@ -59,7 +59,8 @@ class CalendarViewModel @Inject constructor(
             // - 전체 보기
             is CalendarContract.Event.ShowDetailClicked -> setEffect { CalendarContract.Effect.NavigateToScheduleTable(event.plan.id.toInt()) }
             // - 수정하기
-            is CalendarContract.Event.PlanEditClicked -> printPlanCreationBottomSheet(event.plan)
+            is CalendarContract.Event.PlanEditClicked -> setEditMode(event.plan)
+            is CalendarContract.Event.SubmitEditedPlan -> submitEditedPlan(event.editedPlan, event.addScheduleState)
             // - 삭제하기
             is CalendarContract.Event.PlanDeleteClicked -> printDeleteConfirmationDialog()
             is CalendarContract.Event.PlanDeleteConfirmClicked -> confirmDelete(event.plan)
@@ -274,8 +275,49 @@ class CalendarViewModel @Inject constructor(
             }
         }
     }
-    private fun printPlanCreationBottomSheet(plan: ScheduleUiModel) {
-        setState { copy(isAddScheduleSheetOpened = true, selectedPlan = plan) }
+    private fun setEditMode(plan: ScheduleUiModel) {
+        setState {
+            copy(
+                isPlanSheetOpened = false,
+                isAddScheduleSheetOpened = true,
+                selectedPlan = plan,
+                editingPlan = plan
+            )
+        }
+    }
+    private fun submitEditedPlan(
+        editedPlan: ScheduleUiModel,
+        addScheduleState: AddScheduleState
+    ) {
+        viewModelScope.launch {
+            setState { copy(isLoading = true) }
+
+            val result = calendarRepository.editPlan(
+                basicPlanId = editedPlan.id.toInt(),
+                draft = addScheduleState.toDomain()
+            )
+
+            when (result) {
+                is DataResult.Success -> {
+                    calendarRepository.refreshDailyPlans(addScheduleState.dateTimeRange.startDate)
+
+                    setState {
+                        copy(
+                           isLoading = false,
+                            isAddScheduleSheetOpened = false,
+                            editingPlan = null
+                        )
+                    }
+
+                    setEffect { CalendarContract.Effect.ShowToast("일정이 수정되었습니다.") }
+                }
+
+                is DataResult.Error -> {
+                    setState { copy(isLoading = false) }
+                    setEffect { CalendarContract.Effect.ShowToast("일정 수정 실패") }
+                }
+            }
+        }
     }
     private fun printMenu() {
 

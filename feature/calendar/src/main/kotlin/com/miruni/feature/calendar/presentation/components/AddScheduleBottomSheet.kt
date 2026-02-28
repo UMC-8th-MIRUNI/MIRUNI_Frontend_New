@@ -50,36 +50,50 @@ import com.miruni.core.designsystem.Gray
 import com.miruni.core.designsystem.MainColor
 import com.miruni.feature.calendar.common.MiruniButton
 import com.miruni.feature.calendar.common.MiruniTextField
+import com.miruni.feature.calendar.common.convertKoreanToLocalTime
 import com.miruni.feature.calendar.domain.model.PlanPriority
 import com.miruni.feature.calendar.presentation.model.AddScheduleState
 import com.miruni.feature.calendar.presentation.model.DateTimeRangeState
+import com.miruni.feature.calendar.presentation.model.ScheduleUiModel
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddScheduleBottomSheet(
-    selectedDate: LocalDate,
-    isLoading: Boolean,
     modifier: Modifier = Modifier,
-    onConfirm: (AddScheduleState) -> Unit,
+    isLoading: Boolean,
+    selectedDate: LocalDate,
+    editingPlan: ScheduleUiModel?,
+    onConfirm: (AddScheduleState, ScheduleUiModel?) -> Unit,
     onDismiss: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    var title by remember { mutableStateOf("") }
-    var priority by remember { mutableStateOf(PlanPriority.MEDIUM) }
-    var description by remember { mutableStateOf("") }
-    var showDatePicker by remember { mutableStateOf(false) }
-    var dateTimeRange by remember {
-        mutableStateOf(DateTimeRangeState(selectedDate, selectedDate))
+
+    var title by remember(editingPlan) { mutableStateOf(editingPlan?.title ?: "") }
+    var priority by remember(editingPlan) { mutableStateOf(editingPlan?.priority ?: PlanPriority.MEDIUM) }
+    var description by remember(editingPlan) { mutableStateOf(editingPlan?.description ?: "") }
+    var dateTimeRange by remember(editingPlan) {
+        mutableStateOf(
+            DateTimeRangeState(
+                startDate = selectedDate,
+                endDate = selectedDate,
+                startTime = convertKoreanToLocalTime(editingPlan?.startTime.toString()),
+                endTime = convertKoreanToLocalTime(editingPlan?.endTime.toString())
+            )
+        )
     }
 
+    var showDatePicker by remember { mutableStateOf(false) }
 
     if (showDatePicker) {
         DateTimeRangeDialog(
             initialRange = dateTimeRange,
+            isSingleDateMode = editingPlan != null,
             onConfirm = {
                 showDatePicker = false
-                dateTimeRange = it
+                dateTimeRange = if (editingPlan != null) {
+                    it.copy(endDate = it.startDate)
+                } else it
             },
             onDismiss = { showDatePicker = false }
         )
@@ -156,7 +170,8 @@ fun AddScheduleBottomSheet(
                                 dateTimeRange = dateTimeRange,
                                 priority = priority,
                                 description = description
-                            )
+                            ),
+                            editingPlan
                         )
                     },
                     enabled = title.isNotBlank() && !isLoading

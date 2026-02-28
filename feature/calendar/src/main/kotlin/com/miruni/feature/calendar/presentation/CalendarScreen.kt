@@ -43,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
@@ -114,11 +115,22 @@ fun CalendarRoute(
         onPlanDetailClicked = { plan ->
             viewModel.setEvent(CalendarContract.Event.ShowDetailClicked(plan))
         },
+        onPlanEditClicked = {
+            viewModel.setEvent(CalendarContract.Event.PlanEditClicked(state.selectedPlan!!))
+        },
         onCheckBoxClicked = { plan ->
             viewModel.setEvent(CalendarContract.Event.PlanChecked(plan = plan, expectedTime = plan.expectedTime))
         },
         onAddConfirmClicked = { addScheduleState ->
             viewModel.setEvent(CalendarContract.Event.SubmitPlan(addScheduleState))
+        },
+        onEditConfirmClicked = { editingPlan, addScheduleState ->
+            viewModel.setEvent(
+                CalendarContract.Event.SubmitEditedPlan(
+                    editingPlan,
+                    addScheduleState
+                )
+            )
         },
         changeIsPlanCreationSheetOpened = {
             viewModel.setEvent(CalendarContract.Event.ChangeIsPlanCreationOpened)
@@ -142,8 +154,10 @@ fun CalendarScreen(
     onDayClicked: (java.time.LocalDate) -> Unit = {},
     onPlanClicked: (ScheduleUiModel) -> Unit,
     onPlanDetailClicked: (ScheduleUiModel) -> Unit,
+    onPlanEditClicked: () -> Unit,
     onCheckBoxClicked: (ScheduleUiModel) -> Unit,
     onAddConfirmClicked: (AddScheduleState) -> Unit,
+    onEditConfirmClicked: (ScheduleUiModel, AddScheduleState) -> Unit,
     changeIsPlanCreationSheetOpened: () -> Unit,
     openPlanSheet: (PlanType, Int) -> Unit,
     closePlanSheet: () -> Unit
@@ -188,8 +202,13 @@ fun CalendarScreen(
         AddScheduleBottomSheet(
             isLoading = state.isLoading,
             selectedDate = state.selectedDate,
-            onConfirm = {
-                onAddConfirmClicked(it)
+            editingPlan = state.editingPlan,
+            onConfirm = { addState, editingPlan ->
+                if (editingPlan == null) {
+                    onAddConfirmClicked(addState)
+                } else {
+                    onEditConfirmClicked(editingPlan, addState)
+                }
             },
             onDismiss = { changeIsPlanCreationSheetOpened() }
         )
@@ -206,7 +225,10 @@ fun CalendarScreen(
                 priority = plan.priority,
                 onDismiss = { closePlanSheet() },
                 onClickPlanDetail = { onPlanDetailClicked(plan) },
-                onEdit = { closePlanSheet() },
+                onEdit = {
+                    closePlanSheet()
+                    onPlanEditClicked()
+                },
                 onDelete = { closePlanSheet() }
             )
         }
@@ -459,7 +481,9 @@ fun CalendarScreenPreview() {
             },
             closePlanSheet = {},
             onDayClicked = {},
-            onPlanDetailClicked = {}
+            onPlanDetailClicked = {},
+            onPlanEditClicked = {},
+            onEditConfirmClicked = { _, _ -> }
         )
     }
 }

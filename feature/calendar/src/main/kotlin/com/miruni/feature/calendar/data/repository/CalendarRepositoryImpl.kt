@@ -580,7 +580,7 @@ class CalendarRepositoryImpl @Inject constructor(
                     date = draft.startDate,
                     startTime = draft.startTime,
                     endTime = draft.endTime,
-                    priority = draft.priority.server
+                    priority = draft.priority.ui
                 )
             )
         }
