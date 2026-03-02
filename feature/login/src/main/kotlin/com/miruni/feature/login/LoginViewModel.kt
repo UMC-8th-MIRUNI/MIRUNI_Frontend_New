@@ -36,8 +36,7 @@ class LoginViewModel @Inject constructor(
             is LoginContract.Event.OnIdChanged -> {
                 setState {
                     copy(
-//                        id = id.copy(value = event.id).clearError()
-                        id = id.copy(value = "miruni888@gmail.com").clearError()
+                       id = id.copy(value = event.id).clearError()
                     )
                 }
             }
@@ -45,8 +44,7 @@ class LoginViewModel @Inject constructor(
             is LoginContract.Event.OnPwChanged -> {
                 setState {
                     copy(
-//                      password = password.copy(value = event.pw).clearError()
-                        password = password.copy(value = "password123!").clearError()
+                        password = password.copy(value = event.pw).clearError()
                     )
                 }
             }
